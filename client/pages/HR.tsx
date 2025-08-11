@@ -8044,7 +8044,7 @@ ${performanceFormData.managerComments || 'Not specified'}
                                     Total Amount
                                   </p>
                                   <p className="font-medium text-green-600">
-                                    KSh {report.totalNetAmount.toLocaleString()}
+                                    KSh {(report.totalNetAmount || 0).toLocaleString()}
                                   </p>
                                 </div>
                                 <div>
