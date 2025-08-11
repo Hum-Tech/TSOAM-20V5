@@ -816,11 +816,18 @@ export default function MemberManagement() {
         </div>
 
         {/* Main Content */}
-        <Card>
-          <CardHeader>
-            <CardTitle>Full Members Directory</CardTitle>
-          </CardHeader>
-          <CardContent>
+        <Tabs defaultValue="members" className="space-y-4">
+          <TabsList className="grid w-full grid-cols-2">
+            <TabsTrigger value="members">All Members</TabsTrigger>
+            <TabsTrigger value="homecells">Home Cells</TabsTrigger>
+          </TabsList>
+
+          <TabsContent value="members">
+            <Card>
+              <CardHeader>
+                <CardTitle>Full Members Directory</CardTitle>
+              </CardHeader>
+              <CardContent>
             <div className="flex gap-4 mb-6">
               <div className="relative flex-1">
                 <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
