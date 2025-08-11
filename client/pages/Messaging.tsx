@@ -358,6 +358,13 @@ export default function Messaging() {
                          user?.role === "pastor" ||
                          user?.role === "hr" ||
                          user?.role === "finance";
+
+  // Debug logging
+  console.log("Messaging Debug:", {
+    user: user?.name,
+    role: user?.role,
+    canSendMessages
+  });
   const [searchTerm, setSearchTerm] = useState("");
   const [contacts] = useState<Contact[]>(getSystemContacts());
   const [messages, setMessages] = useState<Message[]>(mockMessages);
