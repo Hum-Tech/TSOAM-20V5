@@ -1946,7 +1946,7 @@ ${performanceFormData.managerComments || 'Not specified'}
         `🎯 FINANCE APPROVAL WORKFLOW:\n` +
         `• ✅ Batch sent to Finance Department\n` +
         `• ⏳ Status: Awaiting Finance Approval\n` +
-        `• 📱 Finance team has been notified\n` +
+        `�� 📱 Finance team has been notified\n` +
         `• 📋 Individual payments can be approved/rejected\n\n` +
         (processingErrors.length > 0 ? `⚠️ Note: ${processingErrors.length} employee(s) had processing errors\n\n` : '') +
         `📍 NEXT STEPS:\n` +
@@ -3652,7 +3652,7 @@ ${performanceFormData.managerComments || 'Not specified'}
 
                     <div class="earnings-deductions">
                         <div class="earnings-section">
-                            <div class="section-header">💰 EARNINGS</div>
+                            <div class="section-header">���� EARNINGS</div>
                             <div class="items-list">
                                 <div class="item-row">
                                     <span class="item-label">Basic Salary</span>
@@ -8054,19 +8054,24 @@ ${performanceFormData.managerComments || 'Not specified'}
 
                   <div className="space-y-3">
                     {disbursementReports.map((report) => (
-                      <Card key={report.id} className="border-green-200">
+                      <Card key={report.id} className={`${report.status === "Approved" ? "border-green-200" : "border-red-200"}`}>
                         <CardContent className="p-4">
                           <div className="flex items-start justify-between">
                             <div className="space-y-2">
                               <div className="flex items-center gap-2">
                                 <h4 className="font-semibold">
-                                  Disbursement Report - {report.period}
+                                  {report.status === "Approved" ? "✅ APPROVED" : "❌ REJECTED"} Disbursement - {report.period}
                                 </h4>
                                 <Badge
                                   variant={
                                     report.status === "Approved"
                                       ? "default"
-                                      : "secondary"
+                                      : "destructive"
+                                  }
+                                  className={
+                                    report.status === "Approved"
+                                      ? "bg-green-600"
+                                      : "bg-red-600"
                                   }
                                   className={
                                     report.status === "Approved"
