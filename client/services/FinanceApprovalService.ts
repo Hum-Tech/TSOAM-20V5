@@ -140,8 +140,46 @@ class FinanceApprovalService {
    * Submit payroll batch for Finance approval
    */
   public submitPayrollForApproval(payrollData: Omit<PayrollApprovalRequest, 'status' | 'submittedDate'>): string {
+    // Validate input data
+    if (!payrollData || !payrollData.batchId) {
+      throw new Error('Invalid payroll data: missing batchId');
+    }
+
+    if (!payrollData.employees || payrollData.employees.length === 0) {
+      throw new Error('Invalid payroll data: no employees provided');
+    }
+
+    // Ensure metadata exists with defaults
+    const metadata = {
+      approvalDeadline: new Date(Date.now() + 48 * 60 * 60 * 1000).toISOString(),
+      priority: 'medium' as const,
+      department: 'HR',
+      fiscalYear: new Date().getFullYear(),
+      quarter: Math.ceil((new Date().getMonth() + 1) / 3),
+      ...payrollData.metadata
+    };
+
+    // Ensure summary exists with defaults
+    const summary = {
+      totalBasicSalary: 0,
+      totalAllowances: 0,
+      totalPAYE: 0,
+      totalNSSF: 0,
+      totalSHA: 0,
+      totalHousingLevy: 0,
+      totalLoans: 0,
+      totalInsurance: 0,
+      totalDeductions: 0,
+      projectedCashFlow: payrollData.totalNetAmount || 0,
+      bankBalance: 0,
+      approvalRequired: true,
+      ...payrollData.summary
+    };
+
     const approvalRequest: PayrollApprovalRequest = {
       ...payrollData,
+      metadata,
+      summary,
       status: 'Pending',
       submittedDate: new Date().toISOString(),
       employees: payrollData.employees.map(emp => ({
