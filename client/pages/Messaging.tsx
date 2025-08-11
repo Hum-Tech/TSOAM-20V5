@@ -589,9 +589,19 @@ export default function Messaging() {
           }),
         });
 
-        alert(
-          `${messageType} sent successfully to ${selectedContacts.length} recipient(s)!`,
-        );
+        // Create detailed success message
+        const employeeCount = selectedContactsList.filter(c => c.type === "Employee").length;
+        const memberCount = selectedContactsList.filter(c => c.type === "Member").length;
+
+        let successMessage = "Message sent successfully!\n";
+        if (employeeCount > 0) {
+          successMessage += `• ${employeeCount} staff member(s) notified in-app\n`;
+        }
+        if (memberCount > 0) {
+          successMessage += `• ${memberCount} member(s) sent via ${messageType}`;
+        }
+
+        alert(successMessage);
       } else {
         alert("Failed to send message. Please try again.");
       }
