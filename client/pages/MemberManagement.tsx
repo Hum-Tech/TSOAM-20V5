@@ -452,6 +452,7 @@ export default function MemberManagement() {
       address: "",
       emergencyContactName: "",
       emergencyContactPhone: "",
+      homeCell: "",
       employmentStatus: "",
       membershipState: "Active",
       serviceGroups: [],
