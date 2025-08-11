@@ -358,6 +358,12 @@ export default function MemberManagement() {
     setActiveTab("members");
   };
 
+  // Function to view home cell details
+  const viewHomeCellDetails = (cell: HomeCell) => {
+    setSelectedHomeCellForDetails(cell);
+    setShowHomeCellDetailsDialog(true);
+  };
+
   // Function to transfer member to different home cell
   const handleTransferHomeCell = () => {
     if (!memberToTransfer || !newHomeCellForTransfer) {
