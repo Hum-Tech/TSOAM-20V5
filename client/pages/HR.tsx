@@ -2226,7 +2226,7 @@ ${performanceFormData.managerComments || 'Not specified'}
 
           setTimeout(() => {
             alert(
-              `❌ Payroll Rejected by Finance!\n\n` +
+              `��� Payroll Rejected by Finance!\n\n` +
                 `��� Period: ${rejectionData.period}\n` +
                 `💰 Amount: KSh ${rejectionData.amount?.toLocaleString()}\n` +
                 `���� Rejected by: ${rejectionData.rejectedBy}\n` +
@@ -8072,11 +8072,6 @@ ${performanceFormData.managerComments || 'Not specified'}
                                     report.status === "Approved"
                                       ? "bg-green-600"
                                       : "bg-red-600"
-                                  }
-                                  className={
-                                    report.status === "Approved"
-                                      ? "bg-green-600"
-                                      : ""
                                   }
                                 >
                                   {report.status === "Approved" ? "DISBURSED" : "NOT DISBURSED"}
