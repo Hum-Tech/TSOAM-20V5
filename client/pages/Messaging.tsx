@@ -491,24 +491,30 @@ export default function Messaging() {
       deliveryRate: 100,
     };
 
-    // Create notifications for selected recipients (only if not public message)
+    // Handle message delivery based on recipient type
     const selectedContactsList = contacts.filter(c => selectedContacts.includes(c.id));
     const isPublicMessage = recipientFilter === "all" || selectedContacts.length > 10;
 
-    if (!isPublicMessage) {
-      selectedContactsList.forEach(contact => {
-        // Create notification for each recipient
+    // Separate employees and members
+    const employeeContacts = selectedContactsList.filter(c => c.type === "Employee");
+    const memberContacts = selectedContactsList.filter(c => c.type === "Member");
+
+    // For employees: Create in-app notifications (they shouldn't receive SMS/Email)
+    if (employeeContacts.length > 0) {
+      employeeContacts.forEach(contact => {
+        // Create in-app notification for employee
         const notification = {
           id: `notif-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
-          title: messageType === "Email" ? (subject || "New Message") : "New SMS Message",
+          title: messageType === "Email" ? (subject || "New Internal Message") : "New Internal Message",
           message: messageContent.length > 100 ? messageContent.substring(0, 100) + "..." : messageContent,
           sender: user?.name || "System",
           recipient: contact.name,
           recipientId: contact.id,
-          type: messageType.toLowerCase(),
+          type: "internal",
           isPublic: false,
           timestamp: new Date().toISOString(),
-          read: false
+          read: false,
+          deliveryMethod: "notification"
         };
 
         // Store notification in localStorage (in production, this would go to a database)
@@ -517,14 +523,40 @@ export default function Messaging() {
         localStorage.setItem('notifications', JSON.stringify(existingNotifications));
       });
 
-      // Dispatch event to update notification bell in header
+      // Dispatch event to update notification bell in header for employees
       window.dispatchEvent(new CustomEvent('notificationAdded', {
         detail: {
-          count: selectedContactsList.length,
-          type: messageType,
+          count: employeeContacts.length,
+          type: "Internal",
           sender: user?.name
         }
       }));
+    }
+
+    // For members: Continue with SMS/Email delivery
+    if (memberContacts.length > 0 && !isPublicMessage) {
+      memberContacts.forEach(contact => {
+        // Create delivery record for member (SMS/Email will be sent)
+        const deliveryRecord = {
+          id: `delivery-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+          contactId: contact.id,
+          contactName: contact.name,
+          contactType: contact.type,
+          messageType: messageType,
+          content: messageContent,
+          subject: messageType === "Email" ? subject : undefined,
+          deliveryMethod: messageType === "SMS" ? contact.phone : contact.email,
+          timestamp: new Date().toISOString(),
+          status: "sent"
+        };
+
+        // Store delivery record
+        const deliveryRecords = JSON.parse(localStorage.getItem('messageDeliveries') || '[]');
+        deliveryRecords.unshift(deliveryRecord);
+        localStorage.setItem('messageDeliveries', JSON.stringify(deliveryRecords));
+      });
+
+      console.log(`📱 ${messageType} sent to ${memberContacts.length} member(s) via ${messageType === "SMS" ? "phone" : "email"}`);
     }
 
     try {
