@@ -95,6 +95,17 @@ export function Sidebar() {
       return true;
     }
 
+    // Debug logging for normal users
+    if (user.role === "user") {
+      console.log('Sidebar Debug:', {
+        item: item.label,
+        permission: item.permission,
+        userHasPermission: user.permissions[item.permission as keyof typeof user.permissions],
+        userRole: user.role,
+        allPermissions: user.permissions
+      });
+    }
+
     // For other roles, use the existing permission system
     return user.permissions[item.permission as keyof typeof user.permissions];
   });
