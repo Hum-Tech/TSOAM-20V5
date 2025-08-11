@@ -1841,14 +1841,21 @@ ${performanceFormData.managerComments || 'Not specified'}
         existingNotifications.unshift(financeNotification);
         localStorage.setItem("finance_notifications", JSON.stringify(existingNotifications));
 
-        // Also sync individual transactions to Finance
-        financialTransactionService.addBatchPayroll(payrollRecords);
+        // Also sync individual transactions to Finance with error handling
+        try {
+          const financeTransactions = financialTransactionService.addBatchPayroll(payrollRecords);
+          console.log("✅ Finance transactions created:", financeTransactions.length);
+        } catch (financeError) {
+          console.warn("⚠️ Error creating Finance transactions:", financeError);
+          // Continue with payroll processing even if Finance sync fails
+        }
 
         console.log("✅ Payroll batch sent to Finance for approval:", {
           batchId,
           totalAmount: totalNetPayroll,
           employees: payrollRecords.length,
-          financeNotified: true
+          financeNotified: true,
+          recordStructure: payrollRecords[0] ? Object.keys(payrollRecords[0]) : []
         });
 
         // Trigger a visual notification that Finance has been notified
