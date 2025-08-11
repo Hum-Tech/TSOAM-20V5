@@ -1001,7 +1001,7 @@ export default function SystemLogs() {
                     <div>
                       <h4 className="font-semibold mb-2">Most Active Users</h4>
                       <div className="space-y-2">
-                        {[...new Set(logs.map((log) => log.user))].map(
+                        {[...new Set(logs.map((log) => log.userName || log.userId || 'System'))].map(
                           (user, index) => (
                             <div
                               key={`user-${user}-${index}`}
@@ -1009,7 +1009,7 @@ export default function SystemLogs() {
                             >
                               <span>{user}</span>
                               <span className="font-medium">
-                                {logs.filter((log) => log.user === user).length}{" "}
+                                {logs.filter((log) => (log.userName || log.userId || 'System') === user).length}{" "}
                                 actions
                               </span>
                             </div>
