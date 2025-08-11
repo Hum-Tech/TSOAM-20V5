@@ -201,6 +201,7 @@ const mockMembers: Member[] = [
     churchFeedback: "Love the youth programs and community outreach",
     prayerRequests: "Business success and wisdom",
     transferredFromNewMemberId: "NM-002",
+    homeCell: "HC-001",
     createdAt: "2024-08-15T14:30:00Z",
   },
   {
