@@ -92,6 +92,7 @@ import {
   useEffect,
   ReactNode,
 } from "react";
+import RoleBasedAccessService from "@/services/RoleBasedAccessService";
 
 /**
  * User interface defining the structure of authenticated users
