@@ -3330,56 +3330,7 @@ ${performanceFormData.managerComments || 'Not specified'}
       alert(`❌ Failed to print payslip\n\nError: ${error instanceof Error ? error.message : 'Unknown error'}`);
     }
   };
-                      <td>Housing Allowance</td>
-                      <td class="amount">${payslipData.employee.allowances.housing.toLocaleString()}</td>
-                      <td>S.H.A</td>
-                      <td class="amount">${payslipData.sha.toLocaleString()}</td>
-                  </tr>
-                  <tr>
-                      <td>Transport Allowance</td>
-                      <td class="amount">${payslipData.employee.allowances.transport.toLocaleString()}</td>
-                      <td>N.S.S.F</td>
-                      <td class="amount">${payslipData.nssf.toLocaleString()}</td>
-                  </tr>
-                  <tr>
-                      <td>Medical Allowance</td>
-                      <td class="amount">${payslipData.employee.allowances.medical.toLocaleString()}</td>
-                      <td>Housing Levy</td>
-                      <td class="amount">${payslipData.housingLevy.toLocaleString()}</td>
-                  </tr>
-                  <tr>
-                      <td>Other Allowances</td>
-                      <td class="amount">${payslipData.employee.allowances.other.toLocaleString()}</td>
-                      <td></td>
-                      <td class="amount"></td>
-                  </tr>
-                  <tr class="total-row">
-                      <td><strong>GROSS PAY</strong></td>
-                      <td class="amount"><strong>${payslipData.grossSalary.toLocaleString()}</strong></td>
-                      <td><strong>TOTAL DEDUCTIONS</strong></td>
-                      <td class="amount"><strong>${payslipData.totalDeductions.toLocaleString()}</strong></td>
-                  </tr>
-                  <tr class="total-row" style="background-color: #28a745; color: white;">
-                      <td colspan="3"><strong>NET PAY</strong></td>
-                      <td class="amount"><strong>${payslipData.netSalary.toLocaleString()}</strong></td>
-                  </tr>
-              </tbody>
-          </table>
 
-          <div class="footer">
-              <p>This is a computer-generated payslip and does not require a signature.</p>
-              <p>Generated on: ${payslipData.generatedDate}</p>
-              <p>© 2025 The Seed of Abraham Ministry. All rights reserved.</p>
-          </div>
-      </body>
-      </html>
-    `;
-
-    printWindow.document.write(payslipHTML);
-    printWindow.document.close();
-    printWindow.focus();
-    printWindow.print();
-  };
 
   const printLeaveForm = (leaveRequest?: LeaveRequest) => {
     const formData = leaveRequest || leaveForm;
@@ -4778,7 +4729,7 @@ ${performanceFormData.managerComments || 'Not specified'}
                                     <Textarea
                                       placeholder="• Training programs to attend
 • Skills to develop
-• Certifications to pursue
+��� Certifications to pursue
 • Mentoring or coaching needs"
                                       className="min-h-24"
                                     />
