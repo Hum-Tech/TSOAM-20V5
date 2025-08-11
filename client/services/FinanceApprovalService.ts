@@ -443,7 +443,7 @@ class FinanceApprovalService {
     // Update batch status
     const pendingCount = batch.employees.filter(emp => emp.status === 'Pending').length;
     const approvedCount = batch.employees.filter(emp => emp.status === 'Approved').length;
-    const rejectedCount = batch.employees.filter(emp => emp.status === 'Rejected').length;
+    const totalRejectedCount = batch.employees.filter(emp => emp.status === 'Rejected').length;
 
     if (pendingCount === 0) {
       // All payments have been processed - create disbursement reports
