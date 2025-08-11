@@ -105,6 +105,12 @@ export default function Settings() {
     return unsubscribe;
   }, []);
 
+  // Load home cells
+  useEffect(() => {
+    const cells = homeCellService.getAllHomeCells();
+    setHomeCells(cells);
+  }, []);
+
   /**
    * Save church settings with validation and feedback
    */
