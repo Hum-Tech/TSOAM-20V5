@@ -63,8 +63,24 @@ interface Message {
 }
 
 export function Header() {
-  const { user, logout } = useAuth();
   const navigate = useNavigate();
+
+  // Add error handling for auth context
+  let user, logout;
+  try {
+    const authContext = useAuth();
+    user = authContext.user;
+    logout = authContext.logout;
+  } catch (error) {
+    console.error('Auth context error in Header:', error);
+    return (
+      <header className="border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 sticky top-0 z-50">
+        <div className="container flex h-16 items-center">
+          <div className="text-red-500">Authentication Error - Please refresh the page</div>
+        </div>
+      </header>
+    );
+  }
   const [currentTime, setCurrentTime] = useState(new Date());
   const [isOnline, setIsOnline] = useState(navigator.onLine);
   const [notifications, setNotifications] = useState<Notification[]>([
