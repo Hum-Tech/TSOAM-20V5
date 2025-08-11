@@ -58,7 +58,7 @@ import {
 import { exportService } from "@/services/ExportService";
 import { useAuth } from "@/contexts/AuthContext";
 import { transferService } from "@/services/TransferService";
-import { homeCellService } from "@/services/HomeCellService";
+import { homeCellService, type HomeCell } from "@/services/HomeCellService";
 import { MemberTitheRecords } from "@/components/MemberTitheRecords";
 
 /**
