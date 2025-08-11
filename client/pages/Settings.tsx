@@ -902,9 +902,12 @@ export default function Settings() {
                       Lock Account After Failed Attempts
                     </Label>
                   </div>
-                  <Button>
+                  <Button
+                    onClick={saveSecuritySettings}
+                    disabled={isSaving}
+                  >
                     <Clock className="h-4 w-4 mr-2" />
-                    Save Authentication Settings
+                    {isSaving ? "Saving..." : "Save Authentication Settings"}
                   </Button>
                 </CardContent>
               </Card>
