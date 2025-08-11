@@ -905,6 +905,22 @@ export default function HR() {
       documents: [] as File[],
     });
 
+    // Log employee creation
+    SystemLogService.logHR(
+      'Employee Created',
+      `New employee added: ${newEmployee.fullName} (ID: ${employeeId})`,
+      undefined,
+      'HR System',
+      {
+        employeeId,
+        fullName: newEmployee.fullName,
+        department: newEmployee.department,
+        position: newEmployee.position,
+        basicSalary: newEmployee.basicSalary,
+        documentsUploaded: employeeForm.documents?.length || 0
+      }
+    );
+
     setShowAddEmployeeDialog(false);
     alert(
       `Employee ${newEmployee.fullName} added successfully with ID: ${employeeId}${employeeForm.documents.length > 0 ? ` and ${employeeForm.documents.length} document(s) uploaded` : ""}`,
