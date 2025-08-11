@@ -4691,9 +4691,9 @@ ${performanceFormData.managerComments || 'Not specified'}
                                     `🏛️ Department: ${batch.metadata?.department || 'HR'}\n` +
                                     `📈 Fiscal Year: ${batch.metadata?.fiscalYear || new Date().getFullYear()} Q${batch.metadata?.quarter || Math.ceil((new Date().getMonth() + 1) / 3)}\n\n` +
                                     `📋 STATUS BREAKDOWN:\n` +
-                                    `• Approved: ${financialImpact.approved.count} (KSh ${financialImpact.approved.amount.toLocaleString()})\n` +
-                                    `• Rejected: ${financialImpact.rejected.count} (KSh ${financialImpact.rejected.amount.toLocaleString()})\n` +
-                                    `• Pending: ${financialImpact.pending.count} (KSh ${financialImpact.pending.amount.toLocaleString()})\n\n` +
+                                    `• Approved: ${financialImpact?.approved?.count || 0} (KSh ${(financialImpact?.approved?.amount || 0).toLocaleString()})\n` +
+                                    `• Rejected: ${financialImpact?.rejected?.count || 0} (KSh ${(financialImpact?.rejected?.amount || 0).toLocaleString()})\n` +
+                                    `• Pending: ${financialImpact?.pending?.count || 0} (KSh ${(financialImpact?.pending?.amount || 0).toLocaleString()})\n\n` +
                                     `💼 SYSTEM: Production Finance Approval Service`
                                   );
                                 }}
