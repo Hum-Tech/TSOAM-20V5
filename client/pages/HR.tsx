@@ -4735,7 +4735,7 @@ ${performanceFormData.managerComments || 'Not specified'}
                   Payroll batches awaiting approval from Finance Department
                 </p>
               </CardHeader>
-              <CardContent>
+              <CardContent key={refreshKey}>
                 {(() => {
                   let pendingBatches = [];
                   try {
