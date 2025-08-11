@@ -152,7 +152,7 @@ export default function Login() {
 
   // Check if current user is admin
   const isAdmin =
-    user?.role === "Admin" &&
+    user?.role === "admin" &&
     (user?.canCreateAccounts || user?.canDeleteAccounts);
 
   // Redirect if already authenticated
