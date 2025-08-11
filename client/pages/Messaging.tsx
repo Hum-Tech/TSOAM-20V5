@@ -1142,6 +1142,7 @@ export default function Messaging() {
                 </div>
               </DialogContent>
             </Dialog>
+            )}
           </div>
         </div>
 
