@@ -1048,6 +1048,102 @@ export default function MemberManagement() {
             </Table>
           </CardContent>
         </Card>
+          </TabsContent>
+
+          <TabsContent value="homecells">
+            <Card>
+              <CardHeader>
+                <CardTitle>Home Cells Management</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-6">
+                  {/* Home Cells Summary */}
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    {homeCells.map((cell) => {
+                      const cellMembers = filteredMembers.filter(m => m.homeCell === cell.name);
+                      return (
+                        <Card key={cell.id} className="border-l-4 border-l-primary">
+                          <CardContent className="p-4">
+                            <div className="flex items-center justify-between mb-2">
+                              <h3 className="font-semibold text-lg">{cell.name}</h3>
+                              <Badge variant="outline">
+                                {cellMembers.length} members
+                              </Badge>
+                            </div>
+                            <div className="text-sm text-muted-foreground">
+                              <div>Active: {cellMembers.filter(m => m.membershipStatus === 'Active').length}</div>
+                              <div>Inactive: {cellMembers.filter(m => m.membershipStatus === 'Inactive').length}</div>
+                            </div>
+                            <div className="mt-3 flex gap-2">
+                              <Button
+                                size="sm"
+                                variant="outline"
+                                onClick={() => {
+                                  setFilterHomeCell(cell.name);
+                                  // Switch to members tab to show filtered results
+                                  const membersTab = document.querySelector('[value="members"]') as HTMLElement;
+                                  if (membersTab) membersTab.click();
+                                }}
+                              >
+                                View Members
+                              </Button>
+                              <Button
+                                size="sm"
+                                variant="outline"
+                                onClick={() => handleExportHomeCell(cell.name)}
+                              >
+                                <Download className="h-4 w-4 mr-1" />
+                                Export
+                              </Button>
+                            </div>
+                          </CardContent>
+                        </Card>
+                      );
+                    })}
+                  </div>
+
+                  {/* Members without Home Cell */}
+                  {(() => {
+                    const unassignedMembers = filteredMembers.filter(m => !m.homeCell || m.homeCell === "");
+                    if (unassignedMembers.length > 0) {
+                      return (
+                        <Card className="border-l-4 border-l-orange-500">
+                          <CardContent className="p-4">
+                            <div className="flex items-center justify-between mb-2">
+                              <h3 className="font-semibold text-lg text-orange-700">
+                                Unassigned Members
+                              </h3>
+                              <Badge variant="outline" className="bg-orange-50 text-orange-700">
+                                {unassignedMembers.length} members
+                              </Badge>
+                            </div>
+                            <p className="text-sm text-muted-foreground mb-3">
+                              These members haven't been assigned to a home cell yet.
+                            </p>
+                            <div className="space-y-2">
+                              {unassignedMembers.slice(0, 5).map((member) => (
+                                <div key={member.id} className="flex items-center justify-between text-sm">
+                                  <span>{member.fullName}</span>
+                                  <Badge variant="secondary">{member.memberId}</Badge>
+                                </div>
+                              ))}
+                              {unassignedMembers.length > 5 && (
+                                <div className="text-sm text-muted-foreground">
+                                  ... and {unassignedMembers.length - 5} more
+                                </div>
+                              )}
+                            </div>
+                          </CardContent>
+                        </Card>
+                      );
+                    }
+                    return null;
+                  })()}
+                </div>
+              </CardContent>
+            </Card>
+          </TabsContent>
+        </Tabs>
 
         {/* View Member Dialog */}
         <Dialog open={isViewDialogOpen} onOpenChange={setIsViewDialogOpen}>
