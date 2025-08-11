@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Layout } from "@/components/layout/Layout";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -34,10 +34,15 @@ import {
   Printer,
   RefreshCw,
   Clock,
+  Database,
+  Activity,
 } from "lucide-react";
 import jsPDF from "jspdf";
 import "jspdf-autotable";
 import * as XLSX from "xlsx";
+import SystemLogService from "@/services/SystemLogService";
+import DatabaseIntegrationService from "@/services/DatabaseIntegrationService";
+import type { SystemLogEntry, LogFilter } from "@/services/SystemLogService";
 
 interface SystemLog {
   id: string;
