@@ -8261,13 +8261,27 @@ ${performanceFormData.managerComments || 'Not specified'}
                                 <TableCell>
                                   <Badge
                                     variant={
-                                      emp.disbursementStatus === "Success"
+                                      emp.disbursementStatus === "Success" || emp.disbursementStatus === "Disbursed"
                                         ? "default"
+                                        : emp.disbursementStatus === "Rejected"
+                                        ? "destructive"
                                         : "secondary"
                                     }
+                                    className={
+                                      emp.disbursementStatus === "Success" || emp.disbursementStatus === "Disbursed"
+                                        ? "bg-green-600"
+                                        : emp.disbursementStatus === "Rejected"
+                                        ? "bg-red-600"
+                                        : ""
+                                    }
                                   >
-                                    {emp.disbursementStatus}
+                                    {emp.disbursementStatus === "Rejected" ? "❌ REJECTED" : emp.disbursementStatus}
                                   </Badge>
+                                  {emp.disbursementStatus === "Rejected" && emp.rejectionReason && (
+                                    <p className="text-xs text-red-600 mt-1">
+                                      {emp.rejectionReason}
+                                    </p>
+                                  )}
                                 </TableCell>
                               </TableRow>
                             ),
