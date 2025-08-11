@@ -388,6 +388,27 @@ export default function Messaging() {
   const [selectedMessages, setSelectedMessages] = useState<string[]>([]);
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
 
+  // Function to refresh message history
+  const refreshMessageHistory = () => {
+    const senderKey = `sent_messages_${user?.id}`;
+    const sentMessages = JSON.parse(localStorage.getItem(senderKey) || '[]');
+    const formattedSentMessages = sentMessages.map((msg: any) => ({
+      id: msg.id,
+      type: msg.type || "Internal Message",
+      recipient: msg.recipient,
+      recipientType: msg.recipientType || "Employee",
+      subject: msg.subject,
+      message: msg.message,
+      status: msg.status || "Sent",
+      sentDate: msg.sentDate,
+      sentBy: msg.sentBy,
+      recipientCount: msg.recipientCount || 1,
+      deliveryRate: msg.deliveryRate || 100,
+      deliveryMethod: msg.deliveryMethod || "In-App Notification"
+    }));
+    setMessages([...formattedSentMessages, ...mockMessages]);
+  };
+
   // Dialog states
   const [isComposeOpen, setIsComposeOpen] = useState(false);
   const [isContactsOpen, setIsContactsOpen] = useState(false);
