@@ -580,6 +580,94 @@ class FinanceApprovalService {
     window.dispatchEvent(financeEvent);
   }
 
+  /**
+   * Create disbursement report with accurate individual statuses
+   */
+  public createDisbursementReport(batchId: string, disbursedBy: string): boolean {
+    const batch = this.findPendingBatch(batchId) ||
+                  this.approvalHistory.find(h => h.batchId === batchId);
+
+    if (!batch) {
+      console.error(`Batch ${batchId} not found for disbursement`);
+      return false;
+    }
+
+    // Separate approved and rejected payments
+    const approvedEmployees = batch.employees.filter(emp => emp.status === 'Approved');
+    const rejectedEmployees = batch.employees.filter(emp => emp.status === 'Rejected');
+
+    // Calculate accurate totals for approved payments only
+    const approvedGrossAmount = approvedEmployees.reduce((sum, emp) => sum + emp.grossSalary, 0);
+    const approvedNetAmount = approvedEmployees.reduce((sum, emp) => sum + emp.netSalary, 0);
+    const approvedDeductions = approvedEmployees.reduce((sum, emp) => sum + emp.deductions.total, 0);
+
+    // Create disbursement report for approved payments
+    if (approvedEmployees.length > 0) {
+      const approvedDisbursementReport = {
+        reportId: `DISB-APPROVED-${batchId}-${Date.now()}`,
+        batchId,
+        period: batch.period,
+        totalEmployees: approvedEmployees.length,
+        totalGrossAmount: Math.round(approvedGrossAmount),
+        totalDeductions: Math.round(approvedDeductions),
+        totalNetAmount: Math.round(approvedNetAmount),
+        approvedBy: disbursedBy,
+        approvedDate: new Date().toISOString(),
+        disbursementDate: new Date().toISOString(),
+        disbursementMethod: "Bank Transfer",
+        status: "Approved",
+        employees: approvedEmployees.map(emp => ({
+          ...emp,
+          disbursementStatus: "Disbursed",
+          disbursedDate: new Date().toISOString(),
+          paymentReference: `PAY-${emp.employeeId}-${Date.now()}`
+        })),
+        notes: `Approved disbursement for ${approvedEmployees.length} employees from batch ${batchId}`,
+        type: 'approved_disbursement'
+      };
+
+      // Notify HR module of approved disbursement
+      this.notifyHRModule('disbursement_approved', approvedDisbursementReport);
+    }
+
+    // Create disbursement report for rejected payments (if any)
+    if (rejectedEmployees.length > 0) {
+      const rejectedDisbursementReport = {
+        reportId: `DISB-REJECTED-${batchId}-${Date.now()}`,
+        batchId,
+        period: batch.period,
+        totalEmployees: rejectedEmployees.length,
+        totalGrossAmount: 0, // Rejected payments don't contribute to disbursed amounts
+        totalDeductions: 0,
+        totalNetAmount: 0,
+        rejectedBy: disbursedBy,
+        rejectedDate: new Date().toISOString(),
+        disbursementMethod: "Not Applicable",
+        status: "Rejected",
+        employees: rejectedEmployees.map(emp => ({
+          ...emp,
+          disbursementStatus: "Rejected",
+          rejectedDate: new Date().toISOString(),
+          rejectionReason: emp.rejectionReason || 'Payment rejected by Finance'
+        })),
+        notes: `Rejected disbursement for ${rejectedEmployees.length} employees from batch ${batchId}`,
+        type: 'rejected_disbursement'
+      };
+
+      // Notify HR module of rejected disbursement
+      this.notifyHRModule('disbursement_rejected', rejectedDisbursementReport);
+    }
+
+    console.log(`✅ Disbursement reports created for batch ${batchId}:`, {
+      approved: approvedEmployees.length,
+      rejected: rejectedEmployees.length,
+      approvedAmount: approvedNetAmount,
+      rejectedAmount: 0 // Rejected payments don't count toward disbursed amounts
+    });
+
+    return true;
+  }
+
   private notifyHRModule(eventType: string, data: any): void {
     // Trigger HR module update
     const hrEvent = new CustomEvent('hr_finance_response', {
