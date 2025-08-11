@@ -3,6 +3,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { ReactNode } from "react";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft, Shield, Home } from "lucide-react";
+import RoleBasedAccessService, { UserRole } from "@/services/RoleBasedAccessService";
 
 interface ProtectedRouteProps {
   children: ReactNode;
