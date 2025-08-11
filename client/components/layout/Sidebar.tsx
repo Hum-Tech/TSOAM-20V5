@@ -86,27 +86,35 @@ export function Sidebar() {
   const location = useLocation();
   const { user, logout } = useAuth();
 
-  // Define allowed modules for Finance Officer role
-  const financeAllowedModules = [
-    "dashboard",
-    "finance",
-    "inventory",
-    "messaging",
-    "events",
-    "settings",
-  ];
+  // Get navigation items based on role from RoleBasedAccessService
+  const allowedNavItems = RoleBasedAccessService.getNavigationItems();
 
-  // Filter menu items based on user permissions and role
+  // Convert path to navigation item name for comparison
+  const pathToNavMap: Record<string, string> = {
+    "/": "Dashboard",
+    "/members": "Members",
+    "/new-members": "NewMembers",
+    "/hr": "HR",
+    "/finance": "Finance",
+    "/messaging": "Messaging",
+    "/welfare": "Welfare",
+    "/inventory": "Inventory",
+    "/events": "Events",
+    "/appointments": "Appointments",
+    "/settings": "Settings",
+    "/system-logs": "SystemLogs",
+    "/users": "Users"
+  };
+
+  // Filter menu items based on role-based access control
   const menuItems = allMenuItems.filter((item) => {
     if (!user?.permissions) return false;
 
-    // For Finance Officer, only show specific modules
-    if (user.role === "Finance Officer") {
-      return (
-        financeAllowedModules.includes(item.permission) &&
-        user.permissions[item.permission as keyof typeof user.permissions]
-      );
-    }
+    const navItemName = pathToNavMap[item.path];
+    const hasRoleAccess = allowedNavItems.includes(navItemName);
+    const hasPermission = user.permissions[item.permission as keyof typeof user.permissions];
+
+    return hasRoleAccess && hasPermission;
 
     // For other roles, use standard permission filtering
     return user.permissions[item.permission as keyof typeof user.permissions];
