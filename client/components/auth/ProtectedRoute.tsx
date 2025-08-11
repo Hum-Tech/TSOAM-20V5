@@ -19,7 +19,6 @@ const rolePages = {
     "/events",
     "/inventory",
     "/welfare",
-    "/settings",
   ],
   hr: [
     "/",
@@ -36,7 +35,6 @@ const rolePages = {
     "/finance",
     "/inventory",
     "/events",
-    "/appointments",
     "/settings",
   ],
   pastor: [
@@ -68,6 +66,8 @@ const rolePages = {
     "/system-logs",
     "/users",
     "/inventory",
+    "/database-demo",
+    "/profile",
   ],
 };
 
@@ -105,70 +105,71 @@ export function ProtectedRoute({
     };
 
     const normalizedRole = roleMappingLookup[user.role] || user.role;
-
+    
     // Check if user's normalized role is in allowedRoles
     if (!allowedRoles.includes(normalizedRole)) {
-    const userAllowedPages = rolePages[normalizedRole as keyof typeof rolePages] || [
-      "/",
-    ];
+      const userAllowedPages = rolePages[normalizedRole as keyof typeof rolePages] || [
+        "/",
+      ];
 
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-red-50 to-red-100">
-        <div className="max-w-md mx-auto text-center p-8 bg-white rounded-lg shadow-lg border border-red-200">
-          <div className="mb-4">
-            <Shield className="h-16 w-16 text-red-500 mx-auto mb-4" />
-            <h1 className="text-3xl font-bold text-red-600 mb-2">
-              Access Denied
-            </h1>
-            <p className="text-gray-600 mb-6">
-              You don't have permission to access this page. Your role (
-              {user.role}) doesn't include access to this module.
-            </p>
-          </div>
+      return (
+        <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-red-50 to-red-100">
+          <div className="max-w-md mx-auto text-center p-8 bg-white rounded-lg shadow-lg border border-red-200">
+            <div className="mb-4">
+              <Shield className="h-16 w-16 text-red-500 mx-auto mb-4" />
+              <h1 className="text-3xl font-bold text-red-600 mb-2">
+                Access Denied
+              </h1>
+              <p className="text-gray-600 mb-6">
+                You don't have permission to access this page. Your role (
+                {user.role}) doesn't include access to this module.
+              </p>
+            </div>
 
-          <div className="space-y-3">
-            <Button
-              onClick={() => navigate(-1)}
-              variant="outline"
-              className="w-full"
-            >
-              <ArrowLeft className="h-4 w-4 mr-2" />
-              Go Back
-            </Button>
+            <div className="space-y-3">
+              <Button
+                onClick={() => navigate(-1)}
+                variant="outline"
+                className="w-full"
+              >
+                <ArrowLeft className="h-4 w-4 mr-2" />
+                Go Back
+              </Button>
 
-            <Button
-              onClick={() => navigate("/")}
-              className="w-full bg-red-600 hover:bg-red-700"
-            >
-              <Home className="h-4 w-4 mr-2" />
-              Return to Dashboard
-            </Button>
-          </div>
+              <Button
+                onClick={() => navigate("/")}
+                className="w-full bg-red-600 hover:bg-red-700"
+              >
+                <Home className="h-4 w-4 mr-2" />
+                Return to Dashboard
+              </Button>
+            </div>
 
-          <div className="mt-6 p-4 bg-gray-50 rounded-md">
-            <p className="text-sm text-gray-600 mb-2">
-              <strong>Your authorized pages:</strong>
-            </p>
-            <div className="text-xs text-gray-500 space-y-1">
-              {userAllowedPages.map((page) => (
-                <div
-                  key={page}
-                  className="cursor-pointer hover:text-blue-600"
-                  onClick={() => navigate(page)}
-                >
-                  {page === "/"
-                    ? "Dashboard"
-                    : page
-                        .substring(1)
-                        .replace("-", " ")
-                        .replace(/\b\w/g, (l) => l.toUpperCase())}
-                </div>
-              ))}
+            <div className="mt-6 p-4 bg-gray-50 rounded-md">
+              <p className="text-sm text-gray-600 mb-2">
+                <strong>Your authorized pages:</strong>
+              </p>
+              <div className="text-xs text-gray-500 space-y-1">
+                {userAllowedPages.map((page) => (
+                  <div
+                    key={page}
+                    className="cursor-pointer hover:text-blue-600"
+                    onClick={() => navigate(page)}
+                  >
+                    {page === "/"
+                      ? "Dashboard"
+                      : page
+                          .substring(1)
+                          .replace("-", " ")
+                          .replace(/\b\w/g, (l) => l.toUpperCase())}
+                  </div>
+                ))}
+              </div>
             </div>
           </div>
         </div>
-      </div>
-    );
+      );
+    }
   }
 
   return <>{children}</>;
