@@ -373,7 +373,91 @@ export default function MemberManagement() {
   // Function to view home cell details
   const viewHomeCellDetails = (cell: HomeCell) => {
     setSelectedHomeCellForDetails(cell);
+    setEditHomeCellForm({
+      leader: cell.leader || "",
+      leaderPhone: cell.leaderPhone || "",
+      meetingDay: cell.meetingDay || "",
+      meetingTime: cell.meetingTime || "",
+      location: cell.location || "",
+      description: cell.description || "",
+    });
+    setIsEditingHomeCell(false);
     setShowHomeCellDetailsDialog(true);
+  };
+
+  // Function to start editing home cell
+  const startEditingHomeCell = () => {
+    setIsEditingHomeCell(true);
+  };
+
+  // Function to cancel editing home cell
+  const cancelEditingHomeCell = () => {
+    if (selectedHomeCellForDetails) {
+      setEditHomeCellForm({
+        leader: selectedHomeCellForDetails.leader || "",
+        leaderPhone: selectedHomeCellForDetails.leaderPhone || "",
+        meetingDay: selectedHomeCellForDetails.meetingDay || "",
+        meetingTime: selectedHomeCellForDetails.meetingTime || "",
+        location: selectedHomeCellForDetails.location || "",
+        description: selectedHomeCellForDetails.description || "",
+      });
+    }
+    setIsEditingHomeCell(false);
+  };
+
+  // Function to save home cell edits
+  const saveHomeCellEdits = () => {
+    if (!selectedHomeCellForDetails) return;
+
+    const updated = homeCellService.updateHomeCell(selectedHomeCellForDetails.id, editHomeCellForm);
+
+    if (updated) {
+      // Update local state
+      const updatedHomeCells = homeCells.map(cell =>
+        cell.id === selectedHomeCellForDetails.id ? updated : cell
+      );
+      setHomeCells(updatedHomeCells);
+      setSelectedHomeCellForDetails(updated);
+      setIsEditingHomeCell(false);
+
+      // Emit event to notify other components
+      window.dispatchEvent(new CustomEvent('homeCellUpdated'));
+
+      alert(`Home cell "${updated.name}" has been updated successfully`);
+    } else {
+      alert("Failed to update home cell");
+    }
+  };
+
+  // Function to assign member to home cell
+  const assignMemberToHomeCell = () => {
+    if (!memberToAssign || !selectedHomeCellForAssignment) {
+      alert("Please select a home cell for assignment");
+      return;
+    }
+
+    // Update the member's home cell
+    const updatedMembers = members.map(member =>
+      member.id === memberToAssign.id
+        ? { ...member, homeCell: selectedHomeCellForAssignment }
+        : member
+    );
+
+    setMembers(updatedMembers);
+
+    // Reset assignment dialog
+    setShowAssignHomeCellDialog(false);
+    setMemberToAssign(null);
+    setSelectedHomeCellForAssignment("");
+
+    alert(`${memberToAssign.fullName} has been assigned to ${selectedHomeCellForAssignment} home cell`);
+  };
+
+  // Function to open assignment dialog for unassigned member
+  const openAssignmentDialog = (member: Member) => {
+    setMemberToAssign(member);
+    setSelectedHomeCellForAssignment("");
+    setShowAssignHomeCellDialog(true);
   };
 
   // Function to transfer member to different home cell
