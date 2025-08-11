@@ -6845,28 +6845,65 @@ ${performanceFormData.managerComments || 'Not specified'}
                 <div className="space-x-2">
                   <Button
                     variant="outline"
-                    onClick={() => {
-                      if (selectedP9Employee) {
+                    onClick={async () => {
+                      if (!selectedP9Employee) {
+                        alert("Please select an employee first");
+                        return;
+                      }
+
+                      if (!selectedP9Employee.kraPin) {
+                        alert("Employee KRA PIN is required for P9 generation");
+                        return;
+                      }
+
+                      try {
                         generateP9Excel(selectedP9Employee, p9Year);
                         setShowP9FormDialog(false);
+
+                        // Show success message
+                        setTimeout(() => {
+                          alert(`✅ P9 Excel generated successfully!\n\nEmployee: ${selectedP9Employee.fullName || selectedP9Employee.full_name}\nTax Year: ${p9Year}\n\nFile has been downloaded to your computer.`);
+                        }, 500);
+                      } catch (error) {
+                        console.error("Error generating P9 Excel:", error);
+                        alert("❌ Failed to generate P9 Excel. Please try again.");
                       }
                     }}
                     disabled={!selectedP9Employee}
                   >
                     <Download className="h-4 w-4 mr-2" />
-                    Excel
+                    Generate Excel
                   </Button>
                   <Button
-                    onClick={() => {
-                      if (selectedP9Employee) {
-                        generateP9PDF(selectedP9Employee, p9Year);
+                    onClick={async () => {
+                      if (!selectedP9Employee) {
+                        alert("Please select an employee first");
+                        return;
+                      }
+
+                      if (!selectedP9Employee.kraPin) {
+                        alert("Employee KRA PIN is required for P9 generation");
+                        return;
+                      }
+
+                      try {
+                        await generateP9PDF(selectedP9Employee, p9Year);
                         setShowP9FormDialog(false);
+
+                        // Show success message
+                        setTimeout(() => {
+                          alert(`✅ P9 PDF generated successfully!\n\nEmployee: ${selectedP9Employee.fullName || selectedP9Employee.full_name}\nTax Year: ${p9Year}\n\nFile has been downloaded to your computer.`);
+                        }, 500);
+                      } catch (error) {
+                        console.error("Error generating P9 PDF:", error);
+                        alert("❌ Failed to generate P9 PDF. Please try again.");
                       }
                     }}
                     disabled={!selectedP9Employee}
+                    className="bg-blue-600 hover:bg-blue-700"
                   >
                     <FileText className="h-4 w-4 mr-2" />
-                    PDF
+                    Generate PDF
                   </Button>
                 </div>
               </div>
