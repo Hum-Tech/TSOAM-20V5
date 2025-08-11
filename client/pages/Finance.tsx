@@ -1410,7 +1410,10 @@ export default function Finance() {
         </div>
 
         <TabsContent value="approvals">
-          <FinanceApprovalCenter />
+          <div className="space-y-6">
+            <PayrollApprovalCenter />
+            <FinanceApprovalCenter />
+          </div>
         </TabsContent>
 
         <TabsContent value="overview">
