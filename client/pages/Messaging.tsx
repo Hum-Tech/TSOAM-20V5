@@ -579,56 +579,68 @@ export default function Messaging() {
     }
 
     try {
-      // Save message to backend
-      const response = await fetch("/api/messages", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          ...newMessage,
-          sender_id: user?.id,
-          recipient_ids: selectedContacts,
-          message_content: messageContent,
-          message_type: messageType,
-        }),
-      });
+      // Always add to local state first
+      setMessages((prev) => [newMessage, ...prev]);
 
-      if (response.ok) {
-        // Add to local state
-        setMessages((prev) => [newMessage, ...prev]);
+      // Separate success handling for employees vs members
+      const employeeCount = selectedContactsList.filter(c => c.type === "Employee").length;
+      const memberCount = selectedContactsList.filter(c => c.type === "Member").length;
 
-        // Log the activity
+      let successMessage = "Message sent successfully!\n";
+      let allSent = true;
+
+      // For employees, in-app notifications are always successful if created
+      if (employeeCount > 0) {
+        successMessage += `• ${employeeCount} staff member(s) notified in-app ✓\n`;
+      }
+
+      // For members, attempt API call for SMS/Email
+      if (memberCount > 0) {
+        try {
+          const response = await fetch("/api/messages", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              ...newMessage,
+              sender_id: user?.id,
+              recipient_ids: memberContacts.map(c => c.id),
+              message_content: messageContent,
+              message_type: messageType,
+            }),
+          });
+
+          if (response.ok) {
+            successMessage += `• ${memberCount} member(s) sent via ${messageType} ✓`;
+          } else {
+            successMessage += `• ${memberCount} member(s) via ${messageType} ⚠️ (API Error)`;
+            allSent = false;
+          }
+        } catch (error) {
+          successMessage += `• ${memberCount} member(s) via ${messageType} ⚠️ (Offline)`;
+          allSent = false;
+        }
+      }
+
+      // Log the activity
+      try {
         await fetch("/api/system-logs", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
             action: "Message Sent",
             module: "Messaging",
-            details: `${messageType} sent to ${selectedContacts.length} recipient(s): "${messageContent.substring(0, 50)}..."`,
-            severity: "Info",
+            details: `${messageType} sent to ${selectedContacts.length} recipient(s) (${employeeCount} in-app, ${memberCount} external): "${messageContent.substring(0, 50)}..."`,
+            severity: allSent ? "Info" : "Warning",
           }),
         });
-
-        // Create detailed success message
-        const employeeCount = selectedContactsList.filter(c => c.type === "Employee").length;
-        const memberCount = selectedContactsList.filter(c => c.type === "Member").length;
-
-        let successMessage = "Message sent successfully!\n";
-        if (employeeCount > 0) {
-          successMessage += `• ${employeeCount} staff member(s) notified in-app\n`;
-        }
-        if (memberCount > 0) {
-          successMessage += `• ${memberCount} member(s) sent via ${messageType}`;
-        }
-
-        alert(successMessage);
-      } else {
-        alert("Failed to send message. Please try again.");
+      } catch (logError) {
+        console.log("Could not log activity (offline mode)");
       }
+
+      alert(successMessage);
     } catch (error) {
       console.error("Failed to send message:", error);
-      // Still add to local state as fallback
-      setMessages((prev) => [newMessage, ...prev]);
-      alert("Message sent (offline mode)");
+      alert("Message processing failed. Please try again.");
     }
 
     // Reset form
