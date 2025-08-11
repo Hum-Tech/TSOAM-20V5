@@ -839,8 +839,8 @@ export default function SystemLogs() {
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
-                  {errorLogs.map((log) => (
-                    <div key={log.id} className="border rounded-lg p-4">
+                  {errorLogs.map((log, index) => (
+                    <div key={`error-${log.id}-${index}`} className="border rounded-lg p-4">
                       <div className="flex justify-between items-start mb-2">
                         <div className="flex items-center gap-2">
                           <AlertTriangle className="h-4 w-4 text-red-500" />
