@@ -521,6 +521,13 @@ export default function NewMembers() {
     ];
     setServiceGroups(mockServiceGroups);
 
+    // Load home cells
+    const availableHomeCells = homeCellService.getActiveHomeCells().map(cell => ({
+      id: cell.id,
+      name: cell.name
+    }));
+    setHomeCells(availableHomeCells);
+
     // Load visitors
     const mockVisitors: Visitor[] = [
       {
