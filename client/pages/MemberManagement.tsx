@@ -674,6 +674,7 @@ export default function MemberManagement() {
           { key: "Address", title: "Address", width: 30 },
           { key: "Emergency Contact", title: "Emergency Contact", width: 20 },
           { key: "Emergency Phone", title: "Emergency Phone", width: 15 },
+          { key: "Home Cell", title: "Home Cell", width: 15 },
           { key: "Membership Status", title: "Status", width: 12 },
           { key: "Membership Date", title: "Membership Date", width: 15 },
           { key: "Member Since", title: "Member Since", width: 15 },
