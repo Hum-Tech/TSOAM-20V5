@@ -89,6 +89,14 @@ export function Sidebar() {
   // Get navigation items based on role from RoleBasedAccessService
   const allowedNavItems = RoleBasedAccessService.getNavigationItems();
 
+  // Debug logging
+  console.log("🔍 Sidebar Debug:", {
+    userRole: user?.role,
+    userPermissions: user?.permissions,
+    allowedNavItems,
+    allMenuItemsCount: allMenuItems.length
+  });
+
   // Convert path to navigation item name for comparison
   const pathToNavMap: Record<string, string> = {
     "/": "Dashboard",
@@ -108,10 +116,14 @@ export function Sidebar() {
 
   // Filter menu items based on role-based access control
   const menuItems = allMenuItems.filter((item) => {
-    if (!user?.permissions) return false;
+    if (!user?.permissions) {
+      console.log("❌ No user permissions found");
+      return false;
+    }
 
     // Admin and Pastor see ALL navigation items
     if (user.role === "admin" || user.role === "Admin" || user.role === "pastor" || user.role === "Pastor") {
+      console.log(`✅ Admin/Pastor access granted for ${item.path}`);
       return true;
     }
 
@@ -120,8 +132,12 @@ export function Sidebar() {
     const hasRoleAccess = allowedNavItems.includes(navItemName);
     const hasPermission = user.permissions[item.permission as keyof typeof user.permissions];
 
+    console.log(`🔐 Role check for ${item.path}:`, { navItemName, hasRoleAccess, hasPermission });
+
     return hasRoleAccess && hasPermission;
   });
+
+  console.log("📋 Final menu items:", menuItems.length);
 
   return (
     <div className="w-64 bg-sidebar border-r border-sidebar-border flex flex-col h-full overflow-hidden">
