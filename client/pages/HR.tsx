@@ -2108,6 +2108,9 @@ ${performanceFormData.managerComments || 'Not specified'}
             )
           );
 
+          // Force refresh of component to show updated status immediately
+          setActiveTab(prev => prev); // Trigger re-render
+
           // Show appropriate message based on whether it's partial or full approval
           const approvalType = data.partialApproval ? "partially processed" : "fully processed";
           alert(`✅ Payroll Batch ${approvalType.toUpperCase()}!\n\nBatch: ${data.batchId}\nProcessed by: ${data.approvedBy}\nTotal: KSh ${(data.totalAmount || 0).toLocaleString()}\n\n${data.partialApproval ? "Some payments processed - others may still be pending review." : "All payments are now ready for disbursement."}`);
@@ -5381,7 +5384,7 @@ ${performanceFormData.managerComments || 'Not specified'}
                                     <Textarea
                                       placeholder="�� Significant accomplishments during this period
 • Projects completed successfully
-• Goals exceeded or met
+�� Goals exceeded or met
 • Impact on ministry/organization"
                                       className="min-h-24"
                                     />
