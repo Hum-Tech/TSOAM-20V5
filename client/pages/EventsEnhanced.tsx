@@ -1039,6 +1039,7 @@ export default function EventsEnhanced() {
               <EventCountdown
                 eventDate={event.start_date}
                 eventTime={event.start_time}
+                eventEndTime={event.end_time}
                 eventTitle={event.title}
                 className="border rounded-lg p-3 bg-muted/30"
               />
@@ -1391,6 +1392,7 @@ export default function EventsEnhanced() {
                           <EventCountdown
                             eventDate={event.start_date}
                             eventTime={event.start_time}
+                            eventEndTime={event.end_time}
                             eventTitle={event.title}
                             className="w-full"
                           />
@@ -1493,6 +1495,7 @@ export default function EventsEnhanced() {
                         <EventCountdown
                           eventDate={selectedEvent.start_date}
                           eventTime={selectedEvent.start_time}
+                          eventEndTime={selectedEvent.end_time}
                           eventTitle={selectedEvent.title}
                           className="border rounded-lg p-3 bg-muted/30 mt-2"
                         />
