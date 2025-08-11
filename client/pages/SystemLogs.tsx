@@ -528,7 +528,22 @@ export default function SystemLogs() {
   const handleQuickExport = () => {
     setIsExporting(true);
     setTimeout(() => {
-      exportToExcel(filteredLogs);
+      const mappedLogs: SystemLog[] = filteredLogs.map(log => ({
+        id: log.id,
+        timestamp: log.timestamp,
+        level: log.level === 'info' ? 'Info' :
+               log.level === 'warning' ? 'Warning' :
+               log.level === 'error' ? 'Error' :
+               log.level === 'security' ? 'Security' : 'Info',
+        event: log.action,
+        description: log.details,
+        user: log.userName || log.userId || 'System',
+        ipAddress: log.ipAddress || 'N/A',
+        module: log.module,
+        action: log.action,
+        details: log.details
+      }));
+      exportToExcel(mappedLogs);
       setIsExporting(false);
     }, 500);
   };
