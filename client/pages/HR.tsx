@@ -1810,7 +1810,7 @@ ${performanceFormData.managerComments || 'Not specified'}
                 `�� Period: ${rejectionData.period}\n` +
                 `💰 Amount: KSh ${rejectionData.amount?.toLocaleString()}\n` +
                 `👤 Rejected by: ${rejectionData.rejectedBy}\n` +
-                `📝 Reason: ${rejectionData.rejectionReason}\n` +
+                `���� Reason: ${rejectionData.rejectionReason}\n` +
                 `📅 Date: ${new Date(rejectionData.rejectedDate).toLocaleDateString()}\n\n` +
                 `���️ Please review and resubmit the payroll if necessary.`,
             );
@@ -2991,9 +2991,10 @@ ${performanceFormData.managerComments || 'Not specified'}
                   justify-content: space-between;
                   margin-bottom: 25px;
                   padding: 15px;
-                  background: #f8f9fa;
+                  background: #fef2f2;
                   border-radius: 8px;
-                  border-left: 4px solid #3182ce;
+                  border-left: 4px solid #dc2626;
+                  border-top: 1px solid #fecaca;
                 }
 
                 .meta-item {
