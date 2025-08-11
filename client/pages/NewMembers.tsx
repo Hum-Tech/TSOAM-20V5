@@ -264,6 +264,21 @@ export default function NewMembers() {
     "baptism",
   );
 
+  // Visitor editing states
+  const [showEditVisitorDialog, setShowEditVisitorDialog] = useState(false);
+  const [selectedVisitorForEdit, setSelectedVisitorForEdit] = useState<Visitor | null>(null);
+  const [editVisitorForm, setEditVisitorForm] = useState({
+    fullName: "",
+    phoneNumber: "",
+    purposeOfVisit: "",
+    currentChurch: "",
+    howHeardAboutUs: "",
+    whatLikedMost: "",
+    prayerRequests: [] as string[],
+    followUpRequired: false,
+    followUpNotes: "",
+  });
+
   useEffect(() => {
     loadData();
 
