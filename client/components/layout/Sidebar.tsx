@@ -86,58 +86,18 @@ export function Sidebar() {
   const location = useLocation();
   const { user, logout } = useAuth();
 
-  // Get navigation items based on role from RoleBasedAccessService
-  const allowedNavItems = RoleBasedAccessService.getNavigationItems();
-
-  // Debug logging
-  console.log("🔍 Sidebar Debug:", {
-    userRole: user?.role,
-    userPermissions: user?.permissions,
-    allowedNavItems,
-    allMenuItemsCount: allMenuItems.length
-  });
-
-  // Convert path to navigation item name for comparison
-  const pathToNavMap: Record<string, string> = {
-    "/": "Dashboard",
-    "/members": "Members",
-    "/new-members": "NewMembers",
-    "/hr": "HR",
-    "/finance": "Finance",
-    "/messaging": "Messaging",
-    "/welfare": "Welfare",
-    "/inventory": "Inventory",
-    "/events": "Events",
-    "/appointments": "Appointments",
-    "/settings": "Settings",
-    "/system-logs": "SystemLogs",
-    "/users": "Users"
-  };
-
-  // Filter menu items based on role-based access control
+  // Filter menu items based on user role and permissions
   const menuItems = allMenuItems.filter((item) => {
-    if (!user?.permissions) {
-      console.log("❌ No user permissions found");
-      return false;
-    }
+    if (!user?.permissions) return false;
 
-    // Admin and Pastor see ALL navigation items
-    if (user.role === "admin" || user.role === "Admin" || user.role === "pastor" || user.role === "Pastor") {
-      console.log(`✅ Admin/Pastor access granted for ${item.path}`);
+    // Admin and Pastor see ALL navigation items - no filtering needed
+    if (user.role === "Admin" || user.role === "admin" || user.role === "Pastor" || user.role === "pastor") {
       return true;
     }
 
-    // For other roles, check role-based access control
-    const navItemName = pathToNavMap[item.path];
-    const hasRoleAccess = allowedNavItems.includes(navItemName);
-    const hasPermission = user.permissions[item.permission as keyof typeof user.permissions];
-
-    console.log(`🔐 Role check for ${item.path}:`, { navItemName, hasRoleAccess, hasPermission });
-
-    return hasRoleAccess && hasPermission;
+    // For other roles, use the existing permission system
+    return user.permissions[item.permission as keyof typeof user.permissions];
   });
-
-  console.log("📋 Final menu items:", menuItems.length);
 
   return (
     <div className="w-64 bg-sidebar border-r border-sidebar-border flex flex-col h-full overflow-hidden">
