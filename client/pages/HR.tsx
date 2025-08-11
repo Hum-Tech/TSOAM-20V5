@@ -1796,17 +1796,82 @@ ${performanceFormData.managerComments || 'Not specified'}
         // Save payroll batch for Finance module
         localStorage.setItem("pending_payroll_batch", JSON.stringify(payrollBatch));
 
-        // Trigger Finance notification
+        // Save to pending batches list for HR tracking
+        const existingPendingBatches = JSON.parse(localStorage.getItem("hr_pending_batches") || "[]");
+        existingPendingBatches.push({
+          batchId: batchId,
+          period: currentMonth,
+          totalEmployees: payrollRecords.length,
+          totalAmount: totalNetPayroll,
+          status: "Pending_Finance_Approval",
+          submittedDate: new Date().toISOString(),
+          submittedBy: "HR_System"
+        });
+        localStorage.setItem("hr_pending_batches", JSON.stringify(existingPendingBatches));
+
+        // Trigger Finance notification with enhanced data
         const financeEvent = new CustomEvent('hr_payroll_batch', {
-          detail: payrollBatch
+          detail: {
+            ...payrollBatch,
+            priority: 'high',
+            requiresApproval: true,
+            submissionTimestamp: new Date().toISOString(),
+            hrContact: 'HR Department',
+            approvalDeadline: new Date(Date.now() + 48 * 60 * 60 * 1000).toISOString() // 48 hours
+          }
         });
         window.dispatchEvent(financeEvent);
 
+        // Create Finance module notification
+        const financeNotification = {
+          id: `payroll-${batchId}`,
+          type: 'payroll_approval_request',
+          title: 'New Payroll Batch for Approval',
+          message: `Payroll batch ${batchId} for ${currentMonth} requires approval (${payrollRecords.length} employees, KSh ${totalNetPayroll.toLocaleString()})`,
+          batchId: batchId,
+          amount: totalNetPayroll,
+          employeeCount: payrollRecords.length,
+          priority: 'high',
+          createdAt: new Date().toISOString(),
+          read: false
+        };
+
+        // Store notification for Finance module
+        const existingNotifications = JSON.parse(localStorage.getItem("finance_notifications") || "[]");
+        existingNotifications.unshift(financeNotification);
+        localStorage.setItem("finance_notifications", JSON.stringify(existingNotifications));
+
         // Also sync individual transactions to Finance
         financialTransactionService.addBatchPayroll(payrollRecords);
-        console.log("✅ Payroll batch sent to Finance for approval");
+
+        console.log("✅ Payroll batch sent to Finance for approval:", {
+          batchId,
+          totalAmount: totalNetPayroll,
+          employees: payrollRecords.length,
+          financeNotified: true
+        });
+
+        // Trigger a visual notification that Finance has been notified
+        setTimeout(() => {
+          const confirmed = confirm(
+            `🎯 Payroll Sent to Finance Successfully!\n\n` +
+            `📦 Batch ID: ${batchId}\n` +
+            `💰 Total Amount: KSh ${totalNetPayroll.toLocaleString()}\n` +
+            `👥 Employees: ${payrollRecords.length}\n\n` +
+            `✅ Finance team has been notified and will review within 48 hours.\n` +
+            `📱 You will be notified of approval/rejection status.\n\n` +
+            `Would you like to view the Finance module to track approval status?`
+          );
+
+          if (confirmed) {
+            // This would navigate to Finance module in a real implementation
+            alert("💡 In a full implementation, this would navigate to the Finance module.\n\nFor now, Finance team can access the Payroll Approval section to review this batch.");
+          }
+        }, 1000);
+
       } catch (error) {
-        console.warn("⚠️ Could not sync payroll to Finance:", error);
+        console.error("❌ Error sending payroll to Finance:", error);
+        alert(`❌ Failed to send payroll to Finance!\n\nError: ${error instanceof Error ? error.message : 'Unknown error'}\n\nPlease try again or contact system administrator.`);
       }
 
       // Show detailed success message
