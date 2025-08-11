@@ -855,6 +855,22 @@ export default function MemberManagement() {
                   <SelectItem value="Business Class">Business Class</SelectItem>
                 </SelectContent>
               </Select>
+              <Select
+                value={filterHomeCell}
+                onValueChange={setFilterHomeCell}
+              >
+                <SelectTrigger className="w-40">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="All">All Home Cells</SelectItem>
+                  {homeCells.map((cell) => (
+                    <SelectItem key={cell.id} value={cell.name}>
+                      {cell.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
               <Button variant="outline" onClick={() => handleExport("excel")}>
                 <Download className="h-4 w-4 mr-2" />
                 Export
