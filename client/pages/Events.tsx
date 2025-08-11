@@ -805,6 +805,7 @@ export default function Events() {
                             <EventCountdown
                               eventDate={event.date}
                               eventTime={event.time}
+                              eventEndTime={event.endTime}
                               eventTitle={event.title}
                               className="border rounded-lg p-3 bg-muted/30"
                             />
@@ -1041,6 +1042,7 @@ export default function Events() {
                             <EventCountdown
                               eventDate={event.date}
                               eventTime={event.time}
+                              eventEndTime={event.endTime}
                               eventTitle={event.title}
                               className="w-full"
                             />
@@ -1140,6 +1142,7 @@ export default function Events() {
                     <EventCountdown
                       eventDate={selectedEvent.date}
                       eventTime={selectedEvent.time}
+                      eventEndTime={selectedEvent.endTime}
                       eventTitle={selectedEvent.title}
                       className="border rounded-lg p-3 bg-muted/30"
                     />
