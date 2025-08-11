@@ -4653,6 +4653,183 @@ export default function NewMembers() {
             )}
           </DialogContent>
         </Dialog>
+
+        {/* Edit Visitor Dialog */}
+        <Dialog
+          open={showEditVisitorDialog}
+          onOpenChange={setShowEditVisitorDialog}
+        >
+          <DialogContent className="sm:max-w-[600px] max-h-[90vh] overflow-y-auto">
+            <DialogHeader>
+              <DialogTitle>Edit Visitor Information</DialogTitle>
+            </DialogHeader>
+
+            <div className="space-y-4">
+              {/* Basic Information */}
+              <div className="space-y-4">
+                <h3 className="text-lg font-semibold">Basic Information</h3>
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="editFullName">Full Name *</Label>
+                    <Input
+                      id="editFullName"
+                      value={editVisitorForm.fullName}
+                      onChange={(e) =>
+                        setEditVisitorForm({
+                          ...editVisitorForm,
+                          fullName: e.target.value,
+                        })
+                      }
+                      placeholder="Enter full name"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="editPhoneNumber">Phone Number *</Label>
+                    <Input
+                      id="editPhoneNumber"
+                      value={editVisitorForm.phoneNumber}
+                      onChange={(e) =>
+                        setEditVisitorForm({
+                          ...editVisitorForm,
+                          phoneNumber: e.target.value,
+                        })
+                      }
+                      placeholder="Enter phone number"
+                    />
+                  </div>
+                </div>
+              </div>
+
+              {/* Visit Information */}
+              <div className="space-y-4">
+                <h3 className="text-lg font-semibold">Visit Information</h3>
+                <div className="space-y-2">
+                  <Label htmlFor="editPurposeOfVisit">Purpose of Visit</Label>
+                  <Select
+                    value={editVisitorForm.purposeOfVisit}
+                    onValueChange={(value) =>
+                      setEditVisitorForm({ ...editVisitorForm, purposeOfVisit: value })
+                    }
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select purpose" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="First Time Visit">First Time Visit</SelectItem>
+                      <SelectItem value="Sunday Service">Sunday Service</SelectItem>
+                      <SelectItem value="Special Event">Special Event</SelectItem>
+                      <SelectItem value="Prayer Meeting">Prayer Meeting</SelectItem>
+                      <SelectItem value="Counseling">Counseling</SelectItem>
+                      <SelectItem value="Other">Other</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="editCurrentChurch">Current Church</Label>
+                  <Input
+                    id="editCurrentChurch"
+                    value={editVisitorForm.currentChurch}
+                    onChange={(e) =>
+                      setEditVisitorForm({
+                        ...editVisitorForm,
+                        currentChurch: e.target.value,
+                      })
+                    }
+                    placeholder="Enter current church (if any)"
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="editHowHeardAboutUs">How did you hear about us?</Label>
+                  <Select
+                    value={editVisitorForm.howHeardAboutUs}
+                    onValueChange={(value) =>
+                      setEditVisitorForm({ ...editVisitorForm, howHeardAboutUs: value })
+                    }
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select option" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="Friend/Family">Friend/Family</SelectItem>
+                      <SelectItem value="Social Media">Social Media</SelectItem>
+                      <SelectItem value="Website">Website</SelectItem>
+                      <SelectItem value="Walking by">Walking by</SelectItem>
+                      <SelectItem value="Event/Conference">Event/Conference</SelectItem>
+                      <SelectItem value="Other">Other</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="editWhatLikedMost">What did you like most about your visit?</Label>
+                  <Textarea
+                    id="editWhatLikedMost"
+                    value={editVisitorForm.whatLikedMost}
+                    onChange={(e) =>
+                      setEditVisitorForm({
+                        ...editVisitorForm,
+                        whatLikedMost: e.target.value,
+                      })
+                    }
+                    placeholder="Share your experience..."
+                    rows={3}
+                  />
+                </div>
+              </div>
+
+              {/* Follow-up Information */}
+              <div className="space-y-4">
+                <h3 className="text-lg font-semibold">Follow-up</h3>
+                <div className="flex items-center space-x-2">
+                  <Checkbox
+                    id="editFollowUpRequired"
+                    checked={editVisitorForm.followUpRequired}
+                    onCheckedChange={(checked) =>
+                      setEditVisitorForm({
+                        ...editVisitorForm,
+                        followUpRequired: !!checked,
+                      })
+                    }
+                  />
+                  <Label htmlFor="editFollowUpRequired">Follow-up required</Label>
+                </div>
+
+                {editVisitorForm.followUpRequired && (
+                  <div className="space-y-2">
+                    <Label htmlFor="editFollowUpNotes">Follow-up notes</Label>
+                    <Textarea
+                      id="editFollowUpNotes"
+                      value={editVisitorForm.followUpNotes}
+                      onChange={(e) =>
+                        setEditVisitorForm({
+                          ...editVisitorForm,
+                          followUpNotes: e.target.value,
+                        })
+                      }
+                      placeholder="Enter follow-up instructions..."
+                      rows={3}
+                    />
+                  </div>
+                )}
+              </div>
+
+              {/* Action Buttons */}
+              <div className="flex justify-end gap-2 pt-4 border-t">
+                <Button
+                  variant="outline"
+                  onClick={() => setShowEditVisitorDialog(false)}
+                >
+                  Cancel
+                </Button>
+                <Button onClick={handleSaveEditedVisitor}>
+                  Save Changes
+                </Button>
+              </div>
+            </div>
+          </DialogContent>
+        </Dialog>
       </div>
     </Layout>
   );
