@@ -243,7 +243,7 @@ let systemUsers: (User & { password: string; isActive: boolean })[] = [
     name: "Humphrey Njoroge",
     email: "admin@tsoam.org",
     password: "admin123",
-    role: "Admin",
+    role: "admin",
     department: "Administration",
     employeeId: "TSOAM-EMP-001",
     canCreateAccounts: true,
