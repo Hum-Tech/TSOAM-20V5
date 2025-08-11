@@ -1408,7 +1408,7 @@ ${performanceFormData.managerComments || 'Not specified'}
       doc.text('Performance Areas:', 20, 185);
       doc.text('• Job Knowledge: Excellent', 30, 195);
       doc.text('• Quality of Work: Very Good', 30, 205);
-      doc.text('�� Communication: Good', 30, 215);
+      doc.text('• Communication: Good', 30, 215);
       doc.text('• Teamwork: Excellent', 30, 225);
       doc.text('��� Initiative: Very Good', 30, 235);
 
@@ -1979,7 +1979,7 @@ ${performanceFormData.managerComments || 'Not specified'}
           const confirmed = confirm(
             `🎯 Payroll Sent to Finance Successfully!\n\n` +
             `📦 Batch ID: ${batchId}\n` +
-            `💰 Total Amount: KSh ${totalNetPayroll.toLocaleString()}\n` +
+            `�� Total Amount: KSh ${totalNetPayroll.toLocaleString()}\n` +
             `👥 Employees: ${payrollRecords.length}\n\n` +
             `✅ Finance team has been notified and will review within 48 hours.\n` +
             `📱 You will be notified of approval/rejection status.\n\n` +
@@ -4376,7 +4376,27 @@ ${performanceFormData.managerComments || 'Not specified'}
                               size="sm"
                               onClick={() => {
                                 setSelectedEmployee(employee);
-                                setShowStatusChangeDialog(true);
+                                // Pre-populate edit form with employee data
+                                setEditEmployeeForm({
+                                  fullName: employee.fullName || "",
+                                  email: employee.email || "",
+                                  phone: employee.phone || "",
+                                  address: employee.address || "",
+                                  dateOfBirth: employee.dateOfBirth || "",
+                                  gender: employee.gender || "",
+                                  maritalStatus: employee.maritalStatus || "",
+                                  department: employee.department || "",
+                                  position: employee.position || "",
+                                  employmentType: employee.employmentType || "",
+                                  hireDate: employee.hireDate || "",
+                                  basicSalary: (employee.basicSalary || employee.basic_salary || "").toString(),
+                                  bankAccount: employee.bankAccount || "",
+                                  taxNumber: employee.taxNumber || "",
+                                  socialSecurityNumber: employee.socialSecurityNumber || "",
+                                  emergencyContactName: employee.emergencyContactName || "",
+                                  emergencyContactPhone: employee.emergencyContactPhone || "",
+                                });
+                                setShowEditEmployeeDialog(true);
                               }}
                             >
                               <Edit className="h-4 w-4" />
