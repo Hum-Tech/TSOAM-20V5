@@ -223,12 +223,12 @@ class RoleBasedAccessService {
       case 'hr':
         return [
           'Dashboard', 'HR', 'Events', 'Messaging', 'Appointments',
-          'Welfare', 'Inventory'
+          'Welfare', 'Inventory', 'Settings'
         ];
 
       case 'finance':
         return [
-          'Dashboard', 'Finance', 'Inventory', 'Events'
+          'Dashboard', 'Finance', 'Inventory', 'Events', 'Settings'
         ];
 
       case 'user':
