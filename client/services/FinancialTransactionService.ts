@@ -748,14 +748,20 @@ class FinancialTransactionService {
     const transactions: FinancialTransaction[] = [];
 
     payrollRecords.forEach((record) => {
+      // Handle different deduction structures
+      const totalDeductions = record.deductions?.total ||
+                             record.totalDeductions ||
+                             record.deductions ||
+                             0;
+
       transactions.push(
         this.addPayrollExpense({
-          employeeName: record.employeeName,
-          employeeId: record.employeeId,
-          period: record.period,
-          grossSalary: record.grossSalary,
-          netSalary: record.netSalary,
-          deductions: record.totalDeductions,
+          employeeName: record.employeeName || 'Unknown Employee',
+          employeeId: record.employeeId || 'Unknown',
+          period: record.period || new Date().toISOString().slice(0, 7),
+          grossSalary: Number(record.grossSalary) || 0,
+          netSalary: Number(record.netSalary) || 0,
+          deductions: Number(totalDeductions) || 0,
         }),
       );
     });
