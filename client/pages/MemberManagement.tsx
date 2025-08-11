@@ -725,7 +725,7 @@ export default function MemberManagement() {
         "Service Groups": member.serviceGroups.join(", "),
       }));
 
-      await exportService.exportData({
+      await exportService.export({
         data: memberData,
         filename: `${homeCellName}_Home_Cell_Members_${new Date().toISOString().split("T")[0]}`,
         format: format,
