@@ -545,6 +545,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       // Initialize role-based access service
       const roleMapping: Record<string, any> = {
         "Admin": "admin",
+        "Pastor": "pastor",
         "HR Officer": "hr",
         "Finance Officer": "finance",
         "User": "user"
