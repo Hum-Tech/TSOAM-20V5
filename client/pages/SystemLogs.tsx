@@ -815,7 +815,7 @@ export default function SystemLogs() {
                           {log.timestamp}
                         </span>
                       </div>
-                      <p className="text-sm mb-2">{log.description}</p>
+                      <p className="text-sm mb-2">{log.details}</p>
                       <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
                         <div>
                           <span className="font-medium">User:</span> {log.userName || log.userId || 'System'}
