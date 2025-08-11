@@ -1943,7 +1943,7 @@ ${performanceFormData.managerComments || 'Not specified'}
         `• Employees: ${payrollRecords.length}\n` +
         `• Total Amount: KSh ${totalNetPayroll.toLocaleString()}\n\n` +
         `🎯 FINANCE APPROVAL WORKFLOW:\n` +
-        `• ✅ Batch sent to Finance Department\n` +
+        `�� ✅ Batch sent to Finance Department\n` +
         `• ⏳ Status: Awaiting Finance Approval\n` +
         `�� 📱 Finance team has been notified\n` +
         `• 📋 Individual payments can be approved/rejected\n\n` +
@@ -2135,6 +2135,8 @@ ${performanceFormData.managerComments || 'Not specified'}
                 : record
             )
           );
+          // Force refresh to show updated status
+          setActiveTab(prev => prev);
           break;
 
         case 'individual_rejected':
@@ -2145,6 +2147,8 @@ ${performanceFormData.managerComments || 'Not specified'}
                 : record
             )
           );
+          // Force refresh to show updated status
+          setActiveTab(prev => prev);
           break;
 
         case 'disbursement_approved':
@@ -5384,7 +5388,7 @@ ${performanceFormData.managerComments || 'Not specified'}
                                     <Textarea
                                       placeholder="�� Significant accomplishments during this period
 • Projects completed successfully
-�� Goals exceeded or met
+• Goals exceeded or met
 • Impact on ministry/organization"
                                       className="min-h-24"
                                     />
