@@ -561,7 +561,7 @@ export default function SystemLogs() {
           <div className="flex gap-2">
             <Button
               variant="outline"
-              onClick={() => window.location.reload()}
+              onClick={loadSystemData}
               size="sm"
             >
               <RefreshCw className="h-4 w-4 mr-2" />
