@@ -3807,7 +3807,7 @@ ${performanceFormData.managerComments || 'Not specified'}
               <CardContent>
                 <div className="grid gap-4 md:grid-cols-3">
                   {employees
-                    .filter((e) => e.employmentStatus === "Active")
+                    .filter((e) => e.employmentStatus === "Active" && (e.fullName || e.full_name) && (e.basicSalary || e.basic_salary))
                     .map((employee) => (
                       <Card
                         key={employee.id}
@@ -3817,13 +3817,13 @@ ${performanceFormData.managerComments || 'Not specified'}
                           <div className="flex items-center justify-between">
                             <div>
                               <div className="font-medium">
-                                {employee.fullName}
+                                {employee.fullName || employee.full_name}
                               </div>
                               <div className="text-sm text-muted-foreground">
-                                {employee.employeeId}
+                                {employee.employeeId || employee.employee_id}
                               </div>
                               <div className="text-sm text-muted-foreground">
-                                {employee.department}
+                                {employee.department || 'No Department'}
                               </div>
                             </div>
                             <Button
