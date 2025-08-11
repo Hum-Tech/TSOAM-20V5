@@ -183,7 +183,7 @@ const AppContent = () => {
                 path="/members"
                 element={
                   <ProtectedRoute
-                    allowedRoles={["Admin", "HR Officer", "User"]}
+                    allowedRoles={["admin", "hr", "user"]}
                   >
                     <MemberManagement />
                   </ProtectedRoute>
@@ -193,7 +193,7 @@ const AppContent = () => {
                 path="/new-members"
                 element={
                   <ProtectedRoute
-                    allowedRoles={["Admin", "HR Officer", "User"]}
+                    allowedRoles={["admin", "hr", "user"]}
                   >
                     <NewMembers />
                   </ProtectedRoute>
@@ -203,7 +203,7 @@ const AppContent = () => {
               <Route
                 path="/hr"
                 element={
-                  <ProtectedRoute allowedRoles={["Admin", "HR Officer"]}>
+                  <ProtectedRoute allowedRoles={["admin", "hr"]}>
                     <HR />
                   </ProtectedRoute>
                 }
@@ -211,7 +211,7 @@ const AppContent = () => {
               <Route
                 path="/finance"
                 element={
-                  <ProtectedRoute allowedRoles={["Admin", "Finance Officer"]}>
+                  <ProtectedRoute allowedRoles={["admin", "finance"]}>
                     <FinanceAdvanced />
                   </ProtectedRoute>
                 }
@@ -221,10 +221,10 @@ const AppContent = () => {
                 element={
                   <ProtectedRoute
                     allowedRoles={[
-                      "Admin",
-                      "HR Officer",
-                      "Finance Officer",
-                      "User",
+                      "admin",
+                      "hr",
+                      "finance",
+                      "user",
                     ]}
                   >
                     <Messaging />
@@ -236,10 +236,10 @@ const AppContent = () => {
                 element={
                   <ProtectedRoute
                     allowedRoles={[
-                      "Admin",
-                      "HR Officer",
-                      "Finance Officer",
-                      "User",
+                      "admin",
+                      "hr",
+                      "finance",
+                      "user",
                     ]}
                   >
                     <WelfareEnhanced />
@@ -249,7 +249,7 @@ const AppContent = () => {
               <Route
                 path="/inventory"
                 element={
-                  <ProtectedRoute allowedRoles={["Admin", "HR Officer", "Finance Officer", "User"]}>
+                  <ProtectedRoute allowedRoles={["admin", "hr", "finance", "user"]}>
                     <Inventory />
                   </ProtectedRoute>
                 }
@@ -258,7 +258,7 @@ const AppContent = () => {
                 path="/appointments"
                 element={
                   <ProtectedRoute
-                    allowedRoles={["Admin", "HR Officer", "Finance Officer"]}
+                    allowedRoles={["admin", "hr", "finance"]}
                   >
                     <Appointments />
                   </ProtectedRoute>
@@ -269,10 +269,10 @@ const AppContent = () => {
                 element={
                   <ProtectedRoute
                     allowedRoles={[
-                      "Admin",
-                      "HR Officer",
-                      "Finance Officer",
-                      "User",
+                      "admin",
+                      "hr",
+                      "finance",
+                      "user",
                     ]}
                   >
                     <EventsEnhanced />
@@ -284,10 +284,10 @@ const AppContent = () => {
                 element={
                   <ProtectedRoute
                     allowedRoles={[
-                      "Admin",
-                      "HR Officer",
-                      "Finance Officer",
-                      "User",
+                      "admin",
+                      "hr",
+                      "finance",
+                      "user",
                     ]}
                   >
                     <Settings />
@@ -297,7 +297,7 @@ const AppContent = () => {
               <Route
                 path="/system-logs"
                 element={
-                  <ProtectedRoute allowedRoles={["Admin", "HR Officer"]}>
+                  <ProtectedRoute allowedRoles={["admin", "hr"]}>
                     <SystemLogs />
                   </ProtectedRoute>
                 }
@@ -305,7 +305,7 @@ const AppContent = () => {
               <Route
                 path="/users"
                 element={
-                  <ProtectedRoute allowedRoles={["Admin"]}>
+                  <ProtectedRoute allowedRoles={["admin"]}>
                     <Users />
                   </ProtectedRoute>
                 }
@@ -315,10 +315,10 @@ const AppContent = () => {
                 element={
                   <ProtectedRoute
                     allowedRoles={[
-                      "Admin",
-                      "HR Officer",
-                      "Finance Officer",
-                      "User",
+                      "admin",
+                      "hr",
+                      "finance",
+                      "user",
                     ]}
                   >
                     <Profile />
@@ -328,7 +328,7 @@ const AppContent = () => {
               <Route
                 path="/database-demo"
                 element={
-                  <ProtectedRoute allowedRoles={["Admin"]}>
+                  <ProtectedRoute allowedRoles={["admin"]}>
                     <Layout>
                       <DatabaseIntegrationDemo />
                     </Layout>
