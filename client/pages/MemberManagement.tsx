@@ -60,6 +60,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { transferService } from "@/services/TransferService";
 import { homeCellService, type HomeCell } from "@/services/HomeCellService";
 import { MemberTitheRecords } from "@/components/MemberTitheRecords";
+import RoleBasedAccessService from "@/services/RoleBasedAccessService";
 
 /**
  * Interface for Full Members (those who have completed the transition process)
@@ -243,6 +244,9 @@ const mockMembers: Member[] = [
 export default function MemberManagement() {
   const { user } = useAuth();
   const isAdmin = user?.role === "Admin";
+
+  // Check if user can access tithe management (disabled for normal users)
+  const canAccessTitheManagement = user?.role !== "user" && user?.role !== "User";
   const [searchTerm, setSearchTerm] = useState("");
   const [members, setMembers] = useState(mockMembers);
   const [selectedMember, setSelectedMember] = useState<Member | null>(null);
@@ -1190,9 +1194,10 @@ export default function MemberManagement() {
                             setSelectedMemberForTithe(member);
                             setShowTitheRecords(true);
                           }}
-                          style={{ color: "#800020" }}
-                          className="hover:text-red-800"
-                          title="Tithe Management - View & Record Tithes"
+                          style={{ color: canAccessTitheManagement ? "#800020" : "#9CA3AF" }}
+                          className={canAccessTitheManagement ? "hover:text-red-800" : "cursor-not-allowed opacity-50"}
+                          title={canAccessTitheManagement ? "Tithe Management - View & Record Tithes" : "Access Restricted - Contact Administrator"}
+                          disabled={!canAccessTitheManagement}
                         >
                           💰
                         </Button>
