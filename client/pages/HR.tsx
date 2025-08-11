@@ -4100,10 +4100,7 @@ ${performanceFormData.managerComments || 'Not specified'}
                     <p>No active employees with salary data found.</p>
                     <p className="text-sm mb-4">Add employees with complete salary information to generate payslips.</p>
                     <Button
-                      onClick={() => {
-                        console.log("Loading demo data manually...");
-                        loadHRData();
-                      }}
+                      onClick={loadDemoData}
                       variant="outline"
                     >
                       <RefreshCw className="h-4 w-4 mr-2" />
