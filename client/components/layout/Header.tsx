@@ -527,18 +527,48 @@ export function Header() {
                                     </Badge>
                                   )}
                                 </div>
+                                {notification.sender && notification.type === "message" && (
+                                  <p className="text-xs text-blue-600 font-medium mt-1">
+                                    From: {notification.sender}
+                                  </p>
+                                )}
+                                {notification.subject && (
+                                  <p className="text-sm font-medium text-gray-900 mt-1">
+                                    {notification.subject}
+                                  </p>
+                                )}
                                 <p className="text-sm text-muted-foreground mt-1 line-clamp-2">
                                   {notification.message}
                                 </p>
+                                {notification.fullMessage && notification.fullMessage !== notification.message && (
+                                  <details className="mt-2">
+                                    <summary className="text-xs text-blue-600 cursor-pointer hover:underline">
+                                      View full message
+                                    </summary>
+                                    <div className="mt-1 p-2 bg-muted rounded text-sm">
+                                      {notification.fullMessage}
+                                    </div>
+                                  </details>
+                                )}
                                 <div className="flex items-center justify-between mt-2">
                                   <span className="text-xs text-muted-foreground">
                                     {notification.time}
                                   </span>
-                                  {notification.sender && (
-                                    <span className="text-xs text-muted-foreground">
-                                      From: {notification.sender}
-                                    </span>
-                                  )}
+                                  <div className="flex items-center gap-2">
+                                    {notification.messageType && (
+                                      <span className="text-xs bg-gray-100 px-2 py-1 rounded">
+                                        {notification.messageType}
+                                      </span>
+                                    )}
+                                    {notification.type === "message" && (
+                                      <span className="text-xs text-green-600 flex items-center gap-1">
+                                        <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+                                          <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd"/>
+                                        </svg>
+                                        Delivered
+                                      </span>
+                                    )}
+                                  </div>
                                 </div>
                               </div>
                             </div>
