@@ -3839,6 +3839,13 @@ ${performanceFormData.managerComments || 'Not specified'}
                       </Card>
                     ))}
                 </div>
+                {employees.filter((e) => e.employmentStatus === "Active" && (e.fullName || e.full_name) && (e.basicSalary || e.basic_salary)).length === 0 && (
+                  <div className="text-center py-8 text-muted-foreground">
+                    <PrinterIcon className="h-12 w-12 mx-auto mb-4 opacity-50" />
+                    <p>No active employees with salary data found.</p>
+                    <p className="text-sm">Add employees with complete salary information to generate payslips.</p>
+                  </div>
+                )}
               </CardContent>
             </Card>
           </TabsContent>
@@ -4782,7 +4789,7 @@ ${performanceFormData.managerComments || 'Not specified'}
                                 size="sm"
                                 className="h-8 w-8 p-0"
                                 onClick={() => {
-                                  alert('📅 Performance review scheduled for David Kim on Dec 30, 2024 at 2:00 PM');
+                                  alert('���� Performance review scheduled for David Kim on Dec 30, 2024 at 2:00 PM');
                                   console.log('Performance review scheduled for David Kim');
                                 }}
                                 title="Schedule Performance Review"
