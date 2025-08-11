@@ -1197,7 +1197,15 @@ export default function MemberManagement() {
                               <div>Active: {cellMembers.filter(m => m.membershipStatus === 'Active').length}</div>
                               <div>Inactive: {cellMembers.filter(m => m.membershipStatus === 'Inactive').length}</div>
                             </div>
-                            <div className="mt-3 flex gap-2">
+                            <div className="mt-3 flex flex-wrap gap-2">
+                              <Button
+                                size="sm"
+                                variant="outline"
+                                onClick={() => viewHomeCellDetails(cell)}
+                              >
+                                <Eye className="h-4 w-4 mr-1" />
+                                View Details
+                              </Button>
                               <Button
                                 size="sm"
                                 variant="outline"
