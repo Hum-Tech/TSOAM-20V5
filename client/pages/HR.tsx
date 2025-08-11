@@ -1925,8 +1925,7 @@ ${performanceFormData.managerComments || 'Not specified'}
           );
 
           if (confirmed) {
-            // This would navigate to Finance module in a real implementation
-            alert("💡 In a full implementation, this would navigate to the Finance module.\n\nFor now, Finance team can access the Payroll Approval section to review this batch.");
+            // Payroll submitted to Finance - no popup needed
           }
         }, 1000);
 
@@ -2100,7 +2099,7 @@ ${performanceFormData.managerComments || 'Not specified'}
               record.batchId === data.batchId
                 ? {
                     ...record,
-                    status: "Approved",
+                    status: "Processed",
                     approvedBy: data.approvedBy,
                     approvedDate: data.approvedDate,
                     priority: undefined // Remove priority status
