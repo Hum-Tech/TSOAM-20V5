@@ -49,6 +49,7 @@ import {
   MapPin,
   Heart,
   Edit,
+  Trash2,
 } from "lucide-react";
 import { exportService } from "@/services/ExportService";
 import {
