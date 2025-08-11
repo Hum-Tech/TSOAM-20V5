@@ -84,7 +84,23 @@ const allMenuItems = [
 
 export function Sidebar() {
   const location = useLocation();
-  const { user, logout } = useAuth();
+
+  // Add error handling for auth context
+  let user, logout;
+  try {
+    const authContext = useAuth();
+    user = authContext.user;
+    logout = authContext.logout;
+  } catch (error) {
+    console.error('Auth context error in Sidebar:', error);
+    return (
+      <div className="w-64 bg-sidebar border-r border-sidebar-border flex flex-col h-full">
+        <div className="p-4 text-center text-red-500">
+          Authentication Error - Please refresh the page
+        </div>
+      </div>
+    );
+  }
 
   // Filter menu items based on user role and permissions
   const menuItems = allMenuItems.filter((item) => {
