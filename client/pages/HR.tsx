@@ -4684,7 +4684,14 @@ ${performanceFormData.managerComments || 'Not specified'}
                                     Period: {batch.period} • {batch.totalEmployees} employees
                                   </p>
                                   <div className="flex items-center gap-2 mt-1">
-                                    <Badge variant="outline" className="border-orange-300 text-orange-700">
+                                    <Badge
+                                      variant="outline"
+                                      className={
+                                        batch.status === "Processed" ? "border-green-300 text-green-700 bg-green-50" :
+                                        batch.status === "Rejected" ? "border-red-300 text-red-700 bg-red-50" :
+                                        "border-orange-300 text-orange-700 bg-orange-50"
+                                      }
+                                    >
                                       <Clock className="h-3 w-3 mr-1" />
                                       {batch.status.replace('_', ' ')}
                                     </Badge>
