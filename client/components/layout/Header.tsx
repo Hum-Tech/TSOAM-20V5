@@ -279,6 +279,24 @@ export function Header() {
           : notification,
       ),
     );
+
+    // Update in localStorage as well
+    if (user) {
+      // Update user-specific notifications
+      const userSpecificKey = `notifications_${user.id}`;
+      const userNotifications = JSON.parse(localStorage.getItem(userSpecificKey) || '[]');
+      const updatedUserNotifications = userNotifications.map((notif: any) =>
+        notif.id === id ? { ...notif, read: true } : notif
+      );
+      localStorage.setItem(userSpecificKey, JSON.stringify(updatedUserNotifications));
+
+      // Update general notifications
+      const generalNotifications = JSON.parse(localStorage.getItem('notifications') || '[]');
+      const updatedGeneralNotifications = generalNotifications.map((notif: any) =>
+        notif.id === id ? { ...notif, read: true } : notif
+      );
+      localStorage.setItem('notifications', JSON.stringify(updatedGeneralNotifications));
+    }
   };
 
   // Mark message as read
