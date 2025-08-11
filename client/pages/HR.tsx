@@ -8208,7 +8208,7 @@ ${performanceFormData.managerComments || 'Not specified'}
                                   </div>
                                 </TableCell>
                                 <TableCell className="font-medium">
-                                  KSh {emp.netSalary.toLocaleString()}
+                                  KSh {(emp.netSalary || 0).toLocaleString()}
                                 </TableCell>
                                 <TableCell>
                                   <Badge
