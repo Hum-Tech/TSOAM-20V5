@@ -1058,6 +1058,35 @@ export default function Messaging() {
                     />
                   </div>
 
+                  {/* Delivery Preview */}
+                  {selectedContacts.length > 0 && (
+                    <div className="bg-blue-50 border border-blue-200 p-4 rounded-lg">
+                      <p className="text-sm font-medium text-blue-900 mb-2">Delivery Preview:</p>
+                      {(() => {
+                        const selectedContactsList = contacts.filter(c => selectedContacts.includes(c.id));
+                        const employeeContacts = selectedContactsList.filter(c => c.type === "Employee");
+                        const memberContacts = selectedContactsList.filter(c => c.type === "Member");
+
+                        return (
+                          <div className="space-y-1">
+                            {employeeContacts.length > 0 && (
+                              <div className="flex items-center gap-2 text-sm text-blue-700">
+                                <Bell className="h-4 w-4" />
+                                <span>{employeeContacts.length} staff member(s) will receive in-app notifications</span>
+                              </div>
+                            )}
+                            {memberContacts.length > 0 && (
+                              <div className="flex items-center gap-2 text-sm text-blue-700">
+                                {messageType === "SMS" ? <MessageSquare className="h-4 w-4" /> : <Mail className="h-4 w-4" />}
+                                <span>{memberContacts.length} member(s) will receive {messageType} to their {messageType === "SMS" ? "phone" : "email"}</span>
+                              </div>
+                            )}
+                          </div>
+                        );
+                      })()}
+                    </div>
+                  )}
+
                   {/* Sender Information */}
                   <div className="bg-muted p-4 rounded-lg">
                     <p className="text-sm font-medium">Sender Information:</p>
