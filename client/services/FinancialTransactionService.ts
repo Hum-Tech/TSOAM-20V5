@@ -639,23 +639,31 @@ class FinancialTransactionService {
     netSalary: number;
     deductions: number;
   }): FinancialTransaction {
+    // Validate and sanitize input data
+    const employeeName = data.employeeName || 'Unknown Employee';
+    const employeeId = data.employeeId || 'Unknown';
+    const period = data.period || new Date().toISOString().slice(0, 7);
+    const grossSalary = Number(data.grossSalary) || 0;
+    const netSalary = Number(data.netSalary) || 0;
+    const deductions = Number(data.deductions) || 0;
+
     return this.addTransaction({
       date: new Date().toISOString().split("T")[0],
       type: "Expense",
       category: "Payroll",
       subcategory: "Staff Salaries",
-      description: `Salary payment for ${data.employeeName} (${data.period})`,
-      amount: data.netSalary,
+      description: `Salary payment for ${employeeName} (${period})`,
+      amount: netSalary,
       currency: "KSH",
       paymentMethod: "Bank Transfer",
-      reference: `PAY-${data.employeeId}-${data.period}`,
+      reference: `PAY-${employeeId}-${period}`,
       module: "HR",
-      moduleReference: data.employeeId,
+      moduleReference: employeeId,
       status: "Pending", // Requires approval
       createdBy: "HR System",
       requestedBy: "HR System",
       requiresApproval: true,
-      notes: `Gross: KSh ${data.grossSalary.toLocaleString()}, Deductions: KSh ${data.deductions.toLocaleString()}`,
+      notes: `Gross: KSh ${grossSalary.toLocaleString()}, Deductions: KSh ${deductions.toLocaleString()}, Net: KSh ${netSalary.toLocaleString()}`,
     });
   }
 
