@@ -563,18 +563,26 @@ export default function Settings() {
                   </div>
                   <div>
                     <Label htmlFor="timezone">Timezone</Label>
-                    <Select defaultValue="africa/nairobi">
+                    <Select
+                      value={systemSettings.timezone}
+                      onValueChange={(value) =>
+                        setSystemSettings({
+                          ...systemSettings,
+                          timezone: value,
+                        })
+                      }
+                    >
                       <SelectTrigger>
                         <SelectValue />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="africa/nairobi">
+                        <SelectItem value="Africa/Nairobi">
                           Africa/Nairobi (EAT)
                         </SelectItem>
-                        <SelectItem value="america/new_york">
+                        <SelectItem value="America/New_York">
                           America/New_York (EST)
                         </SelectItem>
-                        <SelectItem value="europe/london">
+                        <SelectItem value="Europe/London">
                           Europe/London (GMT)
                         </SelectItem>
                       </SelectContent>
@@ -582,35 +590,54 @@ export default function Settings() {
                   </div>
                   <div>
                     <Label htmlFor="currency">Default Currency</Label>
-                    <Select defaultValue="ksh">
+                    <Select
+                      value={systemSettings.currency}
+                      onValueChange={(value) =>
+                        setSystemSettings({
+                          ...systemSettings,
+                          currency: value,
+                        })
+                      }
+                    >
                       <SelectTrigger>
                         <SelectValue />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="ksh">
+                        <SelectItem value="KSH">
                           Kenyan Shilling (KSH)
                         </SelectItem>
-                        <SelectItem value="usd">US Dollar (USD)</SelectItem>
-                        <SelectItem value="eur">Euro (EUR)</SelectItem>
+                        <SelectItem value="USD">US Dollar (USD)</SelectItem>
+                        <SelectItem value="EUR">Euro (EUR)</SelectItem>
                       </SelectContent>
                     </Select>
                   </div>
                   <div>
                     <Label htmlFor="dateFormat">Date Format</Label>
-                    <Select defaultValue="dd/mm/yyyy">
+                    <Select
+                      value={systemSettings.dateFormat}
+                      onValueChange={(value) =>
+                        setSystemSettings({
+                          ...systemSettings,
+                          dateFormat: value as any,
+                        })
+                      }
+                    >
                       <SelectTrigger>
                         <SelectValue />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="dd/mm/yyyy">DD/MM/YYYY</SelectItem>
-                        <SelectItem value="mm/dd/yyyy">MM/DD/YYYY</SelectItem>
-                        <SelectItem value="yyyy-mm-dd">YYYY-MM-DD</SelectItem>
+                        <SelectItem value="DD/MM/YYYY">DD/MM/YYYY</SelectItem>
+                        <SelectItem value="MM/DD/YYYY">MM/DD/YYYY</SelectItem>
+                        <SelectItem value="YYYY-MM-DD">YYYY-MM-DD</SelectItem>
                       </SelectContent>
                     </Select>
                   </div>
-                  <Button>
+                  <Button
+                    onClick={saveSystemSettings}
+                    disabled={isSaving}
+                  >
                     <Save className="h-4 w-4 mr-2" />
-                    Save General Settings
+                    {isSaving ? "Saving..." : "Save General Settings"}
                   </Button>
                 </CardContent>
               </Card>
