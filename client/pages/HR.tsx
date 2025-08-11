@@ -1924,7 +1924,7 @@ ${performanceFormData.managerComments || 'Not specified'}
         // Trigger a visual notification that Finance has been notified
         setTimeout(() => {
           const confirmed = confirm(
-            `🎯 Payroll Sent to Finance Successfully!\n\n` +
+            `���� Payroll Sent to Finance Successfully!\n\n` +
             `📦 Batch ID: ${batchId}\n` +
             `💰 Total Amount: KSh ${totalNetPayroll.toLocaleString()}\n` +
             `👥 Employees: ${payrollRecords.length}\n\n` +
@@ -2169,7 +2169,7 @@ ${performanceFormData.managerComments || 'Not specified'}
         case 'disbursement_rejected':
           handleRejectedDisbursementReport(data);
           // Force refresh to show updated disbursement reports
-          setActiveTab(prev => prev);
+          setRefreshKey(prev => prev + 1);
           break;
       }
     };
