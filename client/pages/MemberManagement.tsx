@@ -708,26 +708,10 @@ export default function MemberManagement() {
       }
 
       const memberData = cellMembers.map((member) => ({
-        "Member ID": member.memberId,
+        "Member Number": member.memberId,
+        "Name": member.fullName,
         "Tithe Number": member.titheNumber,
-        "Full Name": member.fullName,
-        "Date of Birth": member.dateOfBirth,
-        "Age": calculateAge(member.dateOfBirth),
-        "Gender": member.gender,
-        "Marital Status": member.maritalStatus,
-        "Email": member.email,
         "Phone": member.phone,
-        "Address": member.address,
-        "Emergency Contact": member.emergencyContactName,
-        "Emergency Phone": member.emergencyContactPhone,
-        "Home Cell": member.homeCell,
-        "Membership Status": member.membershipStatus,
-        "Membership Date": member.membershipDate,
-        "Member Since": calculateTenure(member.membershipDate),
-        "Employment Status": member.employmentStatus,
-        "Baptized": member.baptized ? "Yes" : "No",
-        "Bible Study Completed": member.bibleStudyCompleted ? "Yes" : "No",
-        "Service Groups": member.serviceGroups.join(", "),
       }));
 
       await exportService.export({
