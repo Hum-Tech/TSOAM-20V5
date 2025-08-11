@@ -1860,6 +1860,21 @@ ${performanceFormData.managerComments || 'Not specified'}
         // Submit to production Finance approval service
         const submissionResult = FinanceApprovalService.submitPayrollForApproval(approvalRequest);
 
+        // Log payroll submission
+        SystemLogService.logHR(
+          'Payroll Submitted to Finance',
+          `Payroll batch ${batchId} submitted for approval - ${payrollRecords.length} employees, total: KSh ${totalNetPayroll.toLocaleString()}`,
+          undefined,
+          'HR System',
+          {
+            batchId,
+            employeeCount: payrollRecords.length,
+            period: currentMonth,
+            totalAmount: totalNetPayroll,
+            submissionResult
+          }
+        );
+
         // Save to pending batches list for HR tracking
         const existingPendingBatches = JSON.parse(localStorage.getItem("hr_pending_batches") || "[]");
         existingPendingBatches.push({
@@ -4781,7 +4796,7 @@ ${performanceFormData.managerComments || 'Not specified'}
                                     `📈 Fiscal Year: ${batch.metadata?.fiscalYear || new Date().getFullYear()} Q${batch.metadata?.quarter || Math.ceil((new Date().getMonth() + 1) / 3)}\n\n` +
                                     `📋 STATUS BREAKDOWN:\n` +
                                     `• Approved: ${financialImpact?.approved?.count || 0} (KSh ${(financialImpact?.approved?.amount || 0).toLocaleString()})\n` +
-                                    `• Rejected: ${financialImpact?.rejected?.count || 0} (KSh ${(financialImpact?.rejected?.amount || 0).toLocaleString()})\n` +
+                                    `�� Rejected: ${financialImpact?.rejected?.count || 0} (KSh ${(financialImpact?.rejected?.amount || 0).toLocaleString()})\n` +
                                     `• Pending: ${financialImpact?.pending?.count || 0} (KSh ${(financialImpact?.pending?.amount || 0).toLocaleString()})\n\n` +
                                     `💼 SYSTEM: Production Finance Approval Service`
                                   );
