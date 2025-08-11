@@ -1641,7 +1641,7 @@ ${performanceFormData.managerComments || 'Not specified'}
             totalAllowances = Object.values(allowancesObj).reduce(
               (sum, allowance) => sum + (Number(allowance) || 0),
               0
-            );
+            ) as number;
           }
 
           // Ensure minimum wage compliance (Kenya minimum wage)
@@ -1950,7 +1950,7 @@ ${performanceFormData.managerComments || 'Not specified'}
                 `�� Period: ${rejectionData.period}\n` +
                 `💰 Amount: KSh ${rejectionData.amount?.toLocaleString()}\n` +
                 `👤 Rejected by: ${rejectionData.rejectedBy}\n` +
-                `📝 Reason: ${rejectionData.rejectionReason}\n` +
+                `�� Reason: ${rejectionData.rejectionReason}\n` +
                 `📅 Date: ${new Date(rejectionData.rejectedDate).toLocaleDateString()}\n\n` +
                 `���️ Please review and resubmit the payroll if necessary.`,
             );
