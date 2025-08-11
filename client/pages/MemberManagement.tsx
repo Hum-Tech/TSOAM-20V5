@@ -952,7 +952,7 @@ export default function MemberManagement() {
         </div>
 
         {/* Main Content */}
-        <Tabs defaultValue="members" className="space-y-4">
+        <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-4">
           <TabsList className="grid w-full grid-cols-2">
             <TabsTrigger value="members">All Members</TabsTrigger>
             <TabsTrigger value="homecells">Home Cells</TabsTrigger>
