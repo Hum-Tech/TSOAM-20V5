@@ -2839,6 +2839,29 @@ export default function NewMembers() {
                 <h3 className="text-lg font-semibold">Church Information</h3>
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-2">
+                    <Label htmlFor="homeCell">Home Cell</Label>
+                    <Select
+                      value={newMemberForm.homeCell}
+                      onValueChange={(value) =>
+                        setNewMemberForm({
+                          ...newMemberForm,
+                          homeCell: value,
+                        })
+                      }
+                    >
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select home cell" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {homeCells.map((cell) => (
+                          <SelectItem key={cell.id} value={cell.name}>
+                            {cell.name}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div className="space-y-2">
                     <Label htmlFor="employmentStatus">Employment Status</Label>
                     <Select
                       value={newMemberForm.employmentStatus}
