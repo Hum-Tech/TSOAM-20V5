@@ -1716,6 +1716,19 @@ ${performanceFormData.managerComments || 'Not specified'}
 
           console.log(`✅ Processed: ${employeeName} - Net: KSh ${netSalary.toLocaleString()}`);
 
+          // Debug: Log the first record structure
+          if (payrollRecords.length === 1) {
+            console.log("📋 Sample payroll record structure:", {
+              id: payrollRecord.id,
+              employeeName: payrollRecord.employeeName,
+              grossSalary: payrollRecord.grossSalary,
+              netSalary: payrollRecord.netSalary,
+              deductionsType: typeof payrollRecord.deductions,
+              deductionsValue: payrollRecord.deductions,
+              allKeys: Object.keys(payrollRecord)
+            });
+          }
+
         } catch (employeeError) {
           const errorMsg = `${getEmployeeProp(employee, 'fullName') || 'Unknown'}: ${employeeError instanceof Error ? employeeError.message : 'Processing error'}`;
           processingErrors.push(errorMsg);
