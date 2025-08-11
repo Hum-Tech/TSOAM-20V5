@@ -59,6 +59,7 @@ import {
   type ConversionFunnel,
 } from "@/services/VisitorTrackingService";
 import { transferService } from "@/services/TransferService";
+import { homeCellService } from "@/services/HomeCellService";
 import { useAuth } from "@/contexts/AuthContext";
 
 // Types
