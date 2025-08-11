@@ -630,6 +630,7 @@ export default function MemberManagement() {
       Address: member.address,
       "Emergency Contact": member.emergencyContactName,
       "Emergency Phone": member.emergencyContactPhone,
+      "Home Cell": member.homeCell || "Not assigned",
       "Membership Status": member.membershipStatus,
       "Original Visit Date": member.visitDate,
       "Membership Date": member.membershipDate,
