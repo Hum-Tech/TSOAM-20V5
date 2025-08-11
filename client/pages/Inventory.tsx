@@ -310,9 +310,9 @@ export default function Inventory() {
   const { user } = useAuth(); // Get current authenticated user
 
   // Role-based permissions - Only Admin, Pastor, and HR can delete inventory items
-  const canDeleteItems = user?.role === "admin" || user?.role === "Admin" ||
-                         user?.role === "pastor" || user?.role === "Pastor" ||
-                         user?.role === "hr" || user?.role === "HR Officer";
+  const canDeleteItems = user?.role === "admin" ||
+                         user?.role === "pastor" ||
+                         user?.role === "hr";
   const [items, setItems] = useState<InventoryItem[]>([]);
   const [maintenanceRecords, setMaintenanceRecords] = useState<
     MaintenanceRecord[]
