@@ -508,6 +508,7 @@ export default function HR() {
 
     } catch (error) {
       console.error("Error loading HR data:", error);
+      console.log("Loading demo data for HR module...");
       // Fallback to demo data
       const mockEmployees = [
       {
