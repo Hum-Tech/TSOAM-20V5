@@ -2845,27 +2845,27 @@ ${performanceFormData.managerComments || 'Not specified'}
               <table class="table">
                   <tr>
                       <td><strong>Employee Name:</strong></td>
-                      <td>${payslipData.employee.fullName}</td>
+                      <td>${payslipData.employee.fullName || payslipData.employee.full_name || 'N/A'}</td>
                       <td><strong>Employee ID:</strong></td>
-                      <td>${payslipData.employee.employeeId}</td>
+                      <td>${payslipData.employee.employeeId || payslipData.employee.employee_id || 'N/A'}</td>
                   </tr>
                   <tr>
                       <td><strong>Department:</strong></td>
-                      <td>${payslipData.employee.department}</td>
+                      <td>${payslipData.employee.department || 'N/A'}</td>
                       <td><strong>Position:</strong></td>
-                      <td>${payslipData.employee.position}</td>
+                      <td>${payslipData.employee.position || payslipData.employee.job_title || 'N/A'}</td>
                   </tr>
                   <tr>
                       <td><strong>KRA PIN:</strong></td>
-                      <td>${payslipData.employee.kraPin}</td>
+                      <td>${payslipData.employee.kraPin || payslipData.employee.kra_pin || 'N/A'}</td>
                       <td><strong>NSSF No:</strong></td>
-                      <td>${payslipData.employee.nssfNumber}</td>
+                      <td>${payslipData.employee.nssfNumber || payslipData.employee.nssf_number || 'N/A'}</td>
                   </tr>
                   <tr>
                       <td><strong>Bank:</strong></td>
-                      <td>${payslipData.employee.bankDetails.bankName}</td>
+                      <td>${payslipData.employee.bankDetails?.bankName || payslipData.employee.bank_name || 'N/A'}</td>
                       <td><strong>Account No:</strong></td>
-                      <td>${payslipData.employee.bankDetails.accountNumber}</td>
+                      <td>${payslipData.employee.bankDetails?.accountNumber || payslipData.employee.account_number || 'N/A'}</td>
                   </tr>
               </table>
           </div>
