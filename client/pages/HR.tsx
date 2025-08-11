@@ -2048,6 +2048,46 @@ ${performanceFormData.managerComments || 'Not specified'}
     }, 500);
   };
 
+  // Function to handle rejected disbursement report from Finance
+  const handleRejectedDisbursementReport = (disbursementData: any) => {
+    console.log(
+      "📊 Received REJECTED disbursement report from Finance:",
+      disbursementData,
+    );
+
+    const rejectedDisbursementReport: DisbursementReport = {
+      id: disbursementData.reportId || `DISB-REJ-${Date.now()}`,
+      batchId: disbursementData.batchId,
+      period: disbursementData.period,
+      totalEmployees: disbursementData.totalEmployees,
+      totalGrossAmount: 0, // Rejected payments don't count toward disbursed amounts
+      totalDeductions: 0,
+      totalNetAmount: 0,
+      approvedBy: disbursementData.rejectedBy || 'Finance Officer',
+      approvedDate: disbursementData.rejectedDate,
+      disbursementDate: disbursementData.rejectedDate,
+      disbursementMethod: "Not Applicable",
+      status: "Rejected",
+      employees: disbursementData.employees || [],
+      notes: disbursementData.notes || 'Payments rejected by Finance - no funds disbursed',
+    };
+
+    setDisbursementReports((prev) => [rejectedDisbursementReport, ...prev]);
+
+    // Show notification for rejected disbursement
+    setTimeout(() => {
+      alert(
+        `❌ Payroll Disbursement REJECTED!\n\n` +
+          `👥 Rejected Employees: ${disbursementData.totalEmployees}\n` +
+          `💵 Amount NOT Disbursed: KSh 0 (no deduction from accounts)\n` +
+          `❌ Rejected by: ${disbursementData.rejectedBy || 'Finance Officer'}\n` +
+          `📅 Rejection Date: ${new Date(disbursementData.rejectedDate).toLocaleDateString()}\n\n` +
+          `⚠️ These payments were rejected and no funds have been deducted.\n` +
+          `📋 Please review rejection reasons and reprocess if necessary.`,
+      );
+    }, 1000); // Delay to show after approved notification
+  };
+
   // Listen for Finance approval responses and update UI accordingly
   useEffect(() => {
     const handleFinanceResponse = (event: CustomEvent) => {
@@ -5347,7 +5387,7 @@ ${performanceFormData.managerComments || 'Not specified'}
                                       placeholder="• Core competencies demonstrating excellence
 • Skills that stand out
 • Leadership qualities exhibited
-��� Positive feedback from others"
+����� Positive feedback from others"
                                       className="min-h-24"
                                     />
                                   </div>
