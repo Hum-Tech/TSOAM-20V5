@@ -96,7 +96,7 @@ export function ProtectedRoute({
   // Check role-based access if roles are specified
   if (allowedRoles) {
     // Admin bypass - admin can access all pages
-    if (user.role === "admin" || user.role === "Admin") {
+    if (user.role === "admin") {
       return <>{children}</>;
     }
 
