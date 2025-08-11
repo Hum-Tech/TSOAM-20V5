@@ -2157,7 +2157,7 @@ ${performanceFormData.managerComments || 'Not specified'}
             )
           );
           // Force refresh to show updated status
-          setActiveTab(prev => prev);
+          setRefreshKey(prev => prev + 1);
           break;
 
         case 'disbursement_approved':
