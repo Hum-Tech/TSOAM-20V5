@@ -104,7 +104,8 @@ export function PayrollApprovalCenter({ className }: PayrollApprovalCenterProps)
           title: "✅ Payroll Batch Approved",
           description: `Batch ${selectedBatch.batchId} approved for ${selectedBatch.totalEmployees} employees (KSh ${selectedBatch.totalNetAmount.toLocaleString()})`,
         });
-        loadPendingApprovals();
+        // Immediate refresh to show status change
+        setTimeout(() => loadPendingApprovals(), 100);
       }
     } else {
       if (!notes.trim()) {
@@ -250,7 +251,7 @@ export function PayrollApprovalCenter({ className }: PayrollApprovalCenterProps)
                           {getPriorityBadge(batch.metadata?.priority || 'medium')}
                           <Badge variant="outline">{batch.period}</Badge>
                         </div>
-                        
+
                         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
                           <div>
                             <p className="text-muted-foreground">Employees</p>
