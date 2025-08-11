@@ -542,6 +542,86 @@ export default function Settings() {
     }
   };
 
+  // Home Cell Management Functions
+  const handleAddHomeCell = () => {
+    if (!newHomeCellForm.name.trim()) {
+      toast({
+        title: "Error",
+        description: "Home cell name is required",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    const newCell = homeCellService.createHomeCell({
+      name: newHomeCellForm.name,
+      leader: newHomeCellForm.leader,
+      leaderPhone: newHomeCellForm.leaderPhone,
+      meetingDay: newHomeCellForm.meetingDay,
+      meetingTime: newHomeCellForm.meetingTime,
+      location: newHomeCellForm.location,
+      description: newHomeCellForm.description,
+      isActive: true,
+    });
+
+    setHomeCells([...homeCells, newCell]);
+    setNewHomeCellForm({
+      name: "",
+      leader: "",
+      leaderPhone: "",
+      meetingDay: "",
+      meetingTime: "",
+      location: "",
+      description: "",
+    });
+    setShowAddHomeCellDialog(false);
+
+    toast({
+      title: "Success",
+      description: `Home cell "${newCell.name}" has been created`,
+      duration: 3000,
+    });
+  };
+
+  const handleToggleHomeCellStatus = (id: number) => {
+    const cell = homeCells.find(c => c.id === id);
+    if (!cell) return;
+
+    const updated = cell.isActive
+      ? homeCellService.deactivateHomeCell(id)
+      : homeCellService.activateHomeCell(id);
+
+    if (updated) {
+      const updatedCells = homeCells.map(c =>
+        c.id === id ? { ...c, isActive: !c.isActive } : c
+      );
+      setHomeCells(updatedCells);
+
+      toast({
+        title: "Success",
+        description: `Home cell "${cell.name}" has been ${cell.isActive ? 'deactivated' : 'activated'}`,
+        duration: 3000,
+      });
+    }
+  };
+
+  const handleDeleteHomeCell = (id: number) => {
+    const cell = homeCells.find(c => c.id === id);
+    if (!cell) return;
+
+    if (confirm(`Are you sure you want to delete "${cell.name}" home cell? This action cannot be undone.`)) {
+      const deleted = homeCellService.deleteHomeCell(id);
+      if (deleted) {
+        setHomeCells(homeCells.filter(c => c.id !== id));
+        toast({
+          title: "Success",
+          description: `Home cell "${cell.name}" has been deleted`,
+          duration: 3000,
+        });
+      }
+    }
+  };
+
   return (
     <Layout>
       <div className="space-y-6">
