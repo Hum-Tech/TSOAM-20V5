@@ -700,6 +700,7 @@ export default function HR() {
 
       setEmployees(mockEmployees as any as Employee[]);
       setLeaveRequests(mockLeaveRequests);
+      console.log("Demo data loaded:", mockEmployees.length, "employees");
     }
   };
 
@@ -1699,7 +1700,7 @@ ${performanceFormData.managerComments || 'Not specified'}
 
       // Show success message
       alert(
-        `��� Demo Mode: Payroll processed successfully!\n\n` +
+        `����� Demo Mode: Payroll processed successfully!\n\n` +
           `📊 Processed: ${activeEmployees.length} employees\n` +
           `📅 Period: ${currentMonth}\n` +
           `💰 Total Payroll: KSh ${demoPayrollRecords.reduce((sum, record) => sum + record.netSalary, 0).toLocaleString()}\n\n` +
