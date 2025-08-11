@@ -306,6 +306,10 @@ const locations = [
 
 export default function Inventory() {
   const { user } = useAuth(); // Get current authenticated user
+
+  // Role-based permissions
+  const canDeleteItems = user?.role === "admin" || user?.role === "Admin" ||
+                        user?.role === "pastor" || user?.role === "Pastor";
   const [items, setItems] = useState<InventoryItem[]>([]);
   const [maintenanceRecords, setMaintenanceRecords] = useState<
     MaintenanceRecord[]
@@ -1362,6 +1366,48 @@ export default function Inventory() {
   const handleRestockItem = (item: StockItem) => {
     setSelectedStockItem(item);
     setShowRestockDialog(true);
+  };
+
+  const handleEditStockItem = (item: StockItem) => {
+    setSelectedStockItem(item);
+    setEditStockForm(item);
+    setShowEditStockDialog(true);
+  };
+
+  const handleDeleteStockItem = (item: StockItem) => {
+    setSelectedStockItem(item);
+    setShowDeleteStockDialog(true);
+  };
+
+  const confirmDeleteStockItem = () => {
+    if (selectedStockItem) {
+      setStockItems(prev => prev.filter(item => item.tagNumber !== selectedStockItem.tagNumber));
+      setShowDeleteStockDialog(false);
+      setSelectedStockItem(null);
+
+      // Log the deletion action
+      console.log(`Item deleted: ${selectedStockItem.itemName} by ${user?.name}`);
+      alert(`Item "${selectedStockItem.itemName}" has been deleted successfully.`);
+    }
+  };
+
+  const handleUpdateStockItem = () => {
+    if (selectedStockItem && editStockForm) {
+      setStockItems(prev =>
+        prev.map(item =>
+          item.tagNumber === selectedStockItem.tagNumber
+            ? { ...item, ...editStockForm, updatedAt: new Date().toISOString() }
+            : item
+        )
+      );
+      setShowEditStockDialog(false);
+      setSelectedStockItem(null);
+      setEditStockForm({});
+
+      // Log the update action
+      console.log(`Item updated: ${selectedStockItem.itemName} by ${user?.name}`);
+      alert(`Item "${selectedStockItem.itemName}" has been updated successfully.`);
+    }
   };
 
   const handleRestockSubmit = () => {
