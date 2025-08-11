@@ -86,28 +86,33 @@ export function Sidebar() {
   const location = useLocation();
   const { user, logout } = useAuth();
 
+  // Debug logging - log user info once
+  console.log('Sidebar User Info:', {
+    userName: user?.name,
+    userRole: user?.role,
+    permissions: user?.permissions
+  });
+
   // Filter menu items based on user role and permissions
   const menuItems = allMenuItems.filter((item) => {
     if (!user?.permissions) return false;
 
     // Admin and Pastor see ALL navigation items - no filtering needed
-    if (user.role === "admin" || user.role === "pastor") {
+    if (user.role === "admin" || user.role === "pastor" || user.role === "Admin" || user.role === "Pastor") {
       return true;
     }
 
-    // Debug logging for normal users
-    if (user.role === "user") {
-      console.log('Sidebar Debug:', {
-        item: item.label,
-        permission: item.permission,
-        userHasPermission: user.permissions[item.permission as keyof typeof user.permissions],
-        userRole: user.role,
-        allPermissions: user.permissions
-      });
-    }
+    // Debug logging for all non-admin users
+    const hasPermission = user.permissions[item.permission as keyof typeof user.permissions];
+    console.log('Sidebar Item Check:', {
+      item: item.label,
+      permission: item.permission,
+      hasPermission: hasPermission,
+      userRole: user.role
+    });
 
     // For other roles, use the existing permission system
-    return user.permissions[item.permission as keyof typeof user.permissions];
+    return hasPermission;
   });
 
   return (
