@@ -360,12 +360,7 @@ export default function Messaging() {
                          user?.role === "finance" || user?.role === "Finance Officer" ||
                          user?.role === "user" || user?.role === "User";
 
-  // Debug logging
-  console.log("Messaging Debug:", {
-    user: user?.name,
-    role: user?.role,
-    canSendMessages
-  });
+
   const [searchTerm, setSearchTerm] = useState("");
   const [contacts] = useState<Contact[]>(getSystemContacts());
   const [messages, setMessages] = useState<Message[]>(mockMessages);
@@ -748,9 +743,6 @@ export default function Messaging() {
             <h1 className="text-3xl font-bold">Church Messaging</h1>
             <p className="text-muted-foreground">
               Send SMS and emails to church members and staff
-            </p>
-            <p className="text-xs text-blue-600 bg-blue-50 px-2 py-1 rounded">
-              Debug: User: {user?.name} | Role: {user?.role} | Can Send: {canSendMessages ? "Yes" : "No"}
             </p>
           </div>
           <div className="flex gap-2">
