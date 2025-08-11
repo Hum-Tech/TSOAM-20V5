@@ -479,11 +479,14 @@ export default function HR() {
 
   const loadHRData = async (signal?: AbortSignal) => {
     try {
+      console.log("Attempting to load HR data from API...");
       // Load employees from database
       const employeesData = await HRDatabaseService.getEmployees(signal);
 
       // Check if aborted before proceeding
       if (signal?.aborted) return;
+
+      console.log("API data loaded successfully:", employeesData.length, "employees");
 
       // Map to include backward compatibility fields
       const mappedEmployees: Employee[] = employeesData.map(emp => ({
