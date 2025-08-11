@@ -877,14 +877,13 @@ export default function Messaging() {
               </DialogContent>
             </Dialog>
 
-            {canSendMessages && (
-              <Dialog open={isComposeOpen} onOpenChange={setIsComposeOpen}>
-                <DialogTrigger asChild>
-                  <Button>
-                    <Plus className="h-4 w-4 mr-2" />
-                    Compose Message
-                  </Button>
-                </DialogTrigger>
+            <Dialog open={isComposeOpen} onOpenChange={setIsComposeOpen}>
+              <DialogTrigger asChild>
+                <Button disabled={!canSendMessages}>
+                  <Plus className="h-4 w-4 mr-2" />
+                  Compose Message {!canSendMessages && "(No Permission)"}
+                </Button>
+              </DialogTrigger>
                 <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
                 <DialogHeader>
                   <DialogTitle>Compose New Message</DialogTitle>
