@@ -670,6 +670,7 @@ export default function HR() {
       console.log("Performance reviews loaded successfully:", reviewsData.length, "reviews");
       setPerformanceReviews(reviewsData);
 
+    } catch (error) {
       console.error("Error loading performance reviews from API:", error);
       console.log("Loading demo performance reviews data...");
       // Load demo performance reviews
