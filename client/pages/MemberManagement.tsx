@@ -2766,6 +2766,74 @@ export default function MemberManagement() {
           </DialogContent>
         </Dialog>
 
+        {/* Assign Home Cell Dialog */}
+        <Dialog
+          open={showAssignHomeCellDialog}
+          onOpenChange={setShowAssignHomeCellDialog}
+        >
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>Assign Member to Home Cell</DialogTitle>
+            </DialogHeader>
+            {memberToAssign && (
+              <div className="space-y-4">
+                <div className="p-4 bg-gray-50 rounded-lg">
+                  <h4 className="font-medium">{memberToAssign.fullName}</h4>
+                  <p className="text-sm text-muted-foreground">
+                    Member ID: {memberToAssign.memberId}
+                  </p>
+                  <p className="text-sm text-muted-foreground">
+                    Currently unassigned to any home cell
+                  </p>
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="assignHomeCell">Select Home Cell</Label>
+                  <Select
+                    value={selectedHomeCellForAssignment}
+                    onValueChange={setSelectedHomeCellForAssignment}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select a home cell" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {homeCells
+                        .filter(cell => cell.isActive)
+                        .map((cell) => (
+                          <SelectItem key={cell.id} value={cell.name}>
+                            {cell.name}
+                            {cell.leader && ` (Leader: ${cell.leader})`}
+                          </SelectItem>
+                        ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                <div className="flex gap-2 pt-4">
+                  <Button
+                    variant="outline"
+                    onClick={() => {
+                      setShowAssignHomeCellDialog(false);
+                      setMemberToAssign(null);
+                      setSelectedHomeCellForAssignment("");
+                    }}
+                    className="flex-1"
+                  >
+                    Cancel
+                  </Button>
+                  <Button
+                    onClick={assignMemberToHomeCell}
+                    className="flex-1"
+                    disabled={!selectedHomeCellForAssignment}
+                  >
+                    Assign Member
+                  </Button>
+                </div>
+              </div>
+            )}
+          </DialogContent>
+        </Dialog>
+
         {/* Transfer Home Cell Dialog */}
         <Dialog
           open={showTransferHomeCellDialog}
