@@ -86,13 +86,6 @@ export function Sidebar() {
   const location = useLocation();
   const { user, logout } = useAuth();
 
-  // Debug logging - log user info once
-  console.log('Sidebar User Info:', {
-    userName: user?.name,
-    userRole: user?.role,
-    permissions: user?.permissions
-  });
-
   // Filter menu items based on user role and permissions
   const menuItems = allMenuItems.filter((item) => {
     if (!user?.permissions) return false;
@@ -102,17 +95,8 @@ export function Sidebar() {
       return true;
     }
 
-    // Debug logging for all non-admin users
-    const hasPermission = user.permissions[item.permission as keyof typeof user.permissions];
-    console.log('Sidebar Item Check:', {
-      item: item.label,
-      permission: item.permission,
-      hasPermission: hasPermission,
-      userRole: user.role
-    });
-
     // For other roles, use the existing permission system
-    return hasPermission;
+    return user.permissions[item.permission as keyof typeof user.permissions];
   });
 
   return (
