@@ -1721,12 +1721,42 @@ export default function Inventory() {
                         </TableCell>
                         <TableCell>
                           <div className="flex gap-2">
-                            <Button variant="outline" size="sm">
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              onClick={() => {
+                                setSelectedInventoryItem(item);
+                                setShowViewDialog(true);
+                              }}
+                              title="View Details"
+                            >
                               <Eye className="h-4 w-4" />
                             </Button>
-                            <Button variant="outline" size="sm">
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              onClick={() => {
+                                setEditInventoryForm(item);
+                                setShowEditDialog(true);
+                              }}
+                              title="Edit Item"
+                            >
                               <Edit className="h-4 w-4" />
                             </Button>
+                            {canDeleteItems && (
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                onClick={() => {
+                                  setSelectedInventoryItem(item);
+                                  setShowDeleteDialog(true);
+                                }}
+                                title="Delete Item (Admin/Pastor Only)"
+                                className="text-destructive hover:text-destructive"
+                              >
+                                <Trash2 className="h-4 w-4" />
+                              </Button>
+                            )}
                             <Select
                               onValueChange={(value) =>
                                 handleStatusChange(item, value)
