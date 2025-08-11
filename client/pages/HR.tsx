@@ -2173,6 +2173,21 @@ ${performanceFormData.managerComments || 'Not specified'}
     };
   }, []);
 
+  // Listen for localStorage changes to refresh pending approvals
+  useEffect(() => {
+    const handleStorageChange = (event: StorageEvent) => {
+      if (event.key?.startsWith('finance_') || event.key?.startsWith('hr_')) {
+        // Force refresh when Finance approval data changes
+        setActiveTab(prev => prev);
+      }
+    };
+
+    window.addEventListener('storage', handleStorageChange);
+    return () => {
+      window.removeEventListener('storage', handleStorageChange);
+    };
+  }, []);
+
   // Listen for disbursement reports and rejections from Finance module
   useEffect(() => {
     const handleFinanceEvents = (event: StorageEvent) => {
@@ -3671,7 +3686,7 @@ ${performanceFormData.managerComments || 'Not specified'}
 
                     <div class="earnings-deductions">
                         <div class="earnings-section">
-                            <div class="section-header">���� EARNINGS</div>
+                            <div class="section-header">������ EARNINGS</div>
                             <div class="items-list">
                                 <div class="item-row">
                                     <span class="item-label">Basic Salary</span>
