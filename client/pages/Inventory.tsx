@@ -3570,6 +3570,174 @@ export default function Inventory() {
             )}
           </DialogContent>
         </Dialog>
+
+        {/* Edit Stock Item Dialog */}
+        <Dialog open={showEditStockDialog} onOpenChange={setShowEditStockDialog}>
+          <DialogContent className="max-w-2xl max-h-[85vh] overflow-y-auto">
+            <DialogHeader>
+              <DialogTitle>Edit Stock Item</DialogTitle>
+            </DialogHeader>
+            {selectedStockItem && (
+              <div className="space-y-4">
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="editItemName">Item Name *</Label>
+                    <Input
+                      id="editItemName"
+                      value={editStockForm.itemName || ''}
+                      onChange={(e) => setEditStockForm({...editStockForm, itemName: e.target.value})}
+                      placeholder="Enter item name"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="editCategory">Category *</Label>
+                    <Select
+                      value={editStockForm.category || ''}
+                      onValueChange={(value) => setEditStockForm({...editStockForm, category: value})}
+                    >
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select category" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="Office Supplies">Office Supplies</SelectItem>
+                        <SelectItem value="Kitchen Supplies">Kitchen Supplies</SelectItem>
+                        <SelectItem value="Cleaning Supplies">Cleaning Supplies</SelectItem>
+                        <SelectItem value="Medical Supplies">Medical Supplies</SelectItem>
+                        <SelectItem value="Electronics">Electronics</SelectItem>
+                        <SelectItem value="Furniture">Furniture</SelectItem>
+                        <SelectItem value="Equipment">Equipment</SelectItem>
+                        <SelectItem value="Books">Books</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="editCurrentQuantity">Current Quantity *</Label>
+                    <Input
+                      id="editCurrentQuantity"
+                      type="number"
+                      value={editStockForm.currentQuantity || ''}
+                      onChange={(e) => setEditStockForm({...editStockForm, currentQuantity: parseInt(e.target.value) || 0})}
+                      placeholder="0"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="editMinQuantity">Minimum Quantity *</Label>
+                    <Input
+                      id="editMinQuantity"
+                      type="number"
+                      value={editStockForm.minimumQuantity || ''}
+                      onChange={(e) => setEditStockForm({...editStockForm, minimumQuantity: parseInt(e.target.value) || 0})}
+                      placeholder="0"
+                    />
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="editUnitCost">Unit Cost (KSh) *</Label>
+                    <Input
+                      id="editUnitCost"
+                      type="number"
+                      value={editStockForm.unitCost || ''}
+                      onChange={(e) => setEditStockForm({...editStockForm, unitCost: parseFloat(e.target.value) || 0})}
+                      placeholder="0.00"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="editLocation">Location *</Label>
+                    <Input
+                      id="editLocation"
+                      value={editStockForm.location || ''}
+                      onChange={(e) => setEditStockForm({...editStockForm, location: e.target.value})}
+                      placeholder="Storage location"
+                    />
+                  </div>
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="editNotes">Notes</Label>
+                  <Textarea
+                    id="editNotes"
+                    value={editStockForm.notes || ''}
+                    onChange={(e) => setEditStockForm({...editStockForm, notes: e.target.value})}
+                    placeholder="Additional notes"
+                    rows={3}
+                  />
+                </div>
+
+                <div className="flex justify-end gap-2 pt-4 border-t">
+                  <Button
+                    variant="outline"
+                    onClick={() => {
+                      setShowEditStockDialog(false);
+                      setSelectedStockItem(null);
+                      setEditStockForm({});
+                    }}
+                  >
+                    Cancel
+                  </Button>
+                  <Button onClick={handleUpdateStockItem} className="bg-blue-600 hover:bg-blue-700">
+                    Update Item
+                  </Button>
+                </div>
+              </div>
+            )}
+          </DialogContent>
+        </Dialog>
+
+        {/* Delete Stock Item Dialog */}
+        <Dialog open={showDeleteStockDialog} onOpenChange={setShowDeleteStockDialog}>
+          <DialogContent className="max-w-md">
+            <DialogHeader>
+              <DialogTitle className="flex items-center gap-2 text-red-600">
+                <Trash2 className="h-5 w-5" />
+                Delete Stock Item
+              </DialogTitle>
+            </DialogHeader>
+            {selectedStockItem && (
+              <div className="space-y-4">
+                <div className="bg-red-50 border border-red-200 p-4 rounded-lg">
+                  <p className="text-sm text-red-700">
+                    Are you sure you want to delete "<strong>{selectedStockItem.itemName}</strong>"?
+                  </p>
+                  <p className="text-sm text-red-600 mt-2">
+                    This action cannot be undone. The item will be permanently removed from the inventory.
+                  </p>
+                  <div className="mt-3 p-2 bg-red-100 rounded text-xs">
+                    <strong>Item Details:</strong><br />
+                    Tag: {selectedStockItem.tagNumber}<br />
+                    Category: {selectedStockItem.category}<br />
+                    Quantity: {selectedStockItem.currentQuantity} {selectedStockItem.unitOfMeasure}<br />
+                    Value: KSh {selectedStockItem.totalValue.toLocaleString()}
+                  </div>
+                </div>
+
+                <div className="flex justify-end gap-2">
+                  <Button
+                    variant="outline"
+                    onClick={() => {
+                      setShowDeleteStockDialog(false);
+                      setSelectedStockItem(null);
+                    }}
+                  >
+                    Cancel
+                  </Button>
+                  <Button
+                    variant="destructive"
+                    onClick={confirmDeleteStockItem}
+                    className="bg-red-600 hover:bg-red-700"
+                  >
+                    <Trash2 className="h-4 w-4 mr-2" />
+                    Delete Item
+                  </Button>
+                </div>
+              </div>
+            )}
+          </DialogContent>
+        </Dialog>
       </div>
     </Layout>
   );
