@@ -461,6 +461,12 @@ export default function Messaging() {
   };
 
   const sendMessage = async () => {
+    // Check permissions
+    if (!canSendMessages) {
+      alert("You don't have permission to send messages. Contact your administrator.");
+      return;
+    }
+
     if (!messageContent || selectedContacts.length === 0) {
       alert("Please select recipients and enter a message");
       return;
@@ -484,6 +490,42 @@ export default function Messaging() {
       recipientCount: selectedContacts.length,
       deliveryRate: 100,
     };
+
+    // Create notifications for selected recipients (only if not public message)
+    const selectedContactsList = contacts.filter(c => selectedContacts.includes(c.id));
+    const isPublicMessage = recipientFilter === "all" || selectedContacts.length > 10;
+
+    if (!isPublicMessage) {
+      selectedContactsList.forEach(contact => {
+        // Create notification for each recipient
+        const notification = {
+          id: `notif-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+          title: messageType === "Email" ? (subject || "New Message") : "New SMS Message",
+          message: messageContent.length > 100 ? messageContent.substring(0, 100) + "..." : messageContent,
+          sender: user?.name || "System",
+          recipient: contact.name,
+          recipientId: contact.id,
+          type: messageType.toLowerCase(),
+          isPublic: false,
+          timestamp: new Date().toISOString(),
+          read: false
+        };
+
+        // Store notification in localStorage (in production, this would go to a database)
+        const existingNotifications = JSON.parse(localStorage.getItem('notifications') || '[]');
+        existingNotifications.unshift(notification);
+        localStorage.setItem('notifications', JSON.stringify(existingNotifications));
+      });
+
+      // Dispatch event to update notification bell in header
+      window.dispatchEvent(new CustomEvent('notificationAdded', {
+        detail: {
+          count: selectedContactsList.length,
+          type: messageType,
+          sender: user?.name
+        }
+      }));
+    }
 
     try {
       // Save message to backend
