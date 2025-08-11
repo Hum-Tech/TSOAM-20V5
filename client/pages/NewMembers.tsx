@@ -723,6 +723,12 @@ export default function NewMembers() {
     setShowVisitorDialog(false);
   };
 
+  // View visitor handler
+  const handleViewVisitor = (visitor: Visitor) => {
+    setSelectedVisitorForView(visitor);
+    setShowViewVisitorDialog(true);
+  };
+
   // Edit visitor handler
   const handleEditVisitor = (visitor: Visitor) => {
     setSelectedVisitorForEdit(visitor);
