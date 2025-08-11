@@ -528,9 +528,9 @@ export function Header() {
                 <span>Profile</span>
               </DropdownMenuItem>
               {/* Only show Settings for Finance Officer and other authorized roles */}
-              {(user.role === "Finance Officer" ||
-                user.role === "Admin" ||
-                user.role === "HR Officer" ||
+              {(user.role === "finance" ||
+                user.role === "admin" ||
+                user.role === "hr" ||
                 user?.permissions?.settings) && (
                 <DropdownMenuItem
                   className="cursor-pointer"
