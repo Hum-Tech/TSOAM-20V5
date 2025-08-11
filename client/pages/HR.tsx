@@ -2039,7 +2039,7 @@ ${performanceFormData.managerComments || 'Not specified'}
     // Show notification
     setTimeout(() => {
       alert(
-        `�� Payroll Disbursement Approved!\n\n` +
+        `���� Payroll Disbursement Approved!\n\n` +
           `👥 Employees: ${disbursementData.totalEmployees}\n` +
           `💵 Total Amount: KSh ${disbursementData.totalNetAmount?.toLocaleString()}\n` +
           `✅ Approved by: ${disbursementData.approvedBy}\n` +
@@ -4660,7 +4660,26 @@ ${performanceFormData.managerComments || 'Not specified'}
                                 variant="outline"
                                 size="sm"
                                 onClick={() => {
-                                  alert(`📦 Batch Details:\n\n• Batch ID: ${batch.batchId}\n• Period: ${batch.period}\n• Employees: ${batch.totalEmployees}\n• Total Amount: KSh ${batch.totalAmount.toLocaleString()}\n• Submitted: ${new Date(batch.submittedDate).toLocaleString()}\n• Status: ${batch.status}\n\n💡 Finance team will review and approve/reject this batch.`);
+                                  const financialImpact = FinanceApprovalService.calculateFinancialImpact(batch.batchId);
+                                  alert(
+                                    `📦 PRODUCTION BATCH DETAILS\n\n` +
+                                    `🆔 Batch ID: ${batch.batchId}\n` +
+                                    `📅 Period: ${batch.period}\n` +
+                                    `👥 Employees: ${batch.totalEmployees}\n` +
+                                    `💰 Gross Amount: KSh ${batch.totalGrossAmount.toLocaleString()}\n` +
+                                    `💵 Net Amount: KSh ${batch.totalNetAmount.toLocaleString()}\n` +
+                                    `📊 Total Deductions: KSh ${batch.summary.totalDeductions.toLocaleString()}\n\n` +
+                                    `⚡ PRIORITY: ${batch.metadata.priority.toUpperCase()}\n` +
+                                    `📅 Submitted: ${new Date(batch.submittedDate).toLocaleString()}\n` +
+                                    `⏰ Deadline: ${new Date(batch.metadata.approvalDeadline).toLocaleString()}\n` +
+                                    `🏛️ Department: ${batch.metadata.department}\n` +
+                                    `📈 Fiscal Year: ${batch.metadata.fiscalYear} Q${batch.metadata.quarter}\n\n` +
+                                    `📋 STATUS BREAKDOWN:\n` +
+                                    `• Approved: ${financialImpact.approved.count} (KSh ${financialImpact.approved.amount.toLocaleString()})\n` +
+                                    `• Rejected: ${financialImpact.rejected.count} (KSh ${financialImpact.rejected.amount.toLocaleString()})\n` +
+                                    `• Pending: ${financialImpact.pending.count} (KSh ${financialImpact.pending.amount.toLocaleString()})\n\n` +
+                                    `💼 SYSTEM: Production Finance Approval Service`
+                                  );
                                 }}
                                 className="border-blue-300 text-blue-600"
                               >
