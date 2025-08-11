@@ -163,6 +163,7 @@ export default function NewMembers() {
   const [visitors, setVisitors] = useState<Visitor[]>([]);
   const [newMembers, setNewMembers] = useState<NewMember[]>([]);
   const [serviceGroups, setServiceGroups] = useState<ServiceGroup[]>([]);
+  const [homeCells, setHomeCells] = useState<{id: number, name: string}[]>([]);
   const [loading, setLoading] = useState(false);
 
   // Search and filter states
