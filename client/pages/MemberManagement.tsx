@@ -147,6 +147,7 @@ const mockMembers: Member[] = [
     address: "Nairobi, Kenya",
     emergencyContactName: "Mary Kamau",
     emergencyContactPhone: "+254 722 123 456",
+    homeCell: "Israel",
     membershipStatus: "Active",
     yearOfJoining: 2024,
     visitDate: "2024-01-15", // When they first visited
