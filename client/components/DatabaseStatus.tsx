@@ -1,6 +1,6 @@
 /**
  * Database Status Component
- * 
+ *
  * Displays real-time database health, statistics, and provides
  * database management functionality for administrators
  */
@@ -29,7 +29,21 @@ import {
   Shield,
   Zap
 } from 'lucide-react';
-import { databaseIntegrationService, type DatabaseHealth, type TableInfo } from '@/services/DatabaseIntegrationService';
+import databaseIntegrationService from '@/services/DatabaseIntegrationService';
+
+// Define types locally since they're not exported
+interface DatabaseHealth {
+  overall: 'healthy' | 'warning' | 'error';
+  uptime: number;
+  lastCheck: string;
+  issues: string[];
+}
+
+interface TableInfo {
+  name: string;
+  recordCount: number;
+  lastModified: string;
+}
 
 interface DatabaseStatusProps {
   showAdminFeatures?: boolean;
@@ -37,10 +51,10 @@ interface DatabaseStatusProps {
   refreshInterval?: number;
 }
 
-export function DatabaseStatus({ 
-  showAdminFeatures = false, 
-  autoRefresh = true, 
-  refreshInterval = 30000 
+export function DatabaseStatus({
+  showAdminFeatures = false,
+  autoRefresh = true,
+  refreshInterval = 30000
 }: DatabaseStatusProps) {
   const [health, setHealth] = useState<DatabaseHealth | null>(null);
   const [tables, setTables] = useState<TableInfo[]>([]);
@@ -52,7 +66,7 @@ export function DatabaseStatus({
   const loadDatabaseStatus = async () => {
     try {
       setLoading(true);
-      
+
       // Load health, stats, and usage info in parallel
       const [healthData, tablesData, usageData] = await Promise.all([
         databaseIntegrationService.checkHealth(),
@@ -64,7 +78,7 @@ export function DatabaseStatus({
       setTables(tablesData);
       setUsageInfo(usageData);
       setLastRefresh(new Date());
-      
+
     } catch (error) {
       console.error('Failed to load database status:', error);
     } finally {
@@ -75,7 +89,7 @@ export function DatabaseStatus({
   // Auto-refresh effect
   useEffect(() => {
     loadDatabaseStatus();
-    
+
     if (autoRefresh) {
       const interval = setInterval(loadDatabaseStatus, refreshInterval);
       return () => clearInterval(interval);
