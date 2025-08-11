@@ -419,6 +419,7 @@ export default function MemberManagement() {
       address: addMemberForm.address,
       emergencyContactName: addMemberForm.emergencyContactName,
       emergencyContactPhone: addMemberForm.emergencyContactPhone,
+      homeCell: addMemberForm.homeCell,
       membershipStatus: addMemberForm.membershipState as "Active" | "Inactive",
       yearOfJoining: currentYear,
       visitDate: new Date().toISOString().split("T")[0],
