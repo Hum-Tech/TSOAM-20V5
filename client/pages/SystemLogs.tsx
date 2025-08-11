@@ -1002,9 +1002,9 @@ export default function SystemLogs() {
                       <h4 className="font-semibold mb-2">Most Active Users</h4>
                       <div className="space-y-2">
                         {[...new Set(logs.map((log) => log.user))].map(
-                          (user) => (
+                          (user, index) => (
                             <div
-                              key={user}
+                              key={`user-${user}-${index}`}
                               className="flex justify-between text-sm"
                             >
                               <span>{user}</span>
