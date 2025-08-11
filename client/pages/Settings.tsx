@@ -576,6 +576,9 @@ export default function Settings() {
     });
     setShowAddHomeCellDialog(false);
 
+    // Emit event to notify other components
+    window.dispatchEvent(new CustomEvent('homeCellUpdated'));
+
     toast({
       title: "Success",
       description: `Home cell "${newCell.name}" has been created`,
