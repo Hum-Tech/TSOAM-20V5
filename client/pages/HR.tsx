@@ -74,6 +74,7 @@ import { leaveManagementService } from "@/services/LeaveManagementService";
 import type { LeaveRequest as EnterpriseLeaveRequest, LeaveBalance, LeaveType, LeaveAnalytics } from "@/services/LeaveManagementService";
 import HRDatabaseService from "@/services/HRDatabaseService";
 import type { Employee as DatabaseEmployee, PerformanceReview as DatabasePerformanceReview } from "@/services/HRDatabaseService";
+import SystemLogService from "@/services/SystemLogService";
 import jsPDF from "jspdf";
 import * as XLSX from "xlsx";
 
@@ -1749,7 +1750,7 @@ ${performanceFormData.managerComments || 'Not specified'}
       // Show processing errors if any
       if (processingErrors.length > 0) {
         const proceed = confirm(
-          `⚠��� ${processingErrors.length} employee(s) could not be processed:\n\n` +
+          `������ ${processingErrors.length} employee(s) could not be processed:\n\n` +
           processingErrors.slice(0, 5).join('\n') +
           (processingErrors.length > 5 ? `\n... and ${processingErrors.length - 5} more` : '') +
           `\n\nContinue with ${payrollRecords.length} successfully processed employees?`
