@@ -207,6 +207,25 @@ export default function SystemLogs() {
   // Load real system logs and database status
   useEffect(() => {
     loadSystemData();
+
+    // Set up real-time updates every 5 seconds
+    const interval = setInterval(() => {
+      loadSystemData();
+    }, 5000);
+
+    // Listen for localStorage changes for immediate updates
+    const handleStorageChange = (e: StorageEvent) => {
+      if (e.key === 'system_logs') {
+        loadSystemData();
+      }
+    };
+
+    window.addEventListener('storage', handleStorageChange);
+
+    return () => {
+      clearInterval(interval);
+      window.removeEventListener('storage', handleStorageChange);
+    };
   }, []);
 
   const loadSystemData = async () => {
