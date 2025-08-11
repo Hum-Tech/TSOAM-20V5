@@ -4606,7 +4606,7 @@ ${performanceFormData.managerComments || 'Not specified'}
                   return (
                     <div className="space-y-3">
                       {pendingBatches.map((batch: any, index: number) => (
-                        <div key={batch.batchId} className="bg-white p-4 rounded-lg border border-orange-200">
+                        <div key={`pending-batch-${batch.batchId}-${index}`} className="bg-white p-4 rounded-lg border border-orange-200">
                           <div className="flex items-center justify-between">
                             <div className="flex-1">
                               <div className="flex items-center gap-3">
