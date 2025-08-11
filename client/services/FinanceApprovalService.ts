@@ -252,6 +252,15 @@ class FinanceApprovalService {
       priority: 'medium'
     });
 
+    // Log the approval
+    SystemLogService.logFinance(
+      'Batch Approval',
+      `Payroll batch ${batchId} fully approved by ${approvedBy} - ${batch.totalEmployees} employees, KSh ${batch.totalNetAmount.toLocaleString()}`,
+      undefined,
+      approvedBy,
+      { batchId, totalAmount: batch.totalNetAmount, employeeCount: batch.totalEmployees, notes }
+    );
+
     // Notify HR module of approval
     this.notifyHRModule('batch_approved', {
       batchId,
