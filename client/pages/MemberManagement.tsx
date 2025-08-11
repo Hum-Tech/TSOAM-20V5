@@ -1351,15 +1351,25 @@ export default function MemberManagement() {
                               These members haven't been assigned to a home cell yet.
                             </p>
                             <div className="space-y-2">
-                              {unassignedMembers.slice(0, 5).map((member) => (
-                                <div key={member.id} className="flex items-center justify-between text-sm">
-                                  <span>{member.fullName}</span>
-                                  <Badge variant="secondary">{member.memberId}</Badge>
+                              {unassignedMembers.slice(0, 8).map((member) => (
+                                <div key={member.id} className="flex items-center justify-between text-sm p-2 bg-gray-50 rounded">
+                                  <div className="flex-1">
+                                    <span className="font-medium">{member.fullName}</span>
+                                    <Badge variant="secondary" className="ml-2 text-xs">{member.memberId}</Badge>
+                                  </div>
+                                  <Button
+                                    size="sm"
+                                    variant="outline"
+                                    onClick={() => openAssignmentDialog(member)}
+                                    className="text-xs"
+                                  >
+                                    Assign
+                                  </Button>
                                 </div>
                               ))}
-                              {unassignedMembers.length > 5 && (
-                                <div className="text-sm text-muted-foreground">
-                                  ... and {unassignedMembers.length - 5} more
+                              {unassignedMembers.length > 8 && (
+                                <div className="text-sm text-muted-foreground text-center p-2">
+                                  ... and {unassignedMembers.length - 8} more unassigned members
                                 </div>
                               )}
                             </div>
