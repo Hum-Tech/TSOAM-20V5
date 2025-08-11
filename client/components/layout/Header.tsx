@@ -35,6 +35,7 @@ import {
   CheckCheck,
   Eye,
   MessageSquare,
+  Send,
   X,
 } from "lucide-react";
 import { OfflineIndicator } from "@/components/OfflineIndicator";
