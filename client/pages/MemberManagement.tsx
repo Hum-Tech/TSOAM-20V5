@@ -308,6 +308,13 @@ export default function MemberManagement() {
   useEffect(() => {
     loadMembers();
 
+    // Load home cells
+    const availableHomeCells = homeCellService.getActiveHomeCells().map(cell => ({
+      id: cell.id,
+      name: cell.name
+    }));
+    setHomeCells(availableHomeCells);
+
     // Listen for transfer events from New Members module
     const handleTransferEvent = (event) => {
       if (event.detail && event.detail.type === "newMemberTransfer") {
