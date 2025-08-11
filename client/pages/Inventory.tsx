@@ -1759,11 +1759,16 @@ export default function Inventory() {
                                   setSelectedInventoryItem(item);
                                   setShowDeleteDialog(true);
                                 }}
-                                title="Delete Item (Admin/Pastor Only)"
+                                title="Delete Item (Admin/Pastor/HR Only)"
                                 className="text-destructive hover:text-destructive"
                               >
                                 <Trash2 className="h-4 w-4" />
                               </Button>
+                            )}
+                            {!canDeleteItems && (
+                              <span className="text-xs text-muted-foreground px-2">
+                                Delete restricted
+                              </span>
                             )}
                             <Select
                               onValueChange={(value) =>
