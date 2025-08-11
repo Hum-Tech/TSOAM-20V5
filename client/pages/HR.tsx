@@ -157,6 +157,7 @@ interface PayrollRecord {
   id: number;
   employeeId: string;
   employeeName: string;
+  batchId?: string;
   period: string;
   basicSalary: number;
   allowances: number;
@@ -174,6 +175,11 @@ interface PayrollRecord {
   processedDate: string;
   processedBy?: string;
   isDemoData?: boolean;
+  approvedBy?: string;
+  approvedDate?: string;
+  rejectedBy?: string;
+  rejectedDate?: string;
+  rejectionReason?: string;
 }
 
 interface DisbursementReport {
@@ -1742,7 +1748,7 @@ ${performanceFormData.managerComments || 'Not specified'}
       // Show processing errors if any
       if (processingErrors.length > 0) {
         const proceed = confirm(
-          `⚠️ ${processingErrors.length} employee(s) could not be processed:\n\n` +
+          `⚠��� ${processingErrors.length} employee(s) could not be processed:\n\n` +
           processingErrors.slice(0, 5).join('\n') +
           (processingErrors.length > 5 ? `\n... and ${processingErrors.length - 5} more` : '') +
           `\n\nContinue with ${payrollRecords.length} successfully processed employees?`
@@ -2220,7 +2226,7 @@ ${performanceFormData.managerComments || 'Not specified'}
             alert(
               `❌ Payroll Rejected by Finance!\n\n` +
                 `�� Period: ${rejectionData.period}\n` +
-                `���� Amount: KSh ${rejectionData.amount?.toLocaleString()}\n` +
+                `💰 Amount: KSh ${rejectionData.amount?.toLocaleString()}\n` +
                 `👤 Rejected by: ${rejectionData.rejectedBy}\n` +
                 `�� Reason: ${rejectionData.rejectionReason}\n` +
                 `📅 Date: ${new Date(rejectionData.rejectedDate).toLocaleDateString()}\n\n` +
@@ -4760,7 +4766,7 @@ ${performanceFormData.managerComments || 'Not specified'}
                                   const financialImpact = FinanceApprovalService.calculateFinancialImpact(batch.batchId);
                                   alert(
                                     `📦 PRODUCTION BATCH DETAILS\n\n` +
-                                    `��� Batch ID: ${batch.batchId}\n` +
+                                    `🆔 Batch ID: ${batch.batchId}\n` +
                                     `📅 Period: ${batch.period}\n` +
                                     `👥 Employees: ${batch.totalEmployees || 0}\n` +
                                     `💰 Gross Amount: KSh ${(batch.totalGrossAmount || 0).toLocaleString()}\n` +
@@ -4790,7 +4796,7 @@ ${performanceFormData.managerComments || 'Not specified'}
                                   const confirmed = confirm(
                                     `🔔 Send Reminder to Finance?\n\n` +
                                     `This will notify the Finance team about:\n` +
-                                    `����� Batch ID: ${batch.batchId}\n` +
+                                    `��� Batch ID: ${batch.batchId}\n` +
                                     `• Amount: KSh ${(batch.totalNetAmount || batch.totalAmount || 0).toLocaleString()}\n` +
                                     `• Submitted: ${new Date(batch.submittedDate).toLocaleDateString()}\n\n` +
                                     `Continue with reminder?`
