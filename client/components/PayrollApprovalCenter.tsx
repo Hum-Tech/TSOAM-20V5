@@ -175,7 +175,8 @@ export function PayrollApprovalCenter({ className }: PayrollApprovalCenterProps)
         title: "✅ Individual Payments Processed",
         description: `Approved: ${approvedEmployees.length}, Rejected: ${rejectedEmployees.length}`,
       });
-      loadPendingApprovals();
+      // Immediate refresh to show status change
+      setTimeout(() => loadPendingApprovals(), 100);
     } else {
       toast({
         title: "Error Processing Payments",
