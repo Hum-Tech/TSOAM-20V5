@@ -2163,7 +2163,7 @@ ${performanceFormData.managerComments || 'Not specified'}
         case 'disbursement_approved':
           handleDisbursementReport(data);
           // Force refresh to show updated disbursement reports
-          setActiveTab(prev => prev);
+          setRefreshKey(prev => prev + 1);
           break;
 
         case 'disbursement_rejected':
