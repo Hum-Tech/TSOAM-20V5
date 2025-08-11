@@ -7744,7 +7744,7 @@ ${performanceFormData.managerComments || 'Not specified'}
                     .filter((emp) => emp.employmentStatus === "Active")
                     .map((emp) => (
                       <div
-                        key={emp.id}
+                        key={`p9-emp-${emp.id}-${emp.employeeId || emp.employee_id}`}
                         className="flex justify-between items-center py-1 text-sm"
                       >
                         <span>
