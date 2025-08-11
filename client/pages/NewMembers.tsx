@@ -522,11 +522,15 @@ export default function NewMembers() {
     setServiceGroups(mockServiceGroups);
 
     // Load home cells
-    const availableHomeCells = homeCellService.getActiveHomeCells().map(cell => ({
-      id: cell.id,
-      name: cell.name
-    }));
-    setHomeCells(availableHomeCells);
+    const loadHomeCells = () => {
+      const availableHomeCells = homeCellService.getActiveHomeCells().map(cell => ({
+        id: cell.id,
+        name: cell.name
+      }));
+      setHomeCells(availableHomeCells);
+    };
+
+    loadHomeCells();
 
     // Load visitors
     const mockVisitors: Visitor[] = [
@@ -2127,7 +2131,7 @@ export default function NewMembers() {
                             born again
                           </div>
                           <div>
-                            • Visitors with 3+ consecutive Sundays auto-promote
+                            �� Visitors with 3+ consecutive Sundays auto-promote
                             to New Members
                           </div>
                           <div>
