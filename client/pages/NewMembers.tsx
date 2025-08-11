@@ -680,6 +680,7 @@ export default function NewMembers() {
         address: "456 Mombasa Road, Nairobi",
         emergencyContactName: "Paul Smith",
         emergencyContactPhone: "+254756789012",
+        homeCell: "Judah",
         visitDate: "2024-09-01",
         daysAsNewMember: 136,
         baptized: false,
