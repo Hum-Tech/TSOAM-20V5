@@ -195,12 +195,37 @@ const modules = [
 
 export default function SystemLogs() {
   const [searchTerm, setSearchTerm] = useState("");
-  const [logs] = useState(mockLogs);
+  const [logs, setLogs] = useState<SystemLogEntry[]>([]);
   const [filterLevel, setFilterLevel] = useState("All");
   const [filterModule, setFilterModule] = useState("All");
   const [dateRange, setDateRange] = useState("today");
   const [exportFormat, setExportFormat] = useState("csv");
   const [isExporting, setIsExporting] = useState(false);
+  const [dbStatus, setDbStatus] = useState<any>(null);
+  const [activitySummary, setActivitySummary] = useState<any>(null);
+
+  // Load real system logs and database status
+  useEffect(() => {
+    loadSystemData();
+  }, []);
+
+  const loadSystemData = async () => {
+    // Load system logs
+    const systemLogs = SystemLogService.getLogs();
+    setLogs(systemLogs);
+
+    // Get activity summary
+    const summary = SystemLogService.getActivitySummary(24);
+    setActivitySummary(summary);
+
+    // Check database integration status
+    try {
+      const status = await DatabaseIntegrationService.checkSystemIntegration();
+      setDbStatus(status);
+    } catch (error) {
+      console.error('Failed to check database status:', error);
+    }
+  };
 
   const filteredLogs = logs.filter((log) => {
     const matchesSearch =
