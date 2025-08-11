@@ -380,7 +380,7 @@ export default function Login() {
           setShowCreateAccount(false);
 
           alert(
-            `✅ ACCOUNT CREATED SUCCESSFULLY! (Local Mode)\n\n📋 Account Details:\n• Name: ${createAccountForm.fullName}\n• Email: ${createAccountForm.email}\n• Role: ${createAccountForm.role}\n• Employee ID: ${result.credentials.employeeId}\n• Temporary Password: ${result.credentials.tempPassword}\n\n⚠️ ACTIVATION REQUIRED:\n• Your account is pending admin activation\n• Visit the Users module to activate this account\n• You can login after activation with the temporary password\n\n💡 Account will appear in the "Pending Activation" tab in Users module.`,
+            `✅ ACCOUNT CREATED SUCCESSFULLY! (Local Mode)\n\n📋 Account Details:\n• Name: ${createAccountForm.fullName}\n• Email: ${createAccountForm.email}\n• Role: ${createAccountForm.role}\n• Employee ID: ${result.credentials.employeeId}\n• Temporary Password: ${result.credentials.tempPassword}\n\n⚠️ ACTIVATION REQUIRED:\n• Your account is pending admin activation\n• Visit the Users module to activate this account\n��� You can login after activation with the temporary password\n\n💡 Account will appear in the "Pending Activation" tab in Users module.`,
           );
         } else {
           setError(
@@ -643,6 +643,7 @@ export default function Login() {
                 </div>
               </div>
 
+              {/* TODO: Uncomment for OTP implementation
               {requireOTP && (
                 <div className="space-y-2">
                   <Label htmlFor="otp">OTP Code</Label>
