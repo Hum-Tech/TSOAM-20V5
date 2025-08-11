@@ -1433,9 +1433,9 @@ export default function MemberManagement() {
                         <Label className="text-sm font-medium">
                           Employment Status
                         </Label>
-                        <p className="text-sm">
+                        <div className="text-sm">
                           {getEmploymentBadge(selectedMember.employmentStatus)}
-                        </p>
+                        </div>
                       </div>
                       <div>
                         <Label className="text-sm font-medium">
