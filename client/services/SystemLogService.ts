@@ -70,6 +70,11 @@ class SystemLogService {
     // Save to localStorage for persistence
     this.saveLogs();
 
+    // Dispatch custom event for real-time updates
+    window.dispatchEvent(new CustomEvent('systemLogUpdated', {
+      detail: { logEntry, totalLogs: this.logs.length }
+    }));
+
     // Send to server in production
     if (this.isProduction) {
       this.sendToServer(logEntry);
@@ -201,10 +206,10 @@ class SystemLogService {
       byModule[log.module] = (byModule[log.module] || 0) + 1;
     });
 
-    const criticalEvents = recentLogs.filter(log => 
-      log.level === 'security' || 
-      log.level === 'error' || 
-      log.risk_level === 'critical' || 
+    const criticalEvents = recentLogs.filter(log =>
+      log.level === 'security' ||
+      log.level === 'error' ||
+      log.risk_level === 'critical' ||
       log.risk_level === 'high'
     );
 
@@ -221,7 +226,7 @@ class SystemLogService {
    */
   public exportLogs(filter?: LogFilter, format: 'json' | 'csv' = 'json'): string {
     const logs = this.getLogs(filter);
-    
+
     if (format === 'csv') {
       const headers = ['Timestamp', 'Level', 'Module', 'Action', 'User', 'Details', 'IP Address', 'Risk Level'];
       const rows = logs.map(log => [
@@ -234,10 +239,10 @@ class SystemLogService {
         log.ipAddress || '',
         log.risk_level || ''
       ]);
-      
+
       return [headers, ...rows].map(row => row.map(cell => `"${cell}"`).join(',')).join('\n');
     }
-    
+
     return JSON.stringify(logs, null, 2);
   }
 
@@ -249,9 +254,9 @@ class SystemLogService {
     const initialCount = this.logs.length;
     this.logs = this.logs.filter(log => log.timestamp >= cutoff);
     const clearedCount = initialCount - this.logs.length;
-    
+
     this.saveLogs();
-    
+
     this.log({
       level: 'info',
       module: 'System',
@@ -259,7 +264,7 @@ class SystemLogService {
       details: `Cleared ${clearedCount} logs older than ${days} days`,
       risk_level: 'low'
     });
-    
+
     return clearedCount;
   }
 
@@ -310,25 +315,25 @@ class SystemLogService {
       'delete', 'remove', 'terminate', 'reject', 'suspend', 'approve_batch', 'disbursement',
       'salary_change', 'role_change', 'permission_change', 'system_config'
     ];
-    
+
     const criticalActions = [
       'admin_login', 'bulk_delete', 'database_change', 'security_breach', 'unauthorized_access'
     ];
 
     const actionLower = action.toLowerCase();
-    
+
     if (criticalActions.some(critical => actionLower.includes(critical))) {
       return 'critical';
     }
-    
+
     if (highRiskActions.some(high => actionLower.includes(high))) {
       return 'high';
     }
-    
+
     if (module === 'Finance' || module === 'HR') {
       return 'medium';
     }
-    
+
     return 'low';
   }
 
