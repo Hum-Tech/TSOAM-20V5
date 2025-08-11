@@ -2039,7 +2039,7 @@ ${performanceFormData.managerComments || 'Not specified'}
     // Show notification
     setTimeout(() => {
       alert(
-        `���� Payroll Disbursement Approved!\n\n` +
+        `����� Payroll Disbursement Approved!\n\n` +
           `👥 Employees: ${disbursementData.totalEmployees}\n` +
           `💵 Total Amount: KSh ${disbursementData.totalNetAmount?.toLocaleString()}\n` +
           `✅ Approved by: ${disbursementData.approvedBy}\n` +
@@ -3544,7 +3544,7 @@ ${performanceFormData.managerComments || 'Not specified'}
                             <div class="company-name">${payslipData.organization.name}</div>
                             <div class="company-details">
                                 ${payslipData.organization.address}<br>
-                                📧 ${payslipData.organization.email} | 📞 ${payslipData.organization.phone}<br>
+                                ��� ${payslipData.organization.email} | 📞 ${payslipData.organization.phone}<br>
                                 KRA PIN: ${payslipData.organization.kraPin}
                             </div>
                         </div>
@@ -4651,7 +4651,7 @@ ${performanceFormData.managerComments || 'Not specified'}
                                 </span>
                                 <span className="flex items-center gap-1">
                                   <Clock className="h-4 w-4" />
-                                  Deadline: {new Date(batch.metadata.approvalDeadline).toLocaleDateString()}
+                                  Deadline: {new Date(batch.metadata?.approvalDeadline || Date.now() + 48 * 60 * 60 * 1000).toLocaleDateString()}
                                 </span>
                               </div>
                             </div>
