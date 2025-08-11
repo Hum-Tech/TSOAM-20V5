@@ -4611,13 +4611,32 @@ ${performanceFormData.managerComments || 'Not specified'}
                                   <p className="text-sm text-gray-600">
                                     Period: {batch.period} • {batch.totalEmployees} employees
                                   </p>
+                                  <div className="flex items-center gap-2 mt-1">
+                                    <Badge
+                                      variant="outline"
+                                      className={`text-xs ${
+                                        batch.metadata.priority === 'high' ? 'border-red-300 text-red-700' :
+                                        batch.metadata.priority === 'medium' ? 'border-yellow-300 text-yellow-700' :
+                                        'border-blue-300 text-blue-700'
+                                      }`}
+                                    >
+                                      {batch.metadata.priority.toUpperCase()} PRIORITY
+                                    </Badge>
+                                    <Badge variant="outline" className="border-orange-300 text-orange-700">
+                                      <Clock className="h-3 w-3 mr-1" />
+                                      {batch.status.replace('_', ' ')}
+                                    </Badge>
+                                  </div>
                                 </div>
                                 <div className="text-right">
                                   <p className="font-semibold text-lg text-gray-900">
-                                    KSh {batch.totalAmount.toLocaleString()}
+                                    KSh {batch.totalNetAmount.toLocaleString()}
                                   </p>
                                   <p className="text-xs text-gray-500">
-                                    Total Amount
+                                    Net Amount
+                                  </p>
+                                  <p className="text-xs text-gray-400">
+                                    Gross: KSh {batch.totalGrossAmount.toLocaleString()}
                                   </p>
                                 </div>
                               </div>
@@ -4630,10 +4649,10 @@ ${performanceFormData.managerComments || 'Not specified'}
                                   <User className="h-4 w-4" />
                                   By: {batch.submittedBy}
                                 </span>
-                                <Badge variant="outline" className="border-orange-300 text-orange-700">
-                                  <Clock className="h-3 w-3 mr-1" />
-                                  Awaiting Approval
-                                </Badge>
+                                <span className="flex items-center gap-1">
+                                  <Clock className="h-4 w-4" />
+                                  Deadline: {new Date(batch.metadata.approvalDeadline).toLocaleDateString()}
+                                </span>
                               </div>
                             </div>
                             <div className="ml-4 flex gap-2">
