@@ -165,6 +165,7 @@ export function Header() {
 
   // Count unread notifications
   const unreadCount = notifications.filter((n) => n.unread).length;
+  const unreadInternalMessages = notifications.filter((n) => n.unread && n.type === "message").length;
   const unreadMessages = messages.filter((m) => !m.read).length;
 
   // Update clock every second
