@@ -745,16 +745,16 @@ export default function SystemLogs() {
                         </TableCell>
                         <TableCell>
                           <div>
-                            <div className="font-medium">{log.event}</div>
+                            <div className="font-medium">{log.action}</div>
                             <div className="text-sm text-muted-foreground">
-                              {log.description}
+                              {log.details}
                             </div>
                           </div>
                         </TableCell>
                         <TableCell>
                           <div className="flex items-center gap-2">
                             <User className="h-4 w-4" />
-                            {log.user}
+                            {log.userName || log.userId || 'System'}
                           </div>
                         </TableCell>
                         <TableCell>
