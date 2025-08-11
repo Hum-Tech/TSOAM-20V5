@@ -229,9 +229,9 @@ export default function SystemLogs() {
 
   const filteredLogs = logs.filter((log) => {
     const matchesSearch =
-      log.event.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      log.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      log.user.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      log.action.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      log.details.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      (log.userName || log.userId || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
       log.module.toLowerCase().includes(searchTerm.toLowerCase());
 
     const matchesLevel = filterLevel === "All" || log.level === filterLevel;
