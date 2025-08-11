@@ -443,34 +443,7 @@ export default function Settings() {
     return backups.slice(0, 3); // Show 3 most recent backups
   };
 
-  /**
-   * Test settings integration - verify settings are working correctly
-   */
-  const testSettingsIntegration = async () => {
-    setIsSaving(true);
-    try {
-      // Test that all settings are properly integrated
-      const allSettings = settingsService.getAllSettings();
 
-      // Simulate testing various integrations
-      await new Promise(resolve => setTimeout(resolve, 1000));
-
-      toast({
-        title: "Success",
-        description: `Settings integration test completed successfully! Church: ${allSettings.church.name}, Timezone: ${allSettings.system.timezone}`,
-        duration: 5000,
-      });
-    } catch (error) {
-      toast({
-        title: "Error",
-        description: error instanceof Error ? error.message : "Settings test failed",
-        variant: "destructive",
-        duration: 3000,
-      });
-    } finally {
-      setIsSaving(false);
-    }
-  };
 
   /**
    * Test settings integration - generate a sample report to show settings work
