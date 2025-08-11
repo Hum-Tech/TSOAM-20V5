@@ -286,6 +286,18 @@ export default function MemberManagement() {
   const [newHomeCellForTransfer, setNewHomeCellForTransfer] = useState("");
   const [showHomeCellDetailsDialog, setShowHomeCellDetailsDialog] = useState(false);
   const [selectedHomeCellForDetails, setSelectedHomeCellForDetails] = useState<any>(null);
+  const [isEditingHomeCell, setIsEditingHomeCell] = useState(false);
+  const [editHomeCellForm, setEditHomeCellForm] = useState({
+    leader: "",
+    leaderPhone: "",
+    meetingDay: "",
+    meetingTime: "",
+    location: "",
+    description: "",
+  });
+  const [showAssignHomeCellDialog, setShowAssignHomeCellDialog] = useState(false);
+  const [memberToAssign, setMemberToAssign] = useState<Member | null>(null);
+  const [selectedHomeCellForAssignment, setSelectedHomeCellForAssignment] = useState("");
   const [showAddMemberDialog, setShowAddMemberDialog] = useState(false);
   const [isTransferMode, setIsTransferMode] = useState(false);
   const [showTitheRecords, setShowTitheRecords] = useState(false);
