@@ -1825,19 +1825,14 @@ ${performanceFormData.managerComments || 'Not specified'}
 
       setShowProcessPayrollDialog(false);
 
-      // Log demo processing for debugging
-      console.log("Demo payroll processing completed:", {
+      // Log processing for debugging
+      console.log("Payroll processing completed:", {
         employeeCount: activeEmployees.length,
         period: currentMonth,
-        totalGross: demoPayrollRecords.reduce(
-          (sum, record) => sum + record.grossSalary,
-          0,
-        ),
-        totalNet: demoPayrollRecords.reduce(
-          (sum, record) => sum + record.netSalary,
-          0,
-        ),
-        records: demoPayrollRecords,
+        totalGross: totalGrossPayroll,
+        totalNet: totalNetPayroll,
+        batchId: batchId,
+        recordsCount: payrollRecords.length,
       });
 
       // Optional: Try to log the activity (non-blocking)
