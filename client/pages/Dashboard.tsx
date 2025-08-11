@@ -1492,7 +1492,7 @@ export default function Dashboard() {
       </div>
 
       {/* Performance Metrics */}
-      {user?.role === "Admin" && (
+      {user?.role === "admin" && (
         <Card>
           <CardHeader>
             <CardTitle>System Performance Metrics</CardTitle>
