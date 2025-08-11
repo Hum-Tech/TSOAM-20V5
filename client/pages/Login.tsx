@@ -56,7 +56,7 @@ export default function Login() {
   // Login form states
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [otp, setOtp] = useState("");
+  // const [otp, setOtp] = useState(""); // TODO: Uncomment for OTP implementation
   const [rememberMe, setRememberMe] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState("");
@@ -171,20 +171,22 @@ export default function Login() {
       return;
     }
 
-    if (requireOTP && !otp) {
-      setError("Please enter the OTP sent to your email");
-      setAttemptingLogin(false);
-      return;
-    }
+    // TODO: Uncomment for OTP implementation
+    // if (requireOTP && !otp) {
+    //   setError("Please enter the OTP sent to your email");
+    //   setAttemptingLogin(false);
+    //   return;
+    // }
 
-    const success = await login(email, password, otp, rememberMe);
+    const success = await login(email, password, "", rememberMe); // Pass empty string for OTP
 
     if (!success) {
-      if (requireOTP && !otp) {
-        setError("OTP has been sent to your email. Please enter it below.");
-      } else if (requireOTP && otp) {
-        setError("Invalid OTP. Please check and try again.");
-      } else {
+      // TODO: Uncomment for OTP implementation
+      // if (requireOTP && !otp) {
+      //   setError("OTP has been sent to your email. Please enter it below.");
+      // } else if (requireOTP && otp) {
+      //   setError("Invalid OTP. Please check and try again.");
+      // } else {
         setError("Invalid email or password");
       }
     }
