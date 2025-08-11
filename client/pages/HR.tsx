@@ -4228,7 +4228,7 @@ ${performanceFormData.managerComments || 'Not specified'}
                         <p className="text-sm font-medium text-muted-foreground">Pending Approvals</p>
                         <p className="text-2xl font-bold text-green-600">{leaveAnalytics.pendingRequests}</p>
                         <p className="text-xs text-blue-600">
-                          ����� Avg: {leaveAnalytics.averageProcessingTime}h processing
+                          ������� Avg: {leaveAnalytics.averageProcessingTime}h processing
                         </p>
                       </div>
                       <Clock className="h-8 w-8 text-green-500" />
@@ -4587,7 +4587,17 @@ ${performanceFormData.managerComments || 'Not specified'}
                 {(() => {
                   let pendingBatches = [];
                   try {
-                    pendingBatches = FinanceApprovalService.getPendingApprovals() || [];
+                    const allPendingBatches = FinanceApprovalService.getPendingApprovals() || [];
+                    // Deduplicate batches by batchId to prevent duplicate React keys
+                    const uniqueBatchIds = new Set();
+                    pendingBatches = allPendingBatches.filter(batch => {
+                      if (uniqueBatchIds.has(batch.batchId)) {
+                        console.warn(`Duplicate batch ID found: ${batch.batchId}`);
+                        return false;
+                      }
+                      uniqueBatchIds.add(batch.batchId);
+                      return true;
+                    });
                   } catch (error) {
                     console.error('Error loading pending approvals:', error);
                     pendingBatches = [];
@@ -4699,7 +4709,7 @@ ${performanceFormData.managerComments || 'Not specified'}
                                   const confirmed = confirm(
                                     `🔔 Send Reminder to Finance?\n\n` +
                                     `This will notify the Finance team about:\n` +
-                                    `• Batch ID: ${batch.batchId}\n` +
+                                    `��� Batch ID: ${batch.batchId}\n` +
                                     `• Amount: KSh ${batch.totalAmount.toLocaleString()}\n` +
                                     `• Submitted: ${new Date(batch.submittedDate).toLocaleDateString()}\n\n` +
                                     `Continue with reminder?`
