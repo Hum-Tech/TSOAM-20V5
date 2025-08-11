@@ -42,6 +42,7 @@ import {
   CheckCircle,
   AlertCircle,
   Filter,
+  Bell,
   MessageCircle,
   Phone,
   UserCheck,

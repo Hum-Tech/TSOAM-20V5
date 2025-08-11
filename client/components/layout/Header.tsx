@@ -207,12 +207,12 @@ export function Header() {
       // Convert to header notification format
       const headerNotifications = userNotifications.slice(0, 10).map((notif: any) => ({
         id: notif.id || Date.now(),
-        type: notif.type === "internal" ? "message" : "system",
+        type: (notif.type === "internal" ? "message" : "system") as "message" | "system" | "welfare" | "maintenance",
         title: notif.title || "New Notification",
         message: notif.message || "You have a new notification",
         time: notif.timestamp ? formatTime(notif.timestamp) : "Recently",
         unread: !notif.read,
-        priority: "medium" as const,
+        priority: "medium" as "high" | "medium" | "low",
       }));
 
       setNotifications(headerNotifications);
