@@ -1,16 +1,16 @@
 {
-  "name": "tsoam-church-management-system",
-  "version": "2.0.0",
-  "description": "Complete Church Management System for The Seed of Abraham Ministry (TSOAM)",
-  "main": "server/server.js",
+  "name": "tsoam-church-management",
+  "version": "1.0.0",
+  "description": "TSOAM Church Management System - Production Ready",
+  "main": "server/index.js",
   "scripts": {
     "setup": "node setup-system.js",
     "cleanup": "node cleanup-system.js",
     "install-all": "npm install && cd client && npm install && cd ../server && npm install",
-    "build": "node scripts/build-system.js",
+    "build": "npm run client:build && npm run server:build",
     "build:client": "cd client && npm install && npm run build-only",
     "build-production": "node scripts/build-optimize.js",
-    "start": "cd server && npm start",
+    "start": "node server/index.js",
     "dev": "concurrently \"cd client && npm run dev\" \"cd server && npm run dev\"",
     "dev-server": "cd server && npm run dev",
     "dev-client": "cd client && npm run dev",
@@ -47,7 +47,14 @@
     "package-production": "npm run organize-production && tar -czf tsoam-production-package.tar.gz .",
     "deploy": "node deploy-production.js",
     "verify": "node verify-system.js",
-    "postinstall": "cd client && npm install && cd ../server && npm install"
+    "postinstall": "cd client && npm install && cd ../server && npm install",
+    "client:build": "cd client && npm run build",
+    "server:build": "cd server && npm run build",
+    "db:init": "node database/init.sql",
+    "db:migrate": "node scripts/sync-database.js",
+    "demo:disable": "node scripts/manage-demo-data.js disable",
+    "demo:enable": "node scripts/manage-demo-data.js enable",
+    "production:setup": "node cleanup-for-production.js"
   },
   "keywords": [
     "church",
@@ -67,7 +74,7 @@
     "url": "https://github.com/tsoam/church-management-system.git"
   },
   "engines": {
-    "node": ">=16.0.0",
+    "node": ">=18.0.0",
     "npm": ">=8.0.0"
   },
   "devDependencies": {
