@@ -2095,6 +2095,14 @@ ${performanceFormData.managerComments || 'Not specified'}
             )
           );
           break;
+
+        case 'disbursement_approved':
+          handleDisbursementReport(data);
+          break;
+
+        case 'disbursement_rejected':
+          handleRejectedDisbursementReport(data);
+          break;
       }
     };
 
