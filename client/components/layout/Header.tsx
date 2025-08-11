@@ -227,14 +227,14 @@ export function Header() {
       // Add new notification to the list
       const newNotification = {
         id: Date.now(),
-        type: "message",
+        type: "message" as "message" | "system" | "welfare" | "maintenance",
         title: `New ${type} Message`,
         message: type === "Internal"
           ? `You have a new internal message from ${sender}`
           : `You have a new ${type.toLowerCase()} message from ${sender}`,
         time: "Just now",
         unread: true,
-        priority: type === "Internal" ? "high" : "medium" as const,
+        priority: (type === "Internal" ? "high" : "medium") as "high" | "medium" | "low",
       };
 
       setNotifications(prev => [newNotification, ...prev]);
