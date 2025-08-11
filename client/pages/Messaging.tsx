@@ -1009,6 +1009,18 @@ export default function Messaging() {
                                       ? contact.phone
                                       : contact.email}{" "}
                                     • {contact.type}
+                                    {contact.type === "Employee" && (
+                                      <span className="ml-2 inline-flex items-center gap-1 text-blue-600">
+                                        <Bell className="h-3 w-3" />
+                                        <span className="text-xs">In-app notification</span>
+                                      </span>
+                                    )}
+                                    {contact.type === "Member" && (
+                                      <span className="ml-2 inline-flex items-center gap-1 text-green-600">
+                                        {messageType === "SMS" ? <MessageSquare className="h-3 w-3" /> : <Mail className="h-3 w-3" />}
+                                        <span className="text-xs">Via {messageType}</span>
+                                      </span>
+                                    )}
                                   </div>
                                 </div>
                               </div>
