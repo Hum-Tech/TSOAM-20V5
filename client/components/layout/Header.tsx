@@ -929,6 +929,71 @@ export function Header() {
             </div>
           </DialogContent>
         </Dialog>
+
+        {/* Reply Dialog */}
+        <Dialog open={showReplyDialog} onOpenChange={setShowReplyDialog}>
+          <DialogContent className="sm:max-w-[500px]">
+            <DialogHeader>
+              <DialogTitle className="flex items-center gap-2">
+                <MessageSquare className="h-5 w-5" />
+                Reply to {replyingToNotification?.sender}
+              </DialogTitle>
+            </DialogHeader>
+
+            {replyingToNotification && (
+              <div className="space-y-4">
+                <div className="bg-muted p-3 rounded-lg">
+                  <p className="text-sm font-medium">Original Message:</p>
+                  <p className="text-sm text-muted-foreground mt-1">
+                    {replyingToNotification.subject && (
+                      <span className="font-medium">{replyingToNotification.subject}<br /></span>
+                    )}
+                    {replyingToNotification.fullMessage || replyingToNotification.message}
+                  </p>
+                  <p className="text-xs text-muted-foreground mt-2">
+                    From: {replyingToNotification.sender} • {replyingToNotification.time}
+                  </p>
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="reply-content">Your Reply:</Label>
+                  <Textarea
+                    id="reply-content"
+                    value={replyContent}
+                    onChange={(e) => setReplyContent(e.target.value)}
+                    placeholder="Type your reply here..."
+                    rows={4}
+                    className="resize-none"
+                    maxLength={500}
+                  />
+                  <p className="text-xs text-muted-foreground">
+                    {replyContent.length}/500 characters
+                  </p>
+                </div>
+
+                <div className="flex gap-2 justify-end">
+                  <Button
+                    variant="outline"
+                    onClick={() => {
+                      setShowReplyDialog(false);
+                      setReplyingToNotification(null);
+                      setReplyContent("");
+                    }}
+                  >
+                    Cancel
+                  </Button>
+                  <Button
+                    onClick={handleSendReply}
+                    disabled={!replyContent.trim() || replyContent.length > 500}
+                  >
+                    <Send className="w-4 h-4 mr-2" />
+                    Send Reply
+                  </Button>
+                </div>
+              </div>
+            )}
+          </DialogContent>
+        </Dialog>
       )}
     </header>
   );
