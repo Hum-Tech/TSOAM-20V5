@@ -2062,7 +2062,7 @@ ${performanceFormData.managerComments || 'Not specified'}
                 : record
             )
           );
-          alert(`✅ Payroll Batch Approved!\n\nBatch: ${data.batchId}\nApproved by: ${data.approvedBy}\nTotal: KSh ${data.totalAmount.toLocaleString()}\n\nAll payments are now ready for disbursement.`);
+          alert(`✅ Payroll Batch Approved!\n\nBatch: ${data.batchId}\nApproved by: ${data.approvedBy}\nTotal: KSh ${(data.totalAmount || 0).toLocaleString()}\n\nAll payments are now ready for disbursement.`);
           break;
 
         case 'batch_rejected':
@@ -5673,7 +5673,7 @@ ${performanceFormData.managerComments || 'Not specified'}
                                 size="sm"
                                 className="h-8 w-8 p-0 border-red-200"
                                 onClick={() => {
-                                  alert('⚠��� Performance review is 7 days overdue. Manager has been notified.');
+                                  alert('⚠️ Performance review is 7 days overdue. Manager has been notified.');
                                   console.log('Overdue alert triggered for Mike Johnson');
                                 }}
                                 title="Review Overdue Alert"
