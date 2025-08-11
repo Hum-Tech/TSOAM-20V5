@@ -1870,7 +1870,7 @@ ${performanceFormData.managerComments || 'Not specified'}
         }, 1000);
 
       } catch (error) {
-        console.error("❌ Error sending payroll to Finance:", error);
+        console.error("��� Error sending payroll to Finance:", error);
         alert(`❌ Failed to send payroll to Finance!\n\nError: ${error instanceof Error ? error.message : 'Unknown error'}\n\nPlease try again or contact system administrator.`);
       }
 
@@ -4444,6 +4444,131 @@ ${performanceFormData.managerComments || 'Not specified'}
                 </Button>
               </div>
             </div>
+
+            {/* Pending Finance Approval Section */}
+            <Card className="border-orange-200 bg-orange-50">
+              <CardHeader className="pb-3">
+                <CardTitle className="flex items-center gap-2 text-orange-800">
+                  <Clock className="h-5 w-5" />
+                  Pending Finance Approval
+                </CardTitle>
+                <p className="text-sm text-orange-700">
+                  Payroll batches awaiting approval from Finance Department
+                </p>
+              </CardHeader>
+              <CardContent>
+                {(() => {
+                  const pendingBatches = JSON.parse(localStorage.getItem("hr_pending_batches") || "[]")
+                    .filter((batch: any) => batch.status === "Pending_Finance_Approval");
+
+                  if (pendingBatches.length === 0) {
+                    return (
+                      <div className="text-center py-6 text-orange-600">
+                        <CheckCircle className="h-12 w-12 mx-auto mb-3 opacity-50" />
+                        <p className="font-medium">No Pending Approvals</p>
+                        <p className="text-sm">All payroll batches have been processed by Finance</p>
+                      </div>
+                    );
+                  }
+
+                  return (
+                    <div className="space-y-3">
+                      {pendingBatches.map((batch: any, index: number) => (
+                        <div key={batch.batchId} className="bg-white p-4 rounded-lg border border-orange-200">
+                          <div className="flex items-center justify-between">
+                            <div className="flex-1">
+                              <div className="flex items-center gap-3">
+                                <div className="flex-1">
+                                  <h4 className="font-semibold text-gray-900">
+                                    Batch ID: {batch.batchId}
+                                  </h4>
+                                  <p className="text-sm text-gray-600">
+                                    Period: {batch.period} • {batch.totalEmployees} employees
+                                  </p>
+                                </div>
+                                <div className="text-right">
+                                  <p className="font-semibold text-lg text-gray-900">
+                                    KSh {batch.totalAmount.toLocaleString()}
+                                  </p>
+                                  <p className="text-xs text-gray-500">
+                                    Total Amount
+                                  </p>
+                                </div>
+                              </div>
+                              <div className="mt-3 flex items-center gap-4 text-sm text-gray-600">
+                                <span className="flex items-center gap-1">
+                                  <Calendar className="h-4 w-4" />
+                                  Submitted: {new Date(batch.submittedDate).toLocaleDateString()}
+                                </span>
+                                <span className="flex items-center gap-1">
+                                  <User className="h-4 w-4" />
+                                  By: {batch.submittedBy}
+                                </span>
+                                <Badge variant="outline" className="border-orange-300 text-orange-700">
+                                  <Clock className="h-3 w-3 mr-1" />
+                                  Awaiting Approval
+                                </Badge>
+                              </div>
+                            </div>
+                            <div className="ml-4 flex gap-2">
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                onClick={() => {
+                                  alert(`📦 Batch Details:\n\n• Batch ID: ${batch.batchId}\n• Period: ${batch.period}\n• Employees: ${batch.totalEmployees}\n• Total Amount: KSh ${batch.totalAmount.toLocaleString()}\n• Submitted: ${new Date(batch.submittedDate).toLocaleString()}\n• Status: ${batch.status}\n\n💡 Finance team will review and approve/reject this batch.`);
+                                }}
+                                className="border-blue-300 text-blue-600"
+                              >
+                                <Eye className="h-4 w-4 mr-1" />
+                                View Details
+                              </Button>
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                onClick={() => {
+                                  const confirmed = confirm(
+                                    `🔔 Send Reminder to Finance?\n\n` +
+                                    `This will notify the Finance team about:\n` +
+                                    `• Batch ID: ${batch.batchId}\n` +
+                                    `• Amount: KSh ${batch.totalAmount.toLocaleString()}\n` +
+                                    `• Submitted: ${new Date(batch.submittedDate).toLocaleDateString()}\n\n` +
+                                    `Continue with reminder?`
+                                  );
+
+                                  if (confirmed) {
+                                    // Create reminder notification
+                                    const reminderNotification = {
+                                      id: `reminder-${batch.batchId}-${Date.now()}`,
+                                      type: 'payroll_reminder',
+                                      title: 'Payroll Approval Reminder',
+                                      message: `Reminder: Payroll batch ${batch.batchId} still pending approval (submitted ${new Date(batch.submittedDate).toLocaleDateString()})`,
+                                      batchId: batch.batchId,
+                                      priority: 'medium',
+                                      createdAt: new Date().toISOString(),
+                                      isReminder: true
+                                    };
+
+                                    const notifications = JSON.parse(localStorage.getItem("finance_notifications") || "[]");
+                                    notifications.unshift(reminderNotification);
+                                    localStorage.setItem("finance_notifications", JSON.stringify(notifications));
+
+                                    alert("✅ Reminder sent to Finance team!");
+                                  }
+                                }}
+                                className="border-yellow-300 text-yellow-600"
+                              >
+                                <Bell className="h-4 w-4 mr-1" />
+                                Send Reminder
+                              </Button>
+                            </div>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  );
+                })()}
+              </CardContent>
+            </Card>
 
             <Card>
               <CardHeader>
