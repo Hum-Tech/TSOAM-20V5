@@ -8151,7 +8151,7 @@ ${performanceFormData.managerComments || 'Not specified'}
                         </p>
                         <p className="text-lg font-semibold">
                           KSh{" "}
-                          {selectedDisbursementReport.totalGrossAmount.toLocaleString()}
+                          {(selectedDisbursementReport.totalGrossAmount || 0).toLocaleString()}
                         </p>
                       </div>
                       <div>
@@ -8160,7 +8160,7 @@ ${performanceFormData.managerComments || 'Not specified'}
                         </p>
                         <p className="text-lg font-semibold text-red-600">
                           KSh{" "}
-                          {selectedDisbursementReport.totalDeductions.toLocaleString()}
+                          {(selectedDisbursementReport.totalDeductions || 0).toLocaleString()}
                         </p>
                       </div>
                       <div>
@@ -8169,7 +8169,7 @@ ${performanceFormData.managerComments || 'Not specified'}
                         </p>
                         <p className="text-lg font-semibold text-green-600">
                           KSh{" "}
-                          {selectedDisbursementReport.totalNetAmount.toLocaleString()}
+                          {(selectedDisbursementReport.totalNetAmount || 0).toLocaleString()}
                         </p>
                       </div>
                     </div>
