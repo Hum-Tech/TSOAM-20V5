@@ -647,6 +647,14 @@ export function Header() {
                                       New
                                     </Badge>
                                   )}
+                                  {notification.messageType === "Reply" && (
+                                    <Badge
+                                      variant="outline"
+                                      className="text-xs text-blue-600 border-blue-200"
+                                    >
+                                      Reply
+                                    </Badge>
+                                  )}
                                 </div>
                                 {notification.sender && notification.type === "message" && (
                                   <p className="text-xs text-blue-600 font-medium mt-1">
