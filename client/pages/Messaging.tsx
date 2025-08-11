@@ -536,6 +536,30 @@ export default function Messaging() {
         const existingGeneralNotifications = JSON.parse(localStorage.getItem('notifications') || '[]');
         existingGeneralNotifications.unshift(notification);
         localStorage.setItem('notifications', JSON.stringify(existingGeneralNotifications));
+
+        // Create a sent message record for sender's history
+        const sentMessageRecord = {
+          id: `sent-${Date.now()}-${contact.id}-${Math.random().toString(36).substr(2, 9)}`,
+          type: "Internal Message",
+          recipient: contact.name,
+          recipientType: "Employee",
+          recipientId: contact.id,
+          subject: messageType === "Email" ? subject : undefined,
+          message: messageContent,
+          status: "Sent",
+          sentDate: new Date().toISOString().replace("T", " ").substring(0, 16),
+          sentBy: user?.name || "Admin",
+          recipientCount: 1,
+          deliveryRate: 100,
+          deliveryMethod: "In-App Notification",
+          originalNotificationId: notification.id
+        };
+
+        // Store in sender's sent messages
+        const senderKey = `sent_messages_${user?.id}`;
+        const senderMessages = JSON.parse(localStorage.getItem(senderKey) || '[]');
+        senderMessages.unshift(sentMessageRecord);
+        localStorage.setItem(senderKey, JSON.stringify(senderMessages));
       });
 
       // Dispatch event to update notification bell in header for employees
@@ -591,7 +615,7 @@ export default function Messaging() {
 
       // For employees, in-app notifications are always successful if created
       if (employeeCount > 0) {
-        successMessage += `• ${employeeCount} staff member(s) notified in-app ✓\n`;
+        successMessage += `• ${employeeCount} staff member(s) notified in-app ��\n`;
       }
 
       // For members, attempt API call for SMS/Email
