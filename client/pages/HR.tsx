@@ -2174,7 +2174,7 @@ ${performanceFormData.managerComments || 'Not specified'}
       if (pendingRejection) {
         try {
           const rejectionData = JSON.parse(pendingRejection);
-          console.log("❌ Processing pending rejection:", rejectionData);
+          console.log("�� Processing pending rejection:", rejectionData);
 
           setTimeout(() => {
             alert(
@@ -4585,7 +4585,13 @@ ${performanceFormData.managerComments || 'Not specified'}
               </CardHeader>
               <CardContent>
                 {(() => {
-                  const pendingBatches = FinanceApprovalService.getPendingApprovals();
+                  let pendingBatches = [];
+                  try {
+                    pendingBatches = FinanceApprovalService.getPendingApprovals() || [];
+                  } catch (error) {
+                    console.error('Error loading pending approvals:', error);
+                    pendingBatches = [];
+                  }
 
                   if (pendingBatches.length === 0) {
                     return (
