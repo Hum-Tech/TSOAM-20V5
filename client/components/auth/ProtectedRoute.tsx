@@ -12,38 +12,49 @@ interface ProtectedRouteProps {
 
 // Define available pages by role
 const rolePages = {
-  User: [
+  user: [
     "/",
-    "/welfare",
-    "/events",
-    "/messaging",
-    "/new-members",
     "/members",
+    "/new-members",
+    "/events",
+    "/inventory",
+    "/welfare",
     "/settings",
   ],
-  "HR Officer": [
+  hr: [
+    "/",
+    "/hr",
+    "/events",
+    "/messaging",
+    "/appointments",
+    "/welfare",
+    "/inventory",
+    "/settings",
+  ],
+  finance: [
+    "/",
+    "/finance",
+    "/inventory",
+    "/events",
+    "/appointments",
+    "/settings",
+  ],
+  pastor: [
     "/",
     "/members",
     "/new-members",
     "/hr",
-    "/messaging",
-    "/welfare",
-    "/appointments",
-    "/events",
-    "/settings",
-    "/system-logs",
-  ],
-  "Finance Officer": [
-    "/",
     "/finance",
-    "/welfare",
     "/messaging",
+    "/welfare",
     "/appointments",
     "/events",
     "/settings",
     "/system-logs",
+    "/users",
+    "/inventory",
   ],
-  Admin: [
+  admin: [
     "/",
     "/members",
     "/new-members",
