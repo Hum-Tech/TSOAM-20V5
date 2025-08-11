@@ -5,6 +5,7 @@ interface CountdownProps {
   eventDate: string;
   eventTime: string;
   eventTitle: string;
+  eventEndTime?: string;
   className?: string;
 }
 
@@ -19,6 +20,7 @@ export function EventCountdown({
   eventDate,
   eventTime,
   eventTitle,
+  eventEndTime,
   className = "",
 }: CountdownProps) {
   const [timeLeft, setTimeLeft] = useState<TimeLeft>({
@@ -27,29 +29,40 @@ export function EventCountdown({
     minutes: 0,
     seconds: 0,
   });
-  const [isExpired, setIsExpired] = useState(false);
+  const [eventStatus, setEventStatus] = useState<'upcoming' | 'in-progress' | 'past'>('upcoming');
 
   useEffect(() => {
     const calculateTimeLeft = () => {
-      const eventDateTime = new Date(`${eventDate}T${eventTime}`);
+      const eventStartDateTime = new Date(`${eventDate}T${eventTime}`);
+      const eventEndDateTime = eventEndTime
+        ? new Date(`${eventDate}T${eventEndTime}`)
+        : new Date(eventStartDateTime.getTime() + 2 * 60 * 60 * 1000); // Default 2 hours if no end time
       const now = new Date();
-      const difference = eventDateTime.getTime() - now.getTime();
 
-      if (difference > 0) {
-        const days = Math.floor(difference / (1000 * 60 * 60 * 24));
+      const timeToStart = eventStartDateTime.getTime() - now.getTime();
+      const timeToEnd = eventEndDateTime.getTime() - now.getTime();
+
+      // Determine event status
+      if (timeToStart > 0) {
+        // Event hasn't started yet
+        setEventStatus('upcoming');
+        const days = Math.floor(timeToStart / (1000 * 60 * 60 * 24));
         const hours = Math.floor(
-          (difference % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60),
+          (timeToStart % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60),
         );
         const minutes = Math.floor(
-          (difference % (1000 * 60 * 60)) / (1000 * 60),
+          (timeToStart % (1000 * 60 * 60)) / (1000 * 60),
         );
-        const seconds = Math.floor((difference % (1000 * 60)) / 1000);
-
+        const seconds = Math.floor((timeToStart % (1000 * 60)) / 1000);
         setTimeLeft({ days, hours, minutes, seconds });
-        setIsExpired(false);
-      } else {
+      } else if (timeToEnd > 0) {
+        // Event is currently in progress
+        setEventStatus('in-progress');
         setTimeLeft({ days: 0, hours: 0, minutes: 0, seconds: 0 });
-        setIsExpired(true);
+      } else {
+        // Event has ended
+        setEventStatus('past');
+        setTimeLeft({ days: 0, hours: 0, minutes: 0, seconds: 0 });
       }
     };
 
@@ -60,24 +73,18 @@ export function EventCountdown({
     const timer = setInterval(calculateTimeLeft, 1000);
 
     return () => clearInterval(timer);
-  }, [eventDate, eventTime]);
+  }, [eventDate, eventTime, eventEndTime]);
 
-  if (isExpired) {
+  if (eventStatus === 'past') {
     return (
       <div className={`flex items-center gap-2 text-red-600 ${className}`}>
         <Clock className="h-4 w-4" />
-        <span className="text-sm font-medium">Event has passed</span>
+        <span className="text-sm font-medium">Event has ended</span>
       </div>
     );
   }
 
-  const hasStarted =
-    timeLeft.days === 0 &&
-    timeLeft.hours === 0 &&
-    timeLeft.minutes === 0 &&
-    timeLeft.seconds === 0;
-
-  if (hasStarted) {
+  if (eventStatus === 'in-progress') {
     return (
       <div className={`flex items-center gap-2 text-green-600 ${className}`}>
         <Clock className="h-4 w-4 animate-pulse" />
