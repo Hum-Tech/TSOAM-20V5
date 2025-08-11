@@ -1635,7 +1635,7 @@ ${performanceFormData.managerComments || 'Not specified'}
 
           // Calculate allowances with validation
           const allowancesObj = getEmployeeProp(employee, 'allowances') || {};
-          let totalAllowances = 0;
+          let totalAllowances: number = 0;
 
           if (typeof allowancesObj === 'object' && allowancesObj !== null) {
             totalAllowances = Object.values(allowancesObj).reduce(
