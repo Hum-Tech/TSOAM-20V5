@@ -1377,7 +1377,15 @@ export default function Settings() {
                     <Label htmlFor="notificationFrequency">
                       Notification Frequency
                     </Label>
-                    <Select defaultValue="immediate">
+                    <Select
+                      value={notificationSettings.frequency}
+                      onValueChange={(value) =>
+                        setNotificationSettings({
+                          ...notificationSettings,
+                          frequency: value as any,
+                        })
+                      }
+                    >
                       <SelectTrigger>
                         <SelectValue />
                       </SelectTrigger>
