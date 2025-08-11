@@ -500,6 +500,26 @@ export default function HR() {
     useState(false);
   const [selectedDisbursementReport, setSelectedDisbursementReport] =
     useState<DisbursementReport | null>(null);
+  const [showEditEmployeeDialog, setShowEditEmployeeDialog] = useState(false);
+  const [editEmployeeForm, setEditEmployeeForm] = useState({
+    fullName: "",
+    email: "",
+    phone: "",
+    address: "",
+    dateOfBirth: "",
+    gender: "",
+    maritalStatus: "",
+    department: "",
+    position: "",
+    employmentType: "",
+    hireDate: "",
+    basicSalary: "",
+    bankAccount: "",
+    taxNumber: "",
+    socialSecurityNumber: "",
+    emergencyContactName: "",
+    emergencyContactPhone: "",
+  });
 
   const [selectedEmployee, setSelectedEmployee] = useState<Employee | null>(
     null,
@@ -1388,7 +1408,7 @@ ${performanceFormData.managerComments || 'Not specified'}
       doc.text('Performance Areas:', 20, 185);
       doc.text('• Job Knowledge: Excellent', 30, 195);
       doc.text('• Quality of Work: Very Good', 30, 205);
-      doc.text('• Communication: Good', 30, 215);
+      doc.text('�� Communication: Good', 30, 215);
       doc.text('• Teamwork: Excellent', 30, 225);
       doc.text('��� Initiative: Very Good', 30, 235);
 
