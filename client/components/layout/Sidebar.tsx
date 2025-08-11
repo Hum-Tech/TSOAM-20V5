@@ -2,6 +2,7 @@ import { Link, useLocation } from "react-router-dom";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
+import RoleBasedAccessService from "@/services/RoleBasedAccessService";
 import {
   BarChart3,
   Users,
