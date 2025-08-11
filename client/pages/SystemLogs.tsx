@@ -542,8 +542,8 @@ export default function SystemLogs() {
     return <Badge variant={variants[level] as any}>{level}</Badge>;
   };
 
-  const securityLogs = logs.filter((log) => log.level === "Security");
-  const errorLogs = logs.filter((log) => log.level === "Error");
+  const securityLogs = logs.filter((log) => log.level === "security");
+  const errorLogs = logs.filter((log) => log.level === "error");
   const todayLogs = logs.filter((log) =>
     log.timestamp.startsWith(new Date().toISOString().split("T")[0]),
   );
