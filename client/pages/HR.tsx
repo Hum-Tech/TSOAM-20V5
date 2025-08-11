@@ -4615,12 +4615,12 @@ ${performanceFormData.managerComments || 'Not specified'}
                                     <Badge
                                       variant="outline"
                                       className={`text-xs ${
-                                        batch.metadata.priority === 'high' ? 'border-red-300 text-red-700' :
-                                        batch.metadata.priority === 'medium' ? 'border-yellow-300 text-yellow-700' :
+                                        batch.metadata?.priority === 'high' ? 'border-red-300 text-red-700' :
+                                        batch.metadata?.priority === 'medium' ? 'border-yellow-300 text-yellow-700' :
                                         'border-blue-300 text-blue-700'
                                       }`}
                                     >
-                                      {batch.metadata.priority.toUpperCase()} PRIORITY
+                                      {(batch.metadata?.priority || 'medium').toUpperCase()} PRIORITY
                                     </Badge>
                                     <Badge variant="outline" className="border-orange-300 text-orange-700">
                                       <Clock className="h-3 w-3 mr-1" />
