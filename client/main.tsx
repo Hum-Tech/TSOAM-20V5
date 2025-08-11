@@ -287,7 +287,6 @@ const AppContent = () => {
                       "admin",
                       "hr",
                       "finance",
-                      "user",
                     ]}
                   >
                     <Settings />
