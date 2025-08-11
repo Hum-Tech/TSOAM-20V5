@@ -626,15 +626,20 @@ export default function HR() {
   };
 
   const loadHRData = async (signal?: AbortSignal) => {
+    // Load employees and performance reviews independently
+    await loadEmployees(signal);
+    await loadPerformanceReviews(signal);
+  };
+
+  const loadEmployees = async (signal?: AbortSignal) => {
     try {
-      console.log("Attempting to load HR data from API...");
-      // Load employees from database
+      console.log("Attempting to load employees from API...");
       const employeesData = await HRDatabaseService.getEmployees(signal);
 
       // Check if aborted before proceeding
       if (signal?.aborted) return;
 
-      console.log("API data loaded successfully:", employeesData.length, "employees");
+      console.log("Employee API data loaded successfully:", employeesData.length, "employees");
 
       // Map to include backward compatibility fields
       const mappedEmployees: Employee[] = employeesData.map(emp => ({
@@ -646,15 +651,23 @@ export default function HR() {
 
       setEmployees(mappedEmployees);
 
-      // Check if aborted before loading reviews
-      if (signal?.aborted) return;
+    } catch (error) {
+      console.error("Error loading employees from API:", error);
+      console.log("Loading demo employees data...");
+      // Load demo data for employees
+      loadDemoData();
+    }
+  };
 
-      // Load performance reviews
+  const loadPerformanceReviews = async (signal?: AbortSignal) => {
+    try {
+      console.log("Attempting to load performance reviews from API...");
       const reviewsData = await HRDatabaseService.getPerformanceReviews(signal);
 
       // Check if aborted before setting state
       if (signal?.aborted) return;
 
+      console.log("Performance reviews loaded successfully:", reviewsData.length, "reviews");
       setPerformanceReviews(reviewsData);
 
     } catch (error) {
