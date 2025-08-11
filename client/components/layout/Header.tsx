@@ -190,6 +190,35 @@ export function Header() {
     };
   }, []);
 
+  // Load notifications from localStorage on mount
+  useEffect(() => {
+    if (user) {
+      const storedNotifications = JSON.parse(localStorage.getItem('notifications') || '[]');
+      // Filter notifications for current user (employees only see their internal messages)
+      const userNotifications = storedNotifications.filter((notif: any) => {
+        // If it's an internal message, only show to the specific recipient
+        if (notif.type === "internal" && notif.recipientId) {
+          return notif.recipientId === `E00${user.id}` || notif.recipientId === user.id;
+        }
+        // Show all other types of notifications
+        return true;
+      });
+
+      // Convert to header notification format
+      const headerNotifications = userNotifications.slice(0, 10).map((notif: any) => ({
+        id: notif.id || Date.now(),
+        type: notif.type === "internal" ? "message" : "system",
+        title: notif.title || "New Notification",
+        message: notif.message || "You have a new notification",
+        time: notif.timestamp ? formatTime(notif.timestamp) : "Recently",
+        unread: !notif.read,
+        priority: "medium" as const,
+      }));
+
+      setNotifications(headerNotifications);
+    }
+  }, [user]);
+
   // Listen for new notifications from messaging system
   useEffect(() => {
     const handleNotificationAdded = (event: CustomEvent) => {
@@ -200,10 +229,12 @@ export function Header() {
         id: Date.now(),
         type: "message",
         title: `New ${type} Message`,
-        message: `You have a new ${type.toLowerCase()} message from ${sender}`,
+        message: type === "Internal"
+          ? `You have a new internal message from ${sender}`
+          : `You have a new ${type.toLowerCase()} message from ${sender}`,
         time: "Just now",
         unread: true,
-        priority: "medium" as const,
+        priority: type === "Internal" ? "high" : "medium" as const,
       };
 
       setNotifications(prev => [newNotification, ...prev]);
@@ -217,7 +248,7 @@ export function Header() {
     return () => {
       window.removeEventListener('notificationAdded', handleNotificationAdded as EventListener);
     };
-  }, []);
+  }, [user]);
 
   // Mark notification as read
   const markNotificationAsRead = (id: number) => {
