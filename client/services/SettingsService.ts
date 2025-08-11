@@ -39,6 +39,13 @@ export interface NotificationSettings {
   payrollReminders: boolean;
   membershipAlerts: boolean;
   eventReminders: boolean;
+  newMemberNotifications: boolean;
+  appointmentReminders: boolean;
+  financialAlerts: boolean;
+  eventNotifications: boolean;
+  backupNotifications: boolean;
+  securityAlerts: boolean;
+  frequency: "immediate" | "hourly" | "daily" | "weekly";
 }
 
 export interface SystemSettings {
