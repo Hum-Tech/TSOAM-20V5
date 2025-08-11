@@ -182,6 +182,7 @@ const mockMembers: Member[] = [
     address: "Nakuru, Kenya",
     emergencyContactName: "Grace Wanjiku",
     emergencyContactPhone: "+254 733 789 012",
+    homeCell: "Judah",
     membershipStatus: "Active",
     yearOfJoining: 2024,
     visitDate: "2024-02-10",
