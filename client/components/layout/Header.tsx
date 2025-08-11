@@ -244,29 +244,66 @@ export function Header() {
     const handleNotificationAdded = (event: CustomEvent) => {
       const { count, type, sender } = event.detail;
 
-      // Add new notification to the list
-      const newNotification = {
-        id: Date.now(),
-        type: "message" as "message" | "system" | "welfare" | "maintenance",
-        title: `New ${type} Message`,
-        message: type === "Internal"
-          ? `You have a new internal message from ${sender}`
-          : `You have a new ${type.toLowerCase()} message from ${sender}`,
-        time: "Just now",
-        unread: true,
-        priority: (type === "Internal" ? "high" : "medium") as "high" | "medium" | "low",
-      };
+      // Reload notifications from localStorage to get the latest data
+      if (user) {
+        const userSpecificKey = `notifications_${user.id}`;
+        const userSpecificNotifications = JSON.parse(localStorage.getItem(userSpecificKey) || '[]');
+        const generalNotifications = JSON.parse(localStorage.getItem('notifications') || '[]');
 
-      setNotifications(prev => [newNotification, ...prev]);
+        const allNotifications = [...userSpecificNotifications, ...generalNotifications];
+        const userNotifications = allNotifications.filter((notif: any, index: number, arr: any[]) => {
+          const isUnique = arr.findIndex(n => n.id === notif.id) === index;
+          if (!isUnique) return false;
 
-      // Show toast notification (optional)
-      console.log(`🔔 New ${type} message from ${sender}`);
+          if (notif.type === "internal" && notif.recipientId) {
+            return notif.recipientId === user.id ||
+                   notif.recipientEmail === user.email ||
+                   notif.recipientId === `E00${user.id}`;
+          }
+          return true;
+        });
+
+        const headerNotifications = userNotifications
+          .sort((a: any, b: any) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime())
+          .slice(0, 10)
+          .map((notif: any) => ({
+            id: notif.id || Date.now(),
+            type: (notif.type === "internal" ? "message" : "system") as "message" | "system" | "welfare" | "maintenance",
+            title: notif.title || "New Notification",
+            message: notif.message || "You have a new notification",
+            time: notif.timestamp ? formatTime(notif.timestamp) : "Recently",
+            unread: !notif.read,
+            priority: notif.type === "internal" ? "high" : "medium" as "high" | "medium" | "low",
+            fullMessage: notif.fullMessage,
+            sender: notif.sender,
+            subject: notif.subject,
+            messageType: notif.messageType
+          }));
+
+        setNotifications(headerNotifications);
+
+        // Show toast notification for new internal messages
+        const latestNotification = userNotifications[0];
+        if (latestNotification && latestNotification.type === "internal" && !latestNotification.read) {
+          console.log(`🔔 New internal message from ${latestNotification.sender}`);
+        }
+      }
+    };
+
+    // Listen for localStorage changes (when other tabs/windows update notifications)
+    const handleStorageChange = (e: StorageEvent) => {
+      if (e.key?.startsWith('notifications_') && user) {
+        // Reload notifications when localStorage changes
+        window.dispatchEvent(new CustomEvent('notificationAdded', { detail: { type: 'Internal', sender: 'System', count: 1 } }));
+      }
     };
 
     window.addEventListener('notificationAdded', handleNotificationAdded as EventListener);
+    window.addEventListener('storage', handleStorageChange);
 
     return () => {
       window.removeEventListener('notificationAdded', handleNotificationAdded as EventListener);
+      window.removeEventListener('storage', handleStorageChange);
     };
   }, [user]);
 
