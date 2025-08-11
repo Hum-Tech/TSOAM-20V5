@@ -608,6 +608,23 @@ export function Header() {
                                     )}
                                   </div>
                                 </div>
+                                {notification.type === "message" && notification.sender && (
+                                  <div className="flex gap-2 mt-3">
+                                    <Button
+                                      size="sm"
+                                      variant="outline"
+                                      className="h-8 text-xs"
+                                      onClick={(e) => {
+                                        e.stopPropagation();
+                                        setReplyingToNotification(notification);
+                                        setShowReplyDialog(true);
+                                      }}
+                                    >
+                                      <MessageSquare className="w-3 h-3 mr-1" />
+                                      Reply
+                                    </Button>
+                                  </div>
+                                )}
                               </div>
                             </div>
                             <Button
