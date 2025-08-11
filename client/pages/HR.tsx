@@ -2163,6 +2163,21 @@ ${performanceFormData.managerComments || 'Not specified'}
                 : record
             )
           );
+
+          // Log Finance rejection
+          SystemLogService.logFinance(
+            'Payroll Batch Rejected',
+            `Batch ${data.batchId} rejected by ${data.rejectedBy} - Reason: ${data.reason}`,
+            undefined,
+            data.rejectedBy,
+            {
+              batchId: data.batchId,
+              reason: data.reason,
+              totalAmount: data.totalAmount,
+              employeeCount: data.employeeCount
+            }
+          );
+
           alert(`❌ Payroll Batch Rejected!\n\nBatch: ${data.batchId}\nRejected by: ${data.rejectedBy}\nReason: ${data.reason}\n\nPlease review and resubmit if necessary.`);
           break;
 
