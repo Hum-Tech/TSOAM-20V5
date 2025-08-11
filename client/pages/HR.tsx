@@ -4585,8 +4585,7 @@ ${performanceFormData.managerComments || 'Not specified'}
               </CardHeader>
               <CardContent>
                 {(() => {
-                  const pendingBatches = JSON.parse(localStorage.getItem("hr_pending_batches") || "[]")
-                    .filter((batch: any) => batch.status === "Pending_Finance_Approval");
+                  const pendingBatches = FinanceApprovalService.getPendingApprovals();
 
                   if (pendingBatches.length === 0) {
                     return (
