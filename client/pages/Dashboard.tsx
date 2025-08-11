@@ -321,11 +321,11 @@ export default function Dashboard() {
   // Get authorized modules for data source indicator
   const getAuthorizedModules = () => {
     const modules = [];
-    if (user?.permissions?.finance || user?.role === "Finance Officer")
+    if (user?.permissions?.finance || user?.role === "finance")
       modules.push("Finance");
-    if (user?.permissions?.hr || user?.role === "HR Officer")
+    if (user?.permissions?.hr || user?.role === "hr")
       modules.push("HR");
-    if (user?.permissions?.members || user?.role === "Admin")
+    if (user?.permissions?.members || user?.role === "admin")
       modules.push("Members");
     if (user?.permissions?.inventory) modules.push("Inventory");
     if (user?.permissions?.welfare) modules.push("Welfare");
