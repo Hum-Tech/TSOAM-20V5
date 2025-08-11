@@ -68,7 +68,7 @@ class RoleBasedAccessService {
       permissions: this.getPermissions(role),
       restrictedData: this.getDataRestrictions(role)
     };
-    
+
     // Save to localStorage for persistence
     localStorage.setItem('user_security_context', JSON.stringify(this.currentUser));
   }
@@ -123,7 +123,7 @@ class RoleBasedAccessService {
           activeEmployees: data.activeEmployees,
           pendingLeaves: data.pendingLeaves,
           upcomingEvents: data.upcomingEvents,
-          recentActivities: data.recentActivities?.filter((activity: any) => 
+          recentActivities: data.recentActivities?.filter((activity: any) =>
             ['HR', 'Events', 'Welfare'].includes(activity.module)
           ),
           systemHealth: data.systemHealth,
@@ -140,7 +140,7 @@ class RoleBasedAccessService {
           totalExpenses: data.totalExpenses,
           monthlyGrowth: data.monthlyGrowth,
           upcomingEvents: data.upcomingEvents,
-          recentActivities: data.recentActivities?.filter((activity: any) => 
+          recentActivities: data.recentActivities?.filter((activity: any) =>
             ['Finance', 'Events', 'Inventory'].includes(activity.module)
           ),
           systemHealth: data.systemHealth,
@@ -153,7 +153,7 @@ class RoleBasedAccessService {
         // Regular users see minimal dashboard data
         return {
           upcomingEvents: data.upcomingEvents,
-          recentActivities: data.recentActivities?.filter((activity: any) => 
+          recentActivities: data.recentActivities?.filter((activity: any) =>
             ['Events', 'Members'].includes(activity.module)
           ),
           // Hide all sensitive data
@@ -187,8 +187,8 @@ class RoleBasedAccessService {
       case 'finance':
       case 'user':
         // Only see their own appointments
-        return appointments.filter(apt => 
-          apt.createdBy === currentUserId || 
+        return appointments.filter(apt =>
+          apt.createdBy === currentUserId ||
           apt.assignedTo === currentUserId ||
           apt.attendees?.includes(currentUserId)
         );
@@ -209,26 +209,26 @@ class RoleBasedAccessService {
     switch (role) {
       case 'admin':
         return [
-          'Dashboard', 'Members', 'NewMembers', 'Events', 'HR', 'Finance', 
-          'Inventory', 'Welfare', 'Messaging', 'Appointments', 'Settings', 
+          'Dashboard', 'Members', 'NewMembers', 'Events', 'HR', 'Finance',
+          'Inventory', 'Welfare', 'Messaging', 'Appointments', 'Settings',
           'Users', 'SystemLogs'
         ];
 
       case 'pastor':
         return [
-          'Dashboard', 'Members', 'NewMembers', 'Events', 'HR', 'Finance', 
+          'Dashboard', 'Members', 'NewMembers', 'Events', 'HR', 'Finance',
           'Inventory', 'Welfare', 'Messaging', 'Appointments'
         ];
 
       case 'hr':
         return [
-          'Dashboard', 'HR', 'Events', 'Messaging', 'Appointments', 
+          'Dashboard', 'HR', 'Events', 'Messaging', 'Appointments',
           'Welfare', 'Inventory'
         ];
 
       case 'finance':
         return [
-          'Dashboard', 'Finance', 'Inventory', 'Events', 'Appointments'
+          'Dashboard', 'Finance', 'Inventory', 'Events'
         ];
 
       case 'user':
@@ -379,7 +379,6 @@ class RoleBasedAccessService {
           canAccessFinance: true,
           canAccessInventory: true,
           canAccessEvents: true,
-          canAccessAppointments: true,
           canApprovePayroll: true,
           canViewFinancialReports: true,
           canExportData: true,
