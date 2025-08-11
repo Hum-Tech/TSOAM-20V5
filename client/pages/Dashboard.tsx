@@ -303,13 +303,13 @@ export default function Dashboard() {
   // Role-based dashboard filtering
   const getVisibleMetrics = () => {
     switch (user?.role) {
-      case "Finance Officer":
+      case "finance":
         return ["financial"];
-      case "HR Officer":
+      case "hr":
         return ["hr", "members"];
-      case "User":
+      case "user":
         return ["basic", "events"];
-      case "Admin":
+      case "admin":
         return ["financial", "members", "hr", "events", "system"];
       default:
         return ["basic"];
