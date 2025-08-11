@@ -3165,11 +3165,18 @@ ${performanceFormData.managerComments || 'Not specified'}
 
             <div class="payslip-container">
                 <div class="header">
-                    <div class="company-name">${payslipData.organization.name}</div>
-                    <div class="company-details">
-                        ${payslipData.organization.address}<br>
-                        📧 ${payslipData.organization.email} | 📞 ${payslipData.organization.phone}<br>
-                        KRA PIN: ${payslipData.organization.kraPin}
+                    <div class="logo-section">
+                        <img src="https://cdn.builder.io/api/v1/image/assets%2F0627183da1a04fa4b6c5a1ab36b4780e%2F24ea526264444b8ca043118a01335902?format=webp&width=200"
+                             alt="TSOAM Logo"
+                             class="company-logo" />
+                        <div class="header-text">
+                            <div class="company-name">${payslipData.organization.name}</div>
+                            <div class="company-details">
+                                ${payslipData.organization.address}<br>
+                                📧 ${payslipData.organization.email} | 📞 ${payslipData.organization.phone}<br>
+                                KRA PIN: ${payslipData.organization.kraPin}
+                            </div>
+                        </div>
                     </div>
                     <div class="payslip-title">EMPLOYEE PAYSLIP</div>
                 </div>
