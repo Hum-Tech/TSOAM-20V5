@@ -913,6 +913,11 @@ export default function MemberManagement() {
                       </div>
                     </TableCell>
                     <TableCell>
+                      <Badge variant="outline" className="text-sm">
+                        {member.homeCell || "Not assigned"}
+                      </Badge>
+                    </TableCell>
+                    <TableCell>
                       {getStatusBadge(member.membershipStatus)}
                     </TableCell>
                     <TableCell>
