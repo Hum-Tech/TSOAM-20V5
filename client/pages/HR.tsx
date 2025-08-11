@@ -4196,57 +4196,144 @@ ${performanceFormData.managerComments || 'Not specified'}
 
             <Card>
               <CardHeader>
-                <CardTitle>Quick Payslip Generation</CardTitle>
+                <CardTitle className="flex items-center gap-2">
+                  <PrinterIcon className="h-5 w-5 text-blue-600" />
+                  Quick Payslip Generation
+                </CardTitle>
+                <p className="text-sm text-muted-foreground">
+                  Generate and print individual payslips for active employees with complete salary information.
+                </p>
               </CardHeader>
               <CardContent>
-                <div className="grid gap-4 md:grid-cols-3">
-                  {employees
-                    .filter((e) => e.employmentStatus === "Active" && (e.fullName || e.full_name) && (e.basicSalary || e.basic_salary))
-                    .map((employee) => (
-                      <Card
-                        key={employee.id}
-                        className="cursor-pointer hover:shadow-md transition-shadow"
-                      >
-                        <CardContent className="p-4">
-                          <div className="flex items-center justify-between">
-                            <div>
-                              <div className="font-medium">
-                                {employee.fullName || employee.full_name}
-                              </div>
-                              <div className="text-sm text-muted-foreground">
-                                {employee.employeeId || employee.employee_id}
-                              </div>
-                              <div className="text-sm text-muted-foreground">
-                                {employee.department || 'No Department'}
-                              </div>
-                            </div>
-                            <Button
-                              size="sm"
-                              onClick={() => generatePayslip(employee)}
-                              className="bg-blue-600 hover:bg-blue-700"
-                            >
-                              <PrinterIcon className="h-4 w-4 mr-1" />
-                              Print
-                            </Button>
-                          </div>
-                        </CardContent>
-                      </Card>
-                    ))}
-                </div>
-                {employees.filter((e) => e.employmentStatus === "Active" && (e.fullName || e.full_name) && (e.basicSalary || e.basic_salary)).length === 0 && (
-                  <div className="text-center py-8 text-muted-foreground">
-                    <PrinterIcon className="h-12 w-12 mx-auto mb-4 opacity-50" />
-                    <p>No active employees with salary data found.</p>
-                    <p className="text-sm mb-4">Add employees with complete salary information to generate payslips.</p>
-                    <Button
-                      onClick={loadDemoData}
-                      variant="outline"
-                    >
-                      <RefreshCw className="h-4 w-4 mr-2" />
-                      Load Demo Data
-                    </Button>
+                <div className="space-y-4">
+                  {/* Summary Statistics */}
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4 p-4 bg-blue-50 rounded-lg border border-blue-200">
+                    <div className="text-center">
+                      <div className="text-2xl font-bold text-blue-600">
+                        {employees.filter((e) => e.employmentStatus === "Active").length}
+                      </div>
+                      <div className="text-sm text-blue-700">Active Employees</div>
+                    </div>
+                    <div className="text-center">
+                      <div className="text-2xl font-bold text-green-600">
+                        {employees.filter((e) => e.employmentStatus === "Active" && (e.fullName || e.full_name) && (e.basicSalary || e.basic_salary)).length}
+                      </div>
+                      <div className="text-sm text-green-700">Ready for Payslip</div>
+                    </div>
+                    <div className="text-center">
+                      <div className="text-2xl font-bold text-orange-600">
+                        {employees.filter((e) => e.employmentStatus === "Active" && !(e.basicSalary || e.basic_salary)).length}
+                      </div>
+                      <div className="text-sm text-orange-700">Missing Salary Data</div>
+                    </div>
                   </div>
-                )}
+
+                  {/* Employee Cards */}
+                  <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+                    {employees
+                      .filter((e) => e.employmentStatus === "Active" && (e.fullName || e.full_name) && (e.basicSalary || e.basic_salary))
+                      .map((employee) => {
+                        const basicSalary = Number(employee.basicSalary || employee.basic_salary || 0);
+                        const allowancesTotal = employee.allowances
+                          ? Object.values(employee.allowances).reduce((a, b) => (Number(a) || 0) + (Number(b) || 0), 0) as number
+                          : 0;
+                        const grossSalary = basicSalary + allowancesTotal;
+
+                        return (
+                          <Card
+                            key={employee.id}
+                            className="hover:shadow-lg transition-all duration-200 border-l-4 border-l-blue-500 hover:border-l-green-500"
+                          >
+                            <CardContent className="p-4">
+                              <div className="space-y-3">
+                                <div className="flex items-start justify-between">
+                                  <div className="flex-1">
+                                    <div className="font-semibold text-gray-900">
+                                      {employee.fullName || employee.full_name}
+                                    </div>
+                                    <div className="text-sm text-blue-600 font-medium">
+                                      ID: {employee.employeeId || employee.employee_id}
+                                    </div>
+                                    <div className="text-sm text-gray-600">
+                                      📍 {employee.department || 'General Department'}
+                                    </div>
+                                  </div>
+                                  <Badge variant={basicSalary > 0 ? "default" : "destructive"} className="text-xs">
+                                    {basicSalary > 0 ? "Ready" : "No Salary"}
+                                  </Badge>
+                                </div>
+
+                                <div className="bg-gray-50 p-3 rounded-md space-y-1">
+                                  <div className="flex justify-between text-sm">
+                                    <span className="text-gray-600">Basic Salary:</span>
+                                    <span className="font-medium">KSh {basicSalary.toLocaleString()}</span>
+                                  </div>
+                                  <div className="flex justify-between text-sm">
+                                    <span className="text-gray-600">Gross Salary:</span>
+                                    <span className="font-semibold text-green-600">KSh {grossSalary.toLocaleString()}</span>
+                                  </div>
+                                </div>
+
+                                <Button
+                                  size="sm"
+                                  onClick={() => generatePayslip(employee)}
+                                  className="w-full bg-blue-600 hover:bg-blue-700 transition-colors"
+                                  disabled={basicSalary <= 0}
+                                >
+                                  <PrinterIcon className="h-4 w-4 mr-2" />
+                                  Generate Payslip
+                                </Button>
+                              </div>
+                            </CardContent>
+                          </Card>
+                        );
+                      })}
+                  </div>
+
+                  {/* Empty State */}
+                  {employees.filter((e) => e.employmentStatus === "Active" && (e.fullName || e.full_name) && (e.basicSalary || e.basic_salary)).length === 0 && (
+                    <div className="text-center py-12 bg-gray-50 rounded-lg border-2 border-dashed border-gray-300">
+                      <PrinterIcon className="h-16 w-16 mx-auto mb-4 text-gray-400" />
+                      <h3 className="text-lg font-medium text-gray-900 mb-2">No Employees Ready for Payslip</h3>
+                      <p className="text-gray-600 mb-6 max-w-md mx-auto">
+                        Add employees with complete salary information to generate payslips, or load demo data to test the system.
+                      </p>
+                      <div className="space-x-3">
+                        <Button
+                          onClick={loadDemoData}
+                          variant="outline"
+                          className="border-blue-300 text-blue-600 hover:bg-blue-50"
+                        >
+                          <RefreshCw className="h-4 w-4 mr-2" />
+                          Load Demo Data
+                        </Button>
+                        <Button
+                          onClick={() => setActiveTab("employees")}
+                          className="bg-blue-600 hover:bg-blue-700"
+                        >
+                          <Plus className="h-4 w-4 mr-2" />
+                          Add Employees
+                        </Button>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Help Text */}
+                  <div className="mt-6 p-4 bg-amber-50 border border-amber-200 rounded-lg">
+                    <div className="flex items-start gap-3">
+                      <div className="text-amber-600 mt-0.5">ℹ️</div>
+                      <div>
+                        <h4 className="font-medium text-amber-800 mb-1">Payslip Generation Requirements</h4>
+                        <ul className="text-sm text-amber-700 space-y-1">
+                          <li>• Employee must have Active employment status</li>
+                          <li>• Basic salary must be set and greater than KSh 1,000</li>
+                          <li>• Employee name and ID must be complete</li>
+                          <li>• KRA PIN recommended for tax calculations</li>
+                        </ul>
+                      </div>
+                    </div>
+                  </div>
+                </div>
               </CardContent>
             </Card>
           </TabsContent>
@@ -4729,7 +4816,7 @@ ${performanceFormData.managerComments || 'Not specified'}
                                     <Textarea
                                       placeholder="• Training programs to attend
 • Skills to develop
-��� Certifications to pursue
+• Certifications to pursue
 • Mentoring or coaching needs"
                                       className="min-h-24"
                                     />
