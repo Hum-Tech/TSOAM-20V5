@@ -691,7 +691,7 @@ export default function MemberManagement() {
   /**
    * Export members by home cell
    */
-  const handleExportHomeCell = async (homeCellName: string) => {
+  const handleExportHomeCell = async (homeCellName: string, format: "pdf" | "excel" = "excel") => {
     try {
       const cellMembers = filteredMembers.filter(m => m.homeCell === homeCellName);
 
