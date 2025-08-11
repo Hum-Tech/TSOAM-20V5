@@ -1971,6 +1971,30 @@ export default function MemberManagement() {
                     />
                   </div>
                 </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="addHomeCell">Home Cell</Label>
+                  <Select
+                    value={addMemberForm.homeCell}
+                    onValueChange={(value) =>
+                      setAddMemberForm({
+                        ...addMemberForm,
+                        homeCell: value,
+                      })
+                    }
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select home cell" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {homeCells.map((cell) => (
+                        <SelectItem key={cell.id} value={cell.name}>
+                          {cell.name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
               </div>
 
               {/* Member Information */}
