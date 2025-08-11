@@ -974,25 +974,25 @@ export default function SystemLogs() {
                     <div className="grid grid-cols-2 gap-4">
                       <div className="text-center p-3 bg-blue-50 rounded">
                         <div className="text-2xl font-bold text-blue-600">
-                          {logs.filter((l) => l.level === "Info").length}
+                          {logs.filter((l) => l.level === "info").length}
                         </div>
                         <div className="text-sm text-blue-600">Info Logs</div>
                       </div>
                       <div className="text-center p-3 bg-yellow-50 rounded">
                         <div className="text-2xl font-bold text-yellow-600">
-                          {logs.filter((l) => l.level === "Warning").length}
+                          {logs.filter((l) => l.level === "warning").length}
                         </div>
                         <div className="text-sm text-yellow-600">Warnings</div>
                       </div>
                       <div className="text-center p-3 bg-red-50 rounded">
                         <div className="text-2xl font-bold text-red-600">
-                          {logs.filter((l) => l.level === "Error").length}
+                          {logs.filter((l) => l.level === "error").length}
                         </div>
                         <div className="text-sm text-red-600">Errors</div>
                       </div>
                       <div className="text-center p-3 bg-purple-50 rounded">
                         <div className="text-2xl font-bold text-purple-600">
-                          {logs.filter((l) => l.level === "Security").length}
+                          {logs.filter((l) => l.level === "security").length}
                         </div>
                         <div className="text-sm text-purple-600">Security</div>
                       </div>
