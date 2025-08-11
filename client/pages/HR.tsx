@@ -3800,7 +3800,7 @@ ${performanceFormData.managerComments || 'Not specified'}
 
                     <div class="earnings-deductions">
                         <div class="earnings-section">
-                            <div class="section-header">������ EARNINGS</div>
+                            <div class="section-header">�������� EARNINGS</div>
                             <div class="items-list">
                                 <div class="item-row">
                                     <span class="item-label">Basic Salary</span>
@@ -4804,7 +4804,7 @@ ${performanceFormData.managerComments || 'Not specified'}
                     allBatches = recentlyProcessedBatches; // Fallback to recently processed
                   }
 
-                  if (pendingBatches.length === 0) {
+                  if (allBatches.length === 0) {
                     return (
                       <div className="text-center py-6 text-orange-600">
                         <CheckCircle className="h-12 w-12 mx-auto mb-3 opacity-50" />
@@ -4816,7 +4816,7 @@ ${performanceFormData.managerComments || 'Not specified'}
 
                   return (
                     <div className="space-y-3">
-                      {pendingBatches.map((batch: any, index: number) => (
+                      {allBatches.map((batch: any, index: number) => (
                         <div key={`pending-batch-${batch.batchId}-${index}`} className="bg-white p-4 rounded-lg border border-orange-200">
                           <div className="flex items-center justify-between">
                             <div className="flex-1">
