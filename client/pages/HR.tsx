@@ -4807,19 +4807,35 @@ ${performanceFormData.managerComments || 'Not specified'}
                     // Get truly pending batches from Finance service
                     const pendingBatches = FinanceApprovalService.getPendingApprovals() || [];
 
-                    // Combine with recently processed batches
-                    allBatches = [...pendingBatches, ...recentlyProcessedBatches];
+                    // Get approval history to check processed batches
+                    const approvalHistory = FinanceApprovalService.getApprovalHistory() || [];
 
-                    // Deduplicate batches by batchId to prevent duplicate React keys
-                    const uniqueBatchIds = new Set();
-                    allBatches = allBatches.filter(batch => {
-                      if (uniqueBatchIds.has(batch.batchId)) {
-                        console.warn(`Duplicate batch ID found: ${batch.batchId}`);
-                        return false;
+                    // Create processed batches from recent history (last 10 seconds)
+                    const recentProcessed = approvalHistory
+                      .filter(batch => {
+                        const processedTime = batch.actions?.[batch.actions.length - 1]?.timestamp;
+                        if (!processedTime) return false;
+                        const timeDiff = Date.now() - new Date(processedTime).getTime();
+                        return timeDiff < 10000; // Show for 10 seconds
+                      })
+                      .map(batch => ({
+                        ...batch,
+                        status: batch.status === 'Fully_Approved' ? 'Processed' : 'Rejected'
+                      }));
+
+                    // Combine pending, recently processed from service, and recently processed from state
+                    allBatches = [...pendingBatches, ...recentProcessed, ...recentlyProcessedBatches];
+
+                    // Deduplicate batches by batchId, keeping the most recent status
+                    const uniqueBatches = new Map();
+                    allBatches.forEach(batch => {
+                      const existing = uniqueBatches.get(batch.batchId);
+                      if (!existing || batch.status !== 'Pending') {
+                        uniqueBatches.set(batch.batchId, batch);
                       }
-                      uniqueBatchIds.add(batch.batchId);
-                      return true;
                     });
+                    allBatches = Array.from(uniqueBatches.values());
+
                   } catch (error) {
                     console.error('Error loading pending approvals:', error);
                     allBatches = recentlyProcessedBatches; // Fallback to recently processed
