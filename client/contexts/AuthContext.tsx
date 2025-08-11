@@ -150,8 +150,8 @@ interface AuthContextType {
   completeSystemLoading: () => void;
 
   // Security features
-  requireOTP: boolean;
-  setRequireOTP: (require: boolean) => void;
+  // requireOTP: boolean; // TODO: Uncomment when implementing Twilio/Infobip OTP
+  // setRequireOTP: (require: boolean) => void;
   createAccount: (
     accountData: any,
   ) => Promise<{ success: boolean; credentials?: any; error?: string }>;
@@ -368,7 +368,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isSystemLoading, setIsSystemLoading] = useState(false);
-  const [requireOTP, setRequireOTP] = useState(false);
+  // const [requireOTP, setRequireOTP] = useState(false); // TODO: Uncomment for OTP implementation
   const [sessionTimeLeft, setSessionTimeLeft] = useState(0);
   const [sessionTimer, setSessionTimer] = useState<NodeJS.Timeout | null>(null);
 
@@ -596,7 +596,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         localStorage.setItem("tsoam_remember_token", sessionToken);
       }
 
-      setRequireOTP(false);
+      // setRequireOTP(false); // TODO: Uncomment for OTP implementation
       setIsLoading(false);
       setIsSystemLoading(true); // Trigger ZionSurf loading screen
 
@@ -646,7 +646,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const logout = () => {
     console.log("User logged out");
     setUser(null);
-    setRequireOTP(false);
+    // setRequireOTP(false); // TODO: Uncomment for OTP implementation
     setSessionTimeLeft(0);
 
     if (sessionTimer) {
@@ -934,8 +934,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     logout,
     extendSession,
     completeSystemLoading,
-    requireOTP,
-    setRequireOTP,
+    // requireOTP, // TODO: Uncomment for OTP implementation
+    // setRequireOTP,
     createAccount,
     validateDate,
     getAllUsers,
