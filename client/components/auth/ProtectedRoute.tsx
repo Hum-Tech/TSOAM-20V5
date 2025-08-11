@@ -95,6 +95,11 @@ export function ProtectedRoute({
 
   // Check role-based access if roles are specified
   if (allowedRoles) {
+    // Admin bypass - admin can access all pages
+    if (user.role === "admin" || user.role === "Admin") {
+      return <>{children}</>;
+    }
+
     // Map old role format to new format for compatibility
     const roleMappingLookup: Record<string, string> = {
       "Admin": "admin",
