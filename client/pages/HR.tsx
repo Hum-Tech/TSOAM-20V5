@@ -2729,39 +2729,62 @@ ${performanceFormData.managerComments || 'Not specified'}
   };
 
   const generatePayslip = (employee: Employee) => {
-    const grossSalary =
-      employee.basicSalary +
-      Object.values(employee.allowances || {}).reduce((a, b) => (a as number) + (b as number), 0);
+    try {
+      // Handle different property names for basic salary
+      const basicSalary = employee.basicSalary || employee.basic_salary || 0;
 
-    // Kenya tax calculations
-    const paye = calculatePayrollPAYE(grossSalary);
-    const sha = grossSalary * 0.0275; // 2.75% SHA
-    const nssf = Math.min(grossSalary * 0.06, 2160); // 6% capped at KSH 2,160
-    const housingLevy = grossSalary * 0.015; // 1.5% Housing Levy
+      // Handle allowances from different property structures
+      let allowancesTotal = 0;
+      if (employee.allowances && typeof employee.allowances === 'object') {
+        allowancesTotal = Object.values(employee.allowances).reduce((a, b) => (Number(a) || 0) + (Number(b) || 0), 0) as number;
+      } else {
+        // Try individual allowance properties
+        allowancesTotal = (employee.housing_allowance || 0) +
+                         (employee.transport_allowance || 0) +
+                         (employee.medical_allowance || 0) +
+                         (employee.other_allowances || 0);
+      }
 
-    const totalDeductions = paye + sha + nssf + housingLevy;
-    const netSalary = grossSalary - totalDeductions;
+      const grossSalary = basicSalary + allowancesTotal;
 
-    const payslipData = {
-      employee,
-      period: new Date().toLocaleDateString("en-US", {
-        month: "long",
-        year: "numeric",
-      }),
-      basicSalary: employee.basicSalary,
-      allowances: Object.values(employee.allowances || {}).reduce((a, b) => (a as number) + (b as number), 0),
-      grossSalary,
-      paye,
-      sha,
-      nssf,
-      housingLevy,
-      totalDeductions,
-      netSalary,
-      generatedDate: new Date().toLocaleDateString(),
-    };
+      if (grossSalary <= 0) {
+        alert("Cannot generate payslip: Invalid salary data for this employee");
+        return;
+      }
 
-    // Generate and print payslip
-    printPayslip(payslipData);
+      // Kenya tax calculations
+      const paye = calculatePayrollPAYE(grossSalary);
+      const sha = grossSalary * 0.0275; // 2.75% SHA
+      const nssf = Math.min(grossSalary * 0.06, 2160); // 6% capped at KSH 2,160
+      const housingLevy = grossSalary * 0.015; // 1.5% Housing Levy
+
+      const totalDeductions = paye + sha + nssf + housingLevy;
+      const netSalary = grossSalary - totalDeductions;
+
+      const payslipData = {
+        employee,
+        period: new Date().toLocaleDateString("en-US", {
+          month: "long",
+          year: "numeric",
+        }),
+        basicSalary,
+        allowances: allowancesTotal,
+        grossSalary,
+        paye,
+        sha,
+        nssf,
+        housingLevy,
+        totalDeductions,
+        netSalary,
+        generatedDate: new Date().toLocaleDateString(),
+      };
+
+      // Generate and print payslip
+      printPayslip(payslipData);
+    } catch (error) {
+      console.error("Error generating payslip:", error);
+      alert("Failed to generate payslip. Please check employee data and try again.");
+    }
   };
 
   const calculatePayrollPAYE = (grossSalary: number): number => {
