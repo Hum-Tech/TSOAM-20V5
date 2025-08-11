@@ -2910,11 +2910,11 @@ ${performanceFormData.managerComments || 'Not specified'}
                 }
 
                 .header {
-                  background: linear-gradient(135deg, #2c5282 0%, #3182ce 100%);
+                  background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
                   color: white;
-                  text-align: center;
-                  padding: 30px 20px;
+                  padding: 25px 20px;
                   position: relative;
+                  border-bottom: 4px solid #991b1b;
                 }
 
                 .header::before {
@@ -2924,7 +2924,31 @@ ${performanceFormData.managerComments || 'Not specified'}
                   left: 0;
                   right: 0;
                   bottom: 0;
-                  background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="20" cy="20" r="2" fill="white" opacity="0.1"/><circle cx="80" cy="80" r="2" fill="white" opacity="0.1"/><circle cx="40" cy="60" r="1" fill="white" opacity="0.1"/></svg>');
+                  background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="20" cy="20" r="1" fill="white" opacity="0.05"/><circle cx="80" cy="80" r="1" fill="white" opacity="0.05"/><circle cx="40" cy="60" r="0.5" fill="white" opacity="0.05"/></svg>');
+                }
+
+                .logo-section {
+                  display: flex;
+                  align-items: center;
+                  justify-content: center;
+                  gap: 20px;
+                  margin-bottom: 20px;
+                  position: relative;
+                  z-index: 1;
+                }
+
+                .company-logo {
+                  width: 80px;
+                  height: 80px;
+                  object-fit: contain;
+                  background: white;
+                  border-radius: 8px;
+                  padding: 8px;
+                  box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+                }
+
+                .header-text {
+                  text-align: left;
                 }
 
                 .company-name {
@@ -2933,13 +2957,16 @@ ${performanceFormData.managerComments || 'Not specified'}
                   margin-bottom: 8px;
                   position: relative;
                   z-index: 1;
+                  color: white;
+                  text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
                 }
 
                 .company-details {
                   font-size: 14px;
-                  opacity: 0.9;
+                  opacity: 0.95;
                   position: relative;
                   z-index: 1;
+                  line-height: 1.4;
                 }
 
                 .payslip-title {
