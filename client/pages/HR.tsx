@@ -1874,18 +1874,26 @@ ${performanceFormData.managerComments || 'Not specified'}
         alert(`❌ Failed to send payroll to Finance!\n\nError: ${error instanceof Error ? error.message : 'Unknown error'}\n\nPlease try again or contact system administrator.`);
       }
 
-      // Show detailed success message
+      // Show detailed success message emphasizing Finance approval
       const successMessage =
-        `✅ Payroll Processing Completed!\n\n` +
-        `📊 Summary:\n` +
+        `✅ Payroll Batch Created Successfully!\n\n` +
+        `📦 BATCH SUMMARY:\n` +
         `• Batch ID: ${batchId}\n` +
         `• Period: ${currentMonth}\n` +
-        `• Employees Processed: ${payrollRecords.length}\n` +
-        `• Total Gross Pay: KSh ${totalGrossPayroll.toLocaleString()}\n` +
-        `• Total Net Pay: KSh ${totalNetPayroll.toLocaleString()}\n` +
-        `• Status: Sent to Finance for Approval\n\n` +
-        (processingErrors.length > 0 ? `⚠️ ${processingErrors.length} employee(s) had processing errors\n\n` : '') +
-        `💡 Next: Finance will review and approve individual payments`;
+        `• Employees: ${payrollRecords.length}\n` +
+        `• Total Amount: KSh ${totalNetPayroll.toLocaleString()}\n\n` +
+        `🎯 FINANCE APPROVAL WORKFLOW:\n` +
+        `• ✅ Batch sent to Finance Department\n` +
+        `• ⏳ Status: Awaiting Finance Approval\n` +
+        `• 📱 Finance team has been notified\n` +
+        `• 📋 Individual payments can be approved/rejected\n\n` +
+        (processingErrors.length > 0 ? `⚠️ Note: ${processingErrors.length} employee(s) had processing errors\n\n` : '') +
+        `📍 NEXT STEPS:\n` +
+        `1. Finance will review all employee payments\n` +
+        `2. Individual payments will be approved/rejected\n` +
+        `3. You'll be notified of the approval status\n` +
+        `4. Approved payments will be processed for disbursement\n\n` +
+        `💡 Check the "Pending Finance Approval" section above to track progress.`;
 
       alert(successMessage);
 
@@ -5194,7 +5202,7 @@ ${performanceFormData.managerComments || 'Not specified'}
                                     <Label>Professional Development Plan</Label>
                                     <Textarea
                                       placeholder="• Training programs to attend
-• Skills to develop
+�� Skills to develop
 • Certifications to pursue
 • Mentoring or coaching needs"
                                       className="min-h-24"
