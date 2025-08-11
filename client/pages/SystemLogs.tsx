@@ -208,23 +208,30 @@ export default function SystemLogs() {
   useEffect(() => {
     loadSystemData();
 
-    // Set up real-time updates every 5 seconds
+    // Set up real-time updates every 2 seconds for more responsiveness
     const interval = setInterval(() => {
       loadSystemData();
-    }, 5000);
+    }, 2000);
 
     // Listen for localStorage changes for immediate updates
     const handleStorageChange = (e: StorageEvent) => {
-      if (e.key === 'system_logs') {
+      if (e.key === 'system_logs' || e.key?.includes('log_')) {
         loadSystemData();
       }
     };
 
+    // Listen for custom events for immediate log updates
+    const handleLogUpdate = () => {
+      loadSystemData();
+    };
+
     window.addEventListener('storage', handleStorageChange);
+    window.addEventListener('systemLogUpdated', handleLogUpdate);
 
     return () => {
       clearInterval(interval);
       window.removeEventListener('storage', handleStorageChange);
+      window.removeEventListener('systemLogUpdated', handleLogUpdate);
     };
   }, []);
 
