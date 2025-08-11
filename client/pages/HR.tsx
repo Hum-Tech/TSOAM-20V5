@@ -3068,16 +3068,17 @@ ${performanceFormData.managerComments || 'Not specified'}
                 }
 
                 .section-header {
-                  background: #4299e1;
+                  background: #dc2626;
                   color: white;
                   padding: 15px;
                   font-weight: 600;
                   text-align: center;
                   font-size: 16px;
+                  text-shadow: 1px 1px 2px rgba(0,0,0,0.2);
                 }
 
                 .deductions-section .section-header {
-                  background: #e53e3e;
+                  background: #b91c1c;
                 }
 
                 .items-list {
