@@ -488,8 +488,10 @@ export default function MemberManagement() {
     const matchesEmployment =
       filterEmployment === "All" ||
       member.employmentStatus === filterEmployment;
+    const matchesHomeCell =
+      filterHomeCell === "All" || member.homeCell === filterHomeCell;
 
-    return matchesSearch && matchesStatus && matchesEmployment;
+    return matchesSearch && matchesStatus && matchesEmployment && matchesHomeCell;
   });
 
   /**
