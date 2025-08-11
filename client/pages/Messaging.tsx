@@ -511,20 +511,31 @@ export default function Messaging() {
           id: `notif-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
           title: messageType === "Email" ? (subject || "New Internal Message") : "New Internal Message",
           message: messageContent.length > 100 ? messageContent.substring(0, 100) + "..." : messageContent,
+          fullMessage: messageContent, // Store full message content
           sender: user?.name || "System",
+          senderId: user?.id || "system",
           recipient: contact.name,
           recipientId: contact.id,
+          recipientEmail: contact.email, // Add email for better matching
           type: "internal",
           isPublic: false,
           timestamp: new Date().toISOString(),
           read: false,
-          deliveryMethod: "notification"
+          deliveryMethod: "notification",
+          messageType: messageType,
+          subject: messageType === "Email" ? subject : undefined
         };
 
-        // Store notification in localStorage (in production, this would go to a database)
-        const existingNotifications = JSON.parse(localStorage.getItem('notifications') || '[]');
+        // Store notification in localStorage with user-specific key for better targeting
+        const userSpecificKey = `notifications_${contact.id}`;
+        const existingNotifications = JSON.parse(localStorage.getItem(userSpecificKey) || '[]');
         existingNotifications.unshift(notification);
-        localStorage.setItem('notifications', JSON.stringify(existingNotifications));
+        localStorage.setItem(userSpecificKey, JSON.stringify(existingNotifications));
+
+        // Also store in general notifications for backward compatibility
+        const existingGeneralNotifications = JSON.parse(localStorage.getItem('notifications') || '[]');
+        existingGeneralNotifications.unshift(notification);
+        localStorage.setItem('notifications', JSON.stringify(existingGeneralNotifications));
       });
 
       // Dispatch event to update notification bell in header for employees
