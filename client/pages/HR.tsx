@@ -2153,10 +2153,14 @@ ${performanceFormData.managerComments || 'Not specified'}
 
         case 'disbursement_approved':
           handleDisbursementReport(data);
+          // Force refresh to show updated disbursement reports
+          setActiveTab(prev => prev);
           break;
 
         case 'disbursement_rejected':
           handleRejectedDisbursementReport(data);
+          // Force refresh to show updated disbursement reports
+          setActiveTab(prev => prev);
           break;
       }
     };
