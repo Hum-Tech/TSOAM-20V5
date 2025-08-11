@@ -948,6 +948,56 @@ export default function HR() {
     );
   };
 
+  const handleUpdateEmployee = () => {
+    if (!selectedEmployee || !editEmployeeForm.fullName || !editEmployeeForm.email || !editEmployeeForm.department) {
+      alert("Please fill in required fields (Full Name, Email, Department)");
+      return;
+    }
+
+    // Update the employee in the employees array
+    const updatedEmployees = employees.map(emp =>
+      emp.id === selectedEmployee.id
+        ? {
+            ...emp,
+            fullName: editEmployeeForm.fullName,
+            email: editEmployeeForm.email,
+            phone: editEmployeeForm.phone,
+            address: editEmployeeForm.address,
+            dateOfBirth: editEmployeeForm.dateOfBirth,
+            department: editEmployeeForm.department,
+            position: editEmployeeForm.position,
+            employmentType: editEmployeeForm.employmentType,
+            basicSalary: parseFloat(editEmployeeForm.basicSalary) || 0,
+            basic_salary: parseFloat(editEmployeeForm.basicSalary) || 0,
+          }
+        : emp
+    );
+
+    setEmployees(updatedEmployees);
+
+    // Update localStorage
+    localStorage.setItem("hr_employees", JSON.stringify(updatedEmployees));
+
+    // Log employee update
+    SystemLogService.logHR(
+      'Employee Updated',
+      `Employee updated: ${editEmployeeForm.fullName} (ID: ${selectedEmployee.employeeId})`,
+      undefined,
+      'HR System',
+      {
+        employeeId: selectedEmployee.employeeId,
+        fullName: editEmployeeForm.fullName,
+        department: editEmployeeForm.department,
+        position: editEmployeeForm.position,
+        basicSalary: editEmployeeForm.basicSalary,
+        changes: 'Employee details updated'
+      }
+    );
+
+    setShowEditEmployeeDialog(false);
+    alert(`Employee ${editEmployeeForm.fullName} updated successfully!`);
+  };
+
   const handleLeaveRequest = () => {
     if (!leaveForm.employeeId || !leaveForm.leaveType || !leaveForm.reason) {
       alert("Please fill in required fields");
@@ -4965,7 +5015,7 @@ ${performanceFormData.managerComments || 'Not specified'}
                                     `💰 Gross Amount: KSh ${(batch.totalGrossAmount || 0).toLocaleString()}\n` +
                                     `💵 Net Amount: KSh ${(batch.totalNetAmount || 0).toLocaleString()}\n` +
                                     `📊 Total Deductions: KSh ${(batch.summary?.totalDeductions || 0).toLocaleString()}\n\n` +
-                                    `��� PRIORITY: ${(batch.metadata?.priority || 'medium').toUpperCase()}\n` +
+                                    `����� PRIORITY: ${(batch.metadata?.priority || 'medium').toUpperCase()}\n` +
                                     `📅 Submitted: ${new Date(batch.submittedDate).toLocaleString()}\n` +
                                     `⏰ Deadline: ${new Date(batch.metadata?.approvalDeadline || Date.now() + 48 * 60 * 60 * 1000).toLocaleString()}\n` +
                                     `🏛️ Department: ${batch.metadata?.department || 'HR'}\n` +
