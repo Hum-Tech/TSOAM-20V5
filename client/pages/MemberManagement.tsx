@@ -77,6 +77,7 @@ interface Member {
   address: string;
   emergencyContactName: string;
   emergencyContactPhone: string;
+  homeCell: string;
   membershipStatus: "Active" | "Inactive";
   yearOfJoining: number;
   visitDate: string; // Original visit date
