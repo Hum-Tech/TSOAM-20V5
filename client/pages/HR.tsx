@@ -4781,12 +4781,17 @@ ${performanceFormData.managerComments || 'Not specified'}
               </CardHeader>
               <CardContent key={refreshKey}>
                 {(() => {
-                  let pendingBatches = [];
+                  let allBatches = [];
                   try {
-                    const allPendingBatches = FinanceApprovalService.getPendingApprovals() || [];
+                    // Get truly pending batches from Finance service
+                    const pendingBatches = FinanceApprovalService.getPendingApprovals() || [];
+
+                    // Combine with recently processed batches
+                    allBatches = [...pendingBatches, ...recentlyProcessedBatches];
+
                     // Deduplicate batches by batchId to prevent duplicate React keys
                     const uniqueBatchIds = new Set();
-                    pendingBatches = allPendingBatches.filter(batch => {
+                    allBatches = allBatches.filter(batch => {
                       if (uniqueBatchIds.has(batch.batchId)) {
                         console.warn(`Duplicate batch ID found: ${batch.batchId}`);
                         return false;
@@ -4796,7 +4801,7 @@ ${performanceFormData.managerComments || 'Not specified'}
                     });
                   } catch (error) {
                     console.error('Error loading pending approvals:', error);
-                    pendingBatches = [];
+                    allBatches = recentlyProcessedBatches; // Fallback to recently processed
                   }
 
                   if (pendingBatches.length === 0) {
