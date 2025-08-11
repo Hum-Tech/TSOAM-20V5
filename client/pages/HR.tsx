@@ -1363,7 +1363,7 @@ ${performanceFormData.managerComments || 'Not specified'}
       doc.text('• Quality of Work: Very Good', 30, 205);
       doc.text('• Communication: Good', 30, 215);
       doc.text('• Teamwork: Excellent', 30, 225);
-      doc.text('• Initiative: Very Good', 30, 235);
+      doc.text('��� Initiative: Very Good', 30, 235);
 
       // Goals and Development
       doc.text('Goals & Development Plan:', 20, 255);
@@ -2128,7 +2128,7 @@ ${performanceFormData.managerComments || 'Not specified'}
           setPayrollRecords(prevRecords =>
             prevRecords.map(record =>
               record.employeeId === data.employeeId && record.batchId === data.batchId
-                ? { ...record, status: "Approved", approvedBy: data.approvedBy, approvedDate: data.approvedDate }
+                ? { ...record, status: "Processed", approvedBy: data.approvedBy, approvedDate: data.approvedDate }
                 : record
             )
           );
