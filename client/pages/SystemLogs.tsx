@@ -478,19 +478,36 @@ export default function SystemLogs() {
           break;
       }
 
+      // Convert SystemLogEntry to SystemLog format for export functions
+      const mappedLogs: SystemLog[] = logsToExport.map(log => ({
+        id: log.id,
+        timestamp: log.timestamp,
+        level: log.level === 'info' ? 'Info' :
+               log.level === 'warning' ? 'Warning' :
+               log.level === 'error' ? 'Error' :
+               log.level === 'security' ? 'Security' : 'Info',
+        event: log.action,
+        description: log.details,
+        user: log.userName || log.userId || 'System',
+        ipAddress: log.ipAddress || 'N/A',
+        module: log.module,
+        action: log.action,
+        details: log.details
+      }));
+
       // Export based on selected format
       switch (exportFormat) {
         case "csv":
-          exportToCSV(logsToExport);
+          exportToCSV(mappedLogs);
           break;
         case "excel":
-          exportToExcel(logsToExport);
+          exportToExcel(mappedLogs);
           break;
         case "pdf":
-          exportToPDF(logsToExport);
+          exportToPDF(mappedLogs);
           break;
         case "json":
-          exportToJSON(logsToExport);
+          exportToJSON(mappedLogs);
           break;
       }
 
