@@ -446,7 +446,7 @@ export default function SystemLogs() {
 
     try {
       // Apply date range filtering
-      let logsToExport = filteredLogs;
+      let logsToExport: SystemLogEntry[] = filteredLogs;
 
       const today = new Date();
 
