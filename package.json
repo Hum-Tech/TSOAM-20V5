@@ -7,7 +7,7 @@
     "setup": "node setup-system.js",
     "cleanup": "node cleanup-system.js",
     "install-all": "npm install && cd client && npm install && cd ../server && npm install",
-    "build": "npm run client:build && npm run server:build",
+    "build": "npm run client:build",
     "build:client": "cd client && npm install && npm run build-only",
     "build-production": "node scripts/build-optimize.js",
     "start": "node server/index.js",
