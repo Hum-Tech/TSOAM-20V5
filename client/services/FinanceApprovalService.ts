@@ -447,7 +447,7 @@ class FinanceApprovalService {
 
     if (pendingCount === 0) {
       // All payments have been processed - create disbursement reports
-      if (approvedCount > 0 || rejectedCount > 0) {
+      if (approvedCount > 0 || totalRejectedCount > 0) {
         this.createDisbursementReport(batchId, rejectedBy);
       }
 
