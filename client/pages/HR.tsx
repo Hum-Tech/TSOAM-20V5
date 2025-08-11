@@ -1742,42 +1742,86 @@ ${performanceFormData.managerComments || 'Not specified'}
         return;
       }
 
-      // Update payroll records in state
-      setPayrollRecords(demoPayrollRecords);
+      // Update payroll records in state with individual tracking
+      setPayrollRecords(payrollRecords);
 
-      // Update dashboard total with processed payroll
-      const totalProcessedPayroll = demoPayrollRecords.reduce(
-        (sum, record) => sum + record.netSalary,
-        0,
-      );
-      setProcessedPayrollTotal(totalProcessedPayroll);
+      // Create payroll batch for Finance approval
+      const payrollBatch = {
+        batchId: batchId,
+        period: currentMonth,
+        totalEmployees: payrollRecords.length,
+        totalGrossAmount: Math.round(totalGrossPayroll),
+        totalNetAmount: Math.round(totalNetPayroll),
+        createdDate: new Date().toISOString(),
+        createdBy: "HR_System",
+        status: "Pending_Finance_Approval",
+        employees: payrollRecords.map(record => ({
+          id: record.id,
+          employeeId: record.employeeId,
+          employeeName: record.employeeName,
+          grossSalary: record.grossSalary,
+          netSalary: record.netSalary,
+          deductions: record.deductions,
+          status: "Pending"
+        })),
+        summary: {
+          totalBasicSalary: Math.round(payrollRecords.reduce((sum, r) => sum + r.basicSalary, 0)),
+          totalAllowances: Math.round(payrollRecords.reduce((sum, r) => sum + r.allowances, 0)),
+          totalPAYE: Math.round(payrollRecords.reduce((sum, r) => sum + r.deductions.paye, 0)),
+          totalNSSF: Math.round(payrollRecords.reduce((sum, r) => sum + r.deductions.nssf, 0)),
+          totalSHA: Math.round(payrollRecords.reduce((sum, r) => sum + r.deductions.sha, 0)),
+          totalHousingLevy: Math.round(payrollRecords.reduce((sum, r) => sum + r.deductions.housingLevy, 0)),
+          totalDeductions: Math.round(payrollRecords.reduce((sum, r) => sum + r.deductions.total, 0))
+        }
+      };
 
-      // Save HR data to localStorage for Dashboard integration
+      // Update dashboard with processed payroll
+      setProcessedPayrollTotal(totalNetPayroll);
+
+      // Save comprehensive HR data for Dashboard integration
       const hrModuleData = {
         employees: employees,
-        payrollRecords: demoPayrollRecords,
+        payrollRecords: payrollRecords,
+        payrollBatch: payrollBatch,
         lastUpdated: new Date().toISOString(),
-        totalPayroll: totalProcessedPayroll,
+        totalPayroll: totalNetPayroll,
         activeEmployees: activeEmployees.length,
+        batchId: batchId
       };
       localStorage.setItem("hr_module_data", JSON.stringify(hrModuleData));
 
-      // Sync payroll transactions to Finance module
+      // Send payroll batch to Finance module for approval
       try {
-        financialTransactionService.addBatchPayroll(demoPayrollRecords);
-        console.log("✅ Payroll transactions synced to Finance module");
+        // Save payroll batch for Finance module
+        localStorage.setItem("pending_payroll_batch", JSON.stringify(payrollBatch));
+
+        // Trigger Finance notification
+        const financeEvent = new CustomEvent('hr_payroll_batch', {
+          detail: payrollBatch
+        });
+        window.dispatchEvent(financeEvent);
+
+        // Also sync individual transactions to Finance
+        financialTransactionService.addBatchPayroll(payrollRecords);
+        console.log("✅ Payroll batch sent to Finance for approval");
       } catch (error) {
         console.warn("⚠️ Could not sync payroll to Finance:", error);
       }
 
-      // Show success message
-      alert(
-        `��� Demo Mode: Payroll processed successfully!\n\n` +
-          `📊 Processed: ${activeEmployees.length} employees\n` +
-          `📅 Period: ${currentMonth}\n` +
-          `💰 Total Payroll: KSh ${demoPayrollRecords.reduce((sum, record) => sum + record.netSalary, 0).toLocaleString()}\n\n` +
-          `ℹ️ This is demonstration data. In production, this would connect to your payroll system.`,
-      );
+      // Show detailed success message
+      const successMessage =
+        `✅ Payroll Processing Completed!\n\n` +
+        `📊 Summary:\n` +
+        `• Batch ID: ${batchId}\n` +
+        `• Period: ${currentMonth}\n` +
+        `• Employees Processed: ${payrollRecords.length}\n` +
+        `• Total Gross Pay: KSh ${totalGrossPayroll.toLocaleString()}\n` +
+        `• Total Net Pay: KSh ${totalNetPayroll.toLocaleString()}\n` +
+        `• Status: Sent to Finance for Approval\n\n` +
+        (processingErrors.length > 0 ? `⚠️ ${processingErrors.length} employee(s) had processing errors\n\n` : '') +
+        `💡 Next: Finance will review and approve individual payments`;
+
+      alert(successMessage);
 
       setShowProcessPayrollDialog(false);
 
