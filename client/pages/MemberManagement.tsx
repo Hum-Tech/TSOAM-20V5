@@ -236,6 +236,7 @@ const mockMembers: Member[] = [
     churchFeedback: "Appreciate the biblical teaching",
     prayerRequests: "Job opportunity and financial stability",
     transferredFromNewMemberId: "NM-003",
+    homeCell: "HC-002",
     createdAt: "2024-07-10T09:15:00Z",
   },
 ];
