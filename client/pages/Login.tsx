@@ -45,7 +45,7 @@ export default function Login() {
     isAuthenticated,
     login,
     isLoading,
-    requireOTP,
+    // requireOTP, // TODO: Uncomment for OTP implementation
     user,
     createAccount,
     validateDate,
