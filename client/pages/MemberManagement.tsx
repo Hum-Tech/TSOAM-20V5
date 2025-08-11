@@ -623,6 +623,76 @@ export default function MemberManagement() {
   };
 
   /**
+   * Export members by home cell
+   */
+  const handleExportHomeCell = async (homeCellName: string) => {
+    try {
+      const cellMembers = filteredMembers.filter(m => m.homeCell === homeCellName);
+
+      if (cellMembers.length === 0) {
+        alert(`No members found in ${homeCellName} home cell`);
+        return;
+      }
+
+      const memberData = cellMembers.map((member) => ({
+        "Member ID": member.memberId,
+        "Tithe Number": member.titheNumber,
+        "Full Name": member.fullName,
+        "Date of Birth": member.dateOfBirth,
+        "Age": calculateAge(member.dateOfBirth),
+        "Gender": member.gender,
+        "Marital Status": member.maritalStatus,
+        "Email": member.email,
+        "Phone": member.phone,
+        "Address": member.address,
+        "Emergency Contact": member.emergencyContactName,
+        "Emergency Phone": member.emergencyContactPhone,
+        "Home Cell": member.homeCell,
+        "Membership Status": member.membershipStatus,
+        "Membership Date": member.membershipDate,
+        "Member Since": calculateTenure(member.membershipDate),
+        "Employment Status": member.employmentStatus,
+        "Baptized": member.baptized ? "Yes" : "No",
+        "Bible Study Completed": member.bibleStudyCompleted ? "Yes" : "No",
+        "Service Groups": member.serviceGroups.join(", "),
+      }));
+
+      await exportService.exportData({
+        data: memberData,
+        filename: `${homeCellName}_Home_Cell_Members_${new Date().toISOString().split("T")[0]}`,
+        format: "excel",
+        title: `${homeCellName} Home Cell Members`,
+        subtitle: `Total Members: ${cellMembers.length}`,
+        columns: [
+          { key: "Member ID", title: "Member ID", width: 15 },
+          { key: "Tithe Number", title: "Tithe Number", width: 15 },
+          { key: "Full Name", title: "Full Name", width: 25 },
+          { key: "Date of Birth", title: "Date of Birth", width: 15 },
+          { key: "Age", title: "Age", width: 8 },
+          { key: "Gender", title: "Gender", width: 10 },
+          { key: "Marital Status", title: "Marital Status", width: 15 },
+          { key: "Email", title: "Email", width: 25 },
+          { key: "Phone", title: "Phone", width: 15 },
+          { key: "Address", title: "Address", width: 30 },
+          { key: "Emergency Contact", title: "Emergency Contact", width: 20 },
+          { key: "Emergency Phone", title: "Emergency Phone", width: 15 },
+          { key: "Home Cell", title: "Home Cell", width: 15 },
+          { key: "Membership Status", title: "Status", width: 12 },
+          { key: "Membership Date", title: "Membership Date", width: 15 },
+          { key: "Member Since", title: "Member Since", width: 15 },
+          { key: "Employment Status", title: "Employment", width: 15 },
+          { key: "Baptized", title: "Baptized", width: 10 },
+          { key: "Bible Study Completed", title: "Bible Study", width: 12 },
+          { key: "Service Groups", title: "Service Groups", width: 25 },
+        ],
+      });
+    } catch (error) {
+      console.error("Home cell export failed:", error);
+      alert("Export failed: " + (error as any)?.message || String(error));
+    }
+  };
+
+  /**
    * Handle member status changes (suspend, excommunicate, reactivate)
    */
   const handleStatusChange = () => {
