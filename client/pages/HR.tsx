@@ -3956,7 +3956,17 @@ ${performanceFormData.managerComments || 'Not specified'}
                   <div className="text-center py-8 text-muted-foreground">
                     <PrinterIcon className="h-12 w-12 mx-auto mb-4 opacity-50" />
                     <p>No active employees with salary data found.</p>
-                    <p className="text-sm">Add employees with complete salary information to generate payslips.</p>
+                    <p className="text-sm mb-4">Add employees with complete salary information to generate payslips.</p>
+                    <Button
+                      onClick={() => {
+                        console.log("Loading demo data manually...");
+                        loadHRData();
+                      }}
+                      variant="outline"
+                    >
+                      <RefreshCw className="h-4 w-4 mr-2" />
+                      Load Demo Data
+                    </Button>
                   </div>
                 )}
               </CardContent>
