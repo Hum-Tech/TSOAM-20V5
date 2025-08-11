@@ -1,0 +1,58 @@
+{
+  "name": "tsoam-church-management",
+  "version": "1.0.0",
+  "description": "TSOAM Church Management System - Production Ready",
+  "main": "server/index.js",
+  "scripts": {
+    "start": "node server/index.js",
+    "dev": "concurrently \"npm run server:dev\" \"npm run client:dev\"",
+    "build": "npm run client:build && npm run server:build",
+    "client:build": "cd client && npm run build",
+    "client:dev": "cd client && npm run dev",
+    "server:build": "cd server && npm run build",
+    "server:dev": "cd server && npm run dev",
+    "db:init": "node database/init.sql",
+    "db:migrate": "node scripts/migrate-database.js",
+    "db:backup": "node scripts/backup-database.js",
+    "db:restore": "node scripts/restore-database.js",
+    "demo:enable": "node scripts/manage-demo-data.js enable",
+    "demo:disable": "node scripts/manage-demo-data.js disable",
+    "demo:status": "node scripts/manage-demo-data.js status",
+    "production:setup": "node cleanup-for-production.js",
+    "test": "npm run client:test && npm run server:test",
+    "client:test": "cd client && npm test",
+    "server:test": "cd server && npm test",
+    "lint": "npm run client:lint && npm run server:lint",
+    "client:lint": "cd client && npm run lint",
+    "server:lint": "cd server && npm run lint"
+  },
+  "keywords": [
+    "church",
+    "management",
+    "tsoam",
+    "hr",
+    "finance",
+    "members",
+    "events",
+    "inventory"
+  ],
+  "author": "TSOAM",
+  "license": "Proprietary",
+  "engines": {
+    "node": ">=18.0.0",
+    "npm": ">=8.0.0"
+  },
+  "dependencies": {
+    "concurrently": "^8.2.2",
+    "dotenv": "^16.3.1"
+  },
+  "devDependencies": {},
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/your-org/tsoam-church-management"
+  },
+  "bugs": {
+    "url": "https://github.com/your-org/tsoam-church-management/issues"
+  },
+  "homepage": "https://github.com/your-org/tsoam-church-management#readme"
+}
