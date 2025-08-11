@@ -2048,6 +2048,64 @@ ${performanceFormData.managerComments || 'Not specified'}
     }, 500);
   };
 
+  // Listen for Finance approval responses and update UI accordingly
+  useEffect(() => {
+    const handleFinanceResponse = (event: CustomEvent) => {
+      const { eventType, data } = event.detail;
+
+      switch (eventType) {
+        case 'batch_approved':
+          setPayrollRecords(prevRecords =>
+            prevRecords.map(record =>
+              record.batchId === data.batchId
+                ? { ...record, status: "Approved", approvedBy: data.approvedBy, approvedDate: data.approvedDate }
+                : record
+            )
+          );
+          alert(`✅ Payroll Batch Approved!\n\nBatch: ${data.batchId}\nApproved by: ${data.approvedBy}\nTotal: KSh ${data.totalAmount.toLocaleString()}\n\nAll payments are now ready for disbursement.`);
+          break;
+
+        case 'batch_rejected':
+          setPayrollRecords(prevRecords =>
+            prevRecords.map(record =>
+              record.batchId === data.batchId
+                ? { ...record, status: "Rejected", rejectedBy: data.rejectedBy, rejectedDate: data.rejectedDate, rejectionReason: data.reason }
+                : record
+            )
+          );
+          alert(`❌ Payroll Batch Rejected!\n\nBatch: ${data.batchId}\nRejected by: ${data.rejectedBy}\nReason: ${data.reason}\n\nPlease review and resubmit if necessary.`);
+          break;
+
+        case 'individual_approved':
+          setPayrollRecords(prevRecords =>
+            prevRecords.map(record =>
+              record.employeeId === data.employeeId && record.batchId === data.batchId
+                ? { ...record, status: "Approved", approvedBy: data.approvedBy, approvedDate: data.approvedDate }
+                : record
+            )
+          );
+          break;
+
+        case 'individual_rejected':
+          setPayrollRecords(prevRecords =>
+            prevRecords.map(record =>
+              record.employeeId === data.employeeId && record.batchId === data.batchId
+                ? { ...record, status: "Rejected", rejectedBy: data.rejectedBy, rejectedDate: data.rejectedDate, rejectionReason: data.reason }
+                : record
+            )
+          );
+          break;
+      }
+    };
+
+    // Listen for Finance responses
+    window.addEventListener('hr_finance_response', handleFinanceResponse as EventListener);
+
+    return () => {
+      window.removeEventListener('hr_finance_response', handleFinanceResponse as EventListener);
+    };
+  }, []);
+
   // Listen for disbursement reports and rejections from Finance module
   useEffect(() => {
     const handleFinanceEvents = (event: StorageEvent) => {
