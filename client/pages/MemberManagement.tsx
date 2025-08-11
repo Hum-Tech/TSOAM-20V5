@@ -2579,11 +2579,28 @@ export default function MemberManagement() {
         {/* Home Cell Details Dialog */}
         <Dialog
           open={showHomeCellDetailsDialog}
-          onOpenChange={setShowHomeCellDetailsDialog}
+          onOpenChange={(open) => {
+            setShowHomeCellDetailsDialog(open);
+            if (!open) {
+              setIsEditingHomeCell(false);
+            }
+          }}
         >
-          <DialogContent>
+          <DialogContent className="max-w-2xl">
             <DialogHeader>
-              <DialogTitle>Home Cell Details</DialogTitle>
+              <DialogTitle className="flex items-center justify-between">
+                <span>Home Cell Details</span>
+                {!isEditingHomeCell && (
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={startEditingHomeCell}
+                  >
+                    <Edit className="h-4 w-4 mr-1" />
+                    Edit
+                  </Button>
+                )}
+              </DialogTitle>
             </DialogHeader>
             {selectedHomeCellForDetails && (
               <div className="space-y-4">
@@ -2603,55 +2620,136 @@ export default function MemberManagement() {
                 <div className="grid grid-cols-2 gap-4">
                   <div>
                     <Label className="text-sm font-medium">Cell Leader</Label>
-                    <p className="text-sm">{selectedHomeCellForDetails.leader || "Not assigned"}</p>
+                    {isEditingHomeCell ? (
+                      <Input
+                        value={editHomeCellForm.leader}
+                        onChange={(e) => setEditHomeCellForm({
+                          ...editHomeCellForm,
+                          leader: e.target.value
+                        })}
+                        placeholder="Enter leader name"
+                      />
+                    ) : (
+                      <p className="text-sm">{selectedHomeCellForDetails.leader || "Not assigned"}</p>
+                    )}
                   </div>
                   <div>
                     <Label className="text-sm font-medium">Leader Phone</Label>
-                    <p className="text-sm">{selectedHomeCellForDetails.leaderPhone || "Not provided"}</p>
+                    {isEditingHomeCell ? (
+                      <Input
+                        value={editHomeCellForm.leaderPhone}
+                        onChange={(e) => setEditHomeCellForm({
+                          ...editHomeCellForm,
+                          leaderPhone: e.target.value
+                        })}
+                        placeholder="Enter leader phone"
+                      />
+                    ) : (
+                      <p className="text-sm">{selectedHomeCellForDetails.leaderPhone || "Not provided"}</p>
+                    )}
                   </div>
                 </div>
 
                 <div className="grid grid-cols-2 gap-4">
                   <div>
                     <Label className="text-sm font-medium">Meeting Day</Label>
-                    <p className="text-sm">{selectedHomeCellForDetails.meetingDay || "Not scheduled"}</p>
+                    {isEditingHomeCell ? (
+                      <Input
+                        value={editHomeCellForm.meetingDay}
+                        onChange={(e) => setEditHomeCellForm({
+                          ...editHomeCellForm,
+                          meetingDay: e.target.value
+                        })}
+                        placeholder="e.g., Wednesday"
+                      />
+                    ) : (
+                      <p className="text-sm">{selectedHomeCellForDetails.meetingDay || "Not scheduled"}</p>
+                    )}
                   </div>
                   <div>
                     <Label className="text-sm font-medium">Meeting Time</Label>
-                    <p className="text-sm">{selectedHomeCellForDetails.meetingTime || "Not scheduled"}</p>
+                    {isEditingHomeCell ? (
+                      <Input
+                        value={editHomeCellForm.meetingTime}
+                        onChange={(e) => setEditHomeCellForm({
+                          ...editHomeCellForm,
+                          meetingTime: e.target.value
+                        })}
+                        placeholder="e.g., 6:00 PM"
+                      />
+                    ) : (
+                      <p className="text-sm">{selectedHomeCellForDetails.meetingTime || "Not scheduled"}</p>
+                    )}
                   </div>
                 </div>
 
                 <div>
                   <Label className="text-sm font-medium">Meeting Location</Label>
-                  <p className="text-sm">{selectedHomeCellForDetails.location || "Not specified"}</p>
+                  {isEditingHomeCell ? (
+                    <Input
+                      value={editHomeCellForm.location}
+                      onChange={(e) => setEditHomeCellForm({
+                        ...editHomeCellForm,
+                        location: e.target.value
+                      })}
+                      placeholder="Enter meeting location"
+                    />
+                  ) : (
+                    <p className="text-sm">{selectedHomeCellForDetails.location || "Not specified"}</p>
+                  )}
                 </div>
 
-                {selectedHomeCellForDetails.description && (
-                  <div>
-                    <Label className="text-sm font-medium">Description</Label>
-                    <p className="text-sm">{selectedHomeCellForDetails.description}</p>
+                <div>
+                  <Label className="text-sm font-medium">Description</Label>
+                  {isEditingHomeCell ? (
+                    <Textarea
+                      value={editHomeCellForm.description}
+                      onChange={(e) => setEditHomeCellForm({
+                        ...editHomeCellForm,
+                        description: e.target.value
+                      })}
+                      placeholder="Enter description"
+                      rows={2}
+                    />
+                  ) : (
+                    <p className="text-sm">{selectedHomeCellForDetails.description || "No description"}</p>
+                  )}
+                </div>
+
+                {!isEditingHomeCell && (
+                  <div className="grid grid-cols-2 gap-4 text-xs text-muted-foreground">
+                    <div>
+                      <Label className="text-xs font-medium">Created</Label>
+                      <p>{new Date(selectedHomeCellForDetails.createdAt).toLocaleDateString()}</p>
+                    </div>
+                    <div>
+                      <Label className="text-xs font-medium">Last Updated</Label>
+                      <p>{new Date(selectedHomeCellForDetails.updatedAt).toLocaleDateString()}</p>
+                    </div>
                   </div>
                 )}
 
-                <div className="grid grid-cols-2 gap-4 text-xs text-muted-foreground">
-                  <div>
-                    <Label className="text-xs font-medium">Created</Label>
-                    <p>{new Date(selectedHomeCellForDetails.createdAt).toLocaleDateString()}</p>
-                  </div>
-                  <div>
-                    <Label className="text-xs font-medium">Last Updated</Label>
-                    <p>{new Date(selectedHomeCellForDetails.updatedAt).toLocaleDateString()}</p>
-                  </div>
-                </div>
-
-                <div className="flex justify-end pt-4">
-                  <Button
-                    variant="outline"
-                    onClick={() => setShowHomeCellDetailsDialog(false)}
-                  >
-                    Close
-                  </Button>
+                <div className="flex justify-end gap-2 pt-4">
+                  {isEditingHomeCell ? (
+                    <>
+                      <Button
+                        variant="outline"
+                        onClick={cancelEditingHomeCell}
+                      >
+                        Cancel
+                      </Button>
+                      <Button onClick={saveHomeCellEdits}>
+                        Save Changes
+                      </Button>
+                    </>
+                  ) : (
+                    <Button
+                      variant="outline"
+                      onClick={() => setShowHomeCellDetailsDialog(false)}
+                    >
+                      Close
+                    </Button>
+                  )}
                 </div>
               </div>
             )}
