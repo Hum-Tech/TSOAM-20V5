@@ -2109,8 +2109,8 @@ ${performanceFormData.managerComments || 'Not specified'}
           );
 
           // Show appropriate message based on whether it's partial or full approval
-          const approvalType = data.partialApproval ? "partially approved" : "fully approved";
-          alert(`✅ Payroll Batch ${approvalType.toUpperCase()}!\n\nBatch: ${data.batchId}\nApproved by: ${data.approvedBy}\nTotal: KSh ${(data.totalAmount || 0).toLocaleString()}\n\n${data.partialApproval ? "Some payments approved - others may still be pending review." : "All payments are now ready for disbursement."}`);
+          const approvalType = data.partialApproval ? "partially processed" : "fully processed";
+          alert(`✅ Payroll Batch ${approvalType.toUpperCase()}!\n\nBatch: ${data.batchId}\nProcessed by: ${data.approvedBy}\nTotal: KSh ${(data.totalAmount || 0).toLocaleString()}\n\n${data.partialApproval ? "Some payments processed - others may still be pending review." : "All payments are now ready for disbursement."}`);
           break;
 
         case 'batch_rejected':
@@ -3102,7 +3102,7 @@ ${performanceFormData.managerComments || 'Not specified'}
       const employeeId = employee.employeeId || employee.employee_id;
 
       if (!employeeName || !employeeId) {
-        alert("❌ Employee data incomplete. Missing name or ID.");
+        alert("�� Employee data incomplete. Missing name or ID.");
         return;
       }
 
