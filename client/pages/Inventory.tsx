@@ -309,8 +309,7 @@ export default function Inventory() {
   const { user } = useAuth(); // Get current authenticated user
 
   // Role-based permissions
-  const canDeleteItems = user?.role === "admin" || user?.role === "Admin" ||
-                        user?.role === "pastor" || user?.role === "Pastor";
+  const canDeleteItems = user?.role === "admin" || user?.role === "pastor";
   const [items, setItems] = useState<InventoryItem[]>([]);
   const [maintenanceRecords, setMaintenanceRecords] = useState<
     MaintenanceRecord[]
