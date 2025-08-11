@@ -1292,31 +1292,85 @@ export default function Settings() {
                       <Label htmlFor="newMemberNotif">
                         New Member Registration
                       </Label>
-                      <Switch id="newMemberNotif" defaultChecked />
+                      <Switch
+                        id="newMemberNotif"
+                        checked={notificationSettings.newMemberNotifications}
+                        onCheckedChange={(checked) =>
+                          setNotificationSettings({
+                            ...notificationSettings,
+                            newMemberNotifications: checked,
+                          })
+                        }
+                      />
                     </div>
                     <div className="flex items-center justify-between">
                       <Label htmlFor="appointmentNotif">
                         Appointment Reminders
                       </Label>
-                      <Switch id="appointmentNotif" defaultChecked />
+                      <Switch
+                        id="appointmentNotif"
+                        checked={notificationSettings.appointmentReminders}
+                        onCheckedChange={(checked) =>
+                          setNotificationSettings({
+                            ...notificationSettings,
+                            appointmentReminders: checked,
+                          })
+                        }
+                      />
                     </div>
                     <div className="flex items-center justify-between">
                       <Label htmlFor="financeNotif">
                         Financial Transactions
                       </Label>
-                      <Switch id="financeNotif" defaultChecked />
+                      <Switch
+                        id="financeNotif"
+                        checked={notificationSettings.financialAlerts}
+                        onCheckedChange={(checked) =>
+                          setNotificationSettings({
+                            ...notificationSettings,
+                            financialAlerts: checked,
+                          })
+                        }
+                      />
                     </div>
                     <div className="flex items-center justify-between">
                       <Label htmlFor="eventNotif">Event Notifications</Label>
-                      <Switch id="eventNotif" defaultChecked />
+                      <Switch
+                        id="eventNotif"
+                        checked={notificationSettings.eventNotifications}
+                        onCheckedChange={(checked) =>
+                          setNotificationSettings({
+                            ...notificationSettings,
+                            eventNotifications: checked,
+                          })
+                        }
+                      />
                     </div>
                     <div className="flex items-center justify-between">
                       <Label htmlFor="backupNotif">Backup Status</Label>
-                      <Switch id="backupNotif" defaultChecked />
+                      <Switch
+                        id="backupNotif"
+                        checked={notificationSettings.backupNotifications}
+                        onCheckedChange={(checked) =>
+                          setNotificationSettings({
+                            ...notificationSettings,
+                            backupNotifications: checked,
+                          })
+                        }
+                      />
                     </div>
                     <div className="flex items-center justify-between">
                       <Label htmlFor="securityNotif">Security Alerts</Label>
-                      <Switch id="securityNotif" defaultChecked />
+                      <Switch
+                        id="securityNotif"
+                        checked={notificationSettings.securityAlerts}
+                        onCheckedChange={(checked) =>
+                          setNotificationSettings({
+                            ...notificationSettings,
+                            securityAlerts: checked,
+                          })
+                        }
+                      />
                     </div>
                   </div>
                   <div>
