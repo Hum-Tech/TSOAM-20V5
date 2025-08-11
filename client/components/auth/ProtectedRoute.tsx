@@ -104,10 +104,11 @@ export function ProtectedRoute({
       "User": "user"
     };
 
-    const normalizedRole = roleMappingLookup[user.role] || user.role;
-    
+    const normalizedRole = roleMappingLookup[user.role] || user.role.toLowerCase();
+
     // Check if user's normalized role is in allowedRoles
-    if (!allowedRoles.includes(normalizedRole)) {
+    // Also check the original role for backward compatibility
+    if (!allowedRoles.includes(normalizedRole) && !allowedRoles.includes(user.role)) {
       const userAllowedPages = rolePages[normalizedRole as keyof typeof rolePages] || [
         "/",
       ];
