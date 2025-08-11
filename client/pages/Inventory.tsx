@@ -2150,12 +2150,32 @@ export default function Inventory() {
                               <Button
                                 size="sm"
                                 variant="outline"
+                                onClick={() => handleEditStockItem(item)}
+                                title="Edit Item"
+                                className="border-blue-500 text-blue-600 hover:bg-blue-50"
+                              >
+                                <Edit className="h-3 w-3" />
+                              </Button>
+                              <Button
+                                size="sm"
+                                variant="outline"
                                 onClick={() => handleRestockItem(item)}
                                 title="Restock Item"
                                 className={item.status === "Low Stock" ? "border-orange-500 text-orange-600" : ""}
                               >
-                                <Edit className="h-3 w-3" />
+                                <RefreshCw className="h-3 w-3" />
                               </Button>
+                              {canDeleteItems && (
+                                <Button
+                                  size="sm"
+                                  variant="outline"
+                                  onClick={() => handleDeleteStockItem(item)}
+                                  title="Delete Item (Admin/Pastor Only)"
+                                  className="border-red-500 text-red-600 hover:bg-red-50"
+                                >
+                                  <Trash2 className="h-3 w-3" />
+                                </Button>
+                              )}
                             </div>
                           </TableCell>
                         </TableRow>
