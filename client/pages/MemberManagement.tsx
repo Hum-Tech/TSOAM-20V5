@@ -313,13 +313,7 @@ export default function MemberManagement() {
   // Load members including transferred ones on component mount
   useEffect(() => {
     loadMembers();
-
-    // Load home cells
-    const availableHomeCells = homeCellService.getActiveHomeCells().map(cell => ({
-      id: cell.id,
-      name: cell.name
-    }));
-    setHomeCells(availableHomeCells);
+    loadHomeCells();
 
     // Listen for transfer events from New Members module
     const handleTransferEvent = (event) => {
