@@ -308,7 +308,7 @@ export function Header() {
     };
   }, [user]);
 
-  // Mark notification as read
+  // Mark notification as read and track delivery
   const markNotificationAsRead = (id: number) => {
     setNotifications((prev) =>
       prev.map((notification) =>
@@ -318,22 +318,57 @@ export function Header() {
       ),
     );
 
-    // Update in localStorage as well
+    // Update in localStorage as well and track delivery
     if (user) {
+      const readTimestamp = new Date().toISOString();
+
       // Update user-specific notifications
       const userSpecificKey = `notifications_${user.id}`;
       const userNotifications = JSON.parse(localStorage.getItem(userSpecificKey) || '[]');
       const updatedUserNotifications = userNotifications.map((notif: any) =>
-        notif.id === id ? { ...notif, read: true } : notif
+        notif.id === id ? {
+          ...notif,
+          read: true,
+          readAt: readTimestamp,
+          deliveryStatus: "delivered"
+        } : notif
       );
       localStorage.setItem(userSpecificKey, JSON.stringify(updatedUserNotifications));
 
       // Update general notifications
       const generalNotifications = JSON.parse(localStorage.getItem('notifications') || '[]');
       const updatedGeneralNotifications = generalNotifications.map((notif: any) =>
-        notif.id === id ? { ...notif, read: true } : notif
+        notif.id === id ? {
+          ...notif,
+          read: true,
+          readAt: readTimestamp,
+          deliveryStatus: "delivered"
+        } : notif
       );
       localStorage.setItem('notifications', JSON.stringify(updatedGeneralNotifications));
+
+      // Create delivery receipt for sender
+      const notification = userNotifications.find((n: any) => n.id === id);
+      if (notification && notification.senderId && notification.type === "internal") {
+        const deliveryReceipt = {
+          id: `delivery-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+          type: "delivery",
+          originalMessageId: id,
+          messageTitle: notification.title,
+          recipient: user?.name,
+          recipientId: user?.id,
+          sender: notification.sender,
+          senderId: notification.senderId,
+          deliveredAt: readTimestamp,
+          status: "delivered"
+        };
+
+        // Store delivery receipt for sender
+        const senderKey = `deliveries_${notification.senderId}`;
+        const senderDeliveries = JSON.parse(localStorage.getItem(senderKey) || '[]');
+        senderDeliveries.unshift(deliveryReceipt);
+        localStorage.setItem(senderKey, JSON.stringify(senderDeliveries));
+      }
     }
   };
 
