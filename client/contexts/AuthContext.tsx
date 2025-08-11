@@ -539,6 +539,16 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         permissions: getRolePermissions(userData.role),
       };
 
+      // Initialize role-based access service
+      const roleMapping: Record<string, any> = {
+        "Admin": "admin",
+        "HR Officer": "hr",
+        "Finance Officer": "finance",
+        "User": "user"
+      };
+      const mappedRole = roleMapping[userData.role] || "user";
+      RoleBasedAccessService.setCurrentUser(userData.id, mappedRole);
+
       // Generate session token (in production, this would be a JWT or similar)
       const sessionToken = `tsoam_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
 
