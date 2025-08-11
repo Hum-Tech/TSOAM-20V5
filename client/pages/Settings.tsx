@@ -600,6 +600,9 @@ export default function Settings() {
       );
       setHomeCells(updatedCells);
 
+      // Emit event to notify other components
+      window.dispatchEvent(new CustomEvent('homeCellUpdated'));
+
       toast({
         title: "Success",
         description: `Home cell "${cell.name}" has been ${cell.isActive ? 'deactivated' : 'activated'}`,
