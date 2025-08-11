@@ -91,7 +91,7 @@ export function Sidebar() {
     if (!user?.permissions) return false;
 
     // Admin and Pastor see ALL navigation items - no filtering needed
-    if (user.role === "Admin" || user.role === "admin" || user.role === "Pastor" || user.role === "pastor") {
+    if (user.role === "admin" || user.role === "pastor") {
       return true;
     }
 
