@@ -345,6 +345,7 @@ export default function MemberManagement() {
       address: newMemberData.address || "",
       emergencyContactName: newMemberData.emergencyContactName || "",
       emergencyContactPhone: newMemberData.emergencyContactPhone || "",
+      homeCell: newMemberData.homeCell || "",
       employmentStatus: newMemberData.employmentStatus || "",
       membershipState: "Active",
       serviceGroups: newMemberData.serviceGroups || [],
