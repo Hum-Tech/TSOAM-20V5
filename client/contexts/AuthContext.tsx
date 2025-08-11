@@ -522,21 +522,38 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         );
       }
 
+      /*
+      // TODO: Future OTP Integration with Twilio/Infobip
+      // Uncomment and modify this section when ready to implement real OTP
+
       // Check if OTP is required for this user (Admin roles require OTP)
       if (
         (foundUser.role === "admin" || foundUser.role === "hr") &&
         !otp
       ) {
+        // Send OTP via Twilio/Infobip
+        // const otpCode = generateRandomOTP(); // Generate 6-digit code
+        // await sendOTPViaSMS(foundUser.phone, otpCode); // Send via SMS
+        // Store OTP in database with expiry time (5 minutes)
+        // await storeOTPInDatabase(foundUser.id, otpCode, Date.now() + 300000);
+
         setRequireOTP(true);
         setIsLoading(false);
         return false;
       }
 
-      // Validate OTP if provided (mock validation - accept "123456")
-      if (requireOTP && otp !== "123456") {
-        setIsLoading(false);
-        return false;
+      // Validate OTP if provided
+      if (requireOTP && otp) {
+        // Verify OTP against database
+        // const isValidOTP = await verifyOTPFromDatabase(foundUser.id, otp);
+        // if (!isValidOTP) {
+        //   setIsLoading(false);
+        //   return false;
+        // }
+        // Delete used OTP from database
+        // await deleteUsedOTP(foundUser.id);
       }
+      */
 
       // Calculate session expiry
       const currentTime = new Date();
