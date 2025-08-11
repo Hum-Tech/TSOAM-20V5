@@ -3,6 +3,8 @@
  * Handles all Finance approval workflows for payroll and other HR requests
  */
 
+import SystemLogService from "./SystemLogService";
+
 export interface PayrollApprovalRequest {
   batchId: string;
   period: string;
