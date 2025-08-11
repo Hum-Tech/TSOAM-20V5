@@ -575,6 +575,7 @@ export default function NewMembers() {
         address: "123 Nairobi Street, Nairobi",
         emergencyContactName: "Jane Doe",
         emergencyContactPhone: "+254734567890",
+        homeCell: "Israel",
         visitDate: "2024-07-15",
         daysAsNewMember: 183,
         baptized: true,
