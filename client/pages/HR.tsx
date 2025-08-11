@@ -5296,7 +5296,7 @@ ${performanceFormData.managerComments || 'Not specified'}
                                     { name: "Innovation", desc: "Creative problem-solving and initiative" },
                                     { name: "Reliability", desc: "Consistency and dependability in work" }
                                   ].map((competency, index) => (
-                                    <div key={index} className="border rounded-lg p-4">
+                                    <div key={`competency-${competency.name}-${index}`} className="border rounded-lg p-4">
                                       <h4 className="font-medium">{competency.name}</h4>
                                       <p className="text-xs text-gray-600 mb-2">{competency.desc}</p>
                                       <div className="flex items-center space-x-2">
