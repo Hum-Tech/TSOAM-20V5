@@ -827,7 +827,7 @@ export default function Messaging() {
               </DialogContent>
             </Dialog>
 
-            {canSendMessages ? (
+            {canSendMessages && (
               <Dialog open={isComposeOpen} onOpenChange={setIsComposeOpen}>
                 <DialogTrigger asChild>
                   <Button>
