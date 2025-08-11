@@ -112,6 +112,7 @@ import {
   User,
   FileText,
   RefreshCw,
+  Trash2,
 } from "lucide-react";
 import { exportService } from "@/services/ExportService";
 import { financialTransactionService } from "@/services/FinancialTransactionService";
