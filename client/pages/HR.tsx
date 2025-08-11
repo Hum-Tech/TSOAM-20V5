@@ -2972,13 +2972,16 @@ ${performanceFormData.managerComments || 'Not specified'}
                 .payslip-title {
                   font-size: 20px;
                   font-weight: 600;
-                  margin-top: 15px;
-                  padding: 10px 20px;
-                  background: rgba(255,255,255,0.1);
-                  border-radius: 20px;
+                  margin-top: 0;
+                  padding: 12px 25px;
+                  background: rgba(255,255,255,0.15);
+                  border-radius: 25px;
                   display: inline-block;
                   position: relative;
                   z-index: 1;
+                  border: 2px solid rgba(255,255,255,0.2);
+                  text-align: center;
+                  letter-spacing: 0.5px;
                 }
 
                 .content { padding: 30px; }
