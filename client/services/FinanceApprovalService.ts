@@ -366,17 +366,34 @@ class FinanceApprovalService {
     const approvedTotal = batch.employees.filter(emp => emp.status === 'Approved').length;
     const rejectedTotal = batch.employees.filter(emp => emp.status === 'Rejected').length;
 
+    // Immediately change status to approved when any employee is approved and remove priority
+    if (approvedTotal > 0) {
+      batch.status = 'Fully_Approved';
+      // Remove priority status for approved batches
+      if (batch.metadata) {
+        batch.metadata.priority = 'low';
+      }
+
+      // Notify HR immediately that batch is approved
+      this.notifyHRModule('batch_approved', {
+        batchId,
+        approvedBy,
+        approvedDate: action.timestamp,
+        totalAmount: batch.totalNetAmount,
+        employeeCount: batch.totalEmployees,
+        partialApproval: pendingCount > 0
+      });
+    }
+
     if (pendingCount === 0) {
       // All payments have been processed - create disbursement reports
       if (approvedTotal > 0 || rejectedTotal > 0) {
         this.createDisbursementReport(batchId, approvedBy);
       }
 
-      batch.status = approvedTotal > 0 ? 'Fully_Approved' : 'Rejected';
+      // Move to history only when all processing is complete
       this.moveToHistory(batch, [action]);
       this.removePendingBatch(batchId);
-    } else if (approvedTotal > 0) {
-      batch.status = 'Partially_Approved';
     }
 
     // Create notification
