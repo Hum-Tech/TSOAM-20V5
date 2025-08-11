@@ -8543,7 +8543,7 @@ ${performanceFormData.managerComments || 'Not specified'}
                     <CardContent>
                       <div className="space-y-2">
                         {selectedLeaveRequest.attachments.map((attachment, index) => (
-                          <div key={`attachment-${selectedLeaveRequest.id}-${index}-${attachment.name || attachment.filename || index}`} className="flex items-center justify-between p-3 border rounded">
+                          <div key={`attachment-${selectedLeaveRequest.id}-${index}-${attachment.filename || index}`} className="flex items-center justify-between p-3 border rounded">
                             <div className="flex items-center gap-3">
                               <FileText className="h-5 w-5 text-muted-foreground" />
                               <div>
