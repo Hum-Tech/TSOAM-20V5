@@ -3841,7 +3841,7 @@ ${performanceFormData.managerComments || 'Not specified'}
 
                     <div class="earnings-deductions">
                         <div class="earnings-section">
-                            <div class="section-header">�������� EARNINGS</div>
+                            <div class="section-header">���������� EARNINGS</div>
                             <div class="items-list">
                                 <div class="item-row">
                                     <span class="item-label">Basic Salary</span>
@@ -7362,6 +7362,196 @@ ${performanceFormData.managerComments || 'Not specified'}
           </DialogContent>
         </Dialog>
 
+        {/* Edit Employee Dialog */}
+        <Dialog
+          open={showEditEmployeeDialog}
+          onOpenChange={setShowEditEmployeeDialog}
+        >
+          <DialogContent className="sm:max-w-[800px] max-h-[90vh] overflow-y-auto">
+            <DialogHeader>
+              <DialogTitle>Edit Employee - {selectedEmployee?.fullName}</DialogTitle>
+            </DialogHeader>
+            <div className="space-y-6">
+              {/* Personal Information */}
+              <div className="space-y-4">
+                <h3 className="text-lg font-semibold">Personal Information</h3>
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="edit-fullName">Full Name *</Label>
+                    <Input
+                      id="edit-fullName"
+                      value={editEmployeeForm.fullName}
+                      onChange={(e) =>
+                        setEditEmployeeForm({
+                          ...editEmployeeForm,
+                          fullName: e.target.value,
+                        })
+                      }
+                      placeholder="Enter full name"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="edit-email">Email Address *</Label>
+                    <Input
+                      id="edit-email"
+                      type="email"
+                      value={editEmployeeForm.email}
+                      onChange={(e) =>
+                        setEditEmployeeForm({
+                          ...editEmployeeForm,
+                          email: e.target.value,
+                        })
+                      }
+                      placeholder="Enter email address"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="edit-phone">Phone Number</Label>
+                    <Input
+                      id="edit-phone"
+                      value={editEmployeeForm.phone}
+                      onChange={(e) =>
+                        setEditEmployeeForm({
+                          ...editEmployeeForm,
+                          phone: e.target.value,
+                        })
+                      }
+                      placeholder="Enter phone number"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="edit-dateOfBirth">Date of Birth</Label>
+                    <Input
+                      id="edit-dateOfBirth"
+                      type="date"
+                      value={editEmployeeForm.dateOfBirth}
+                      onChange={(e) =>
+                        setEditEmployeeForm({
+                          ...editEmployeeForm,
+                          dateOfBirth: e.target.value,
+                        })
+                      }
+                    />
+                  </div>
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="edit-address">Address</Label>
+                  <Textarea
+                    id="edit-address"
+                    value={editEmployeeForm.address}
+                    onChange={(e) =>
+                      setEditEmployeeForm({
+                        ...editEmployeeForm,
+                        address: e.target.value,
+                      })
+                    }
+                    placeholder="Enter physical address"
+                    rows={2}
+                  />
+                </div>
+              </div>
+
+              {/* Employment Information */}
+              <div className="space-y-4">
+                <h3 className="text-lg font-semibold">Employment Information</h3>
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="edit-department">Department *</Label>
+                    <Select
+                      value={editEmployeeForm.department}
+                      onValueChange={(value) =>
+                        setEditEmployeeForm({ ...editEmployeeForm, department: value })
+                      }
+                    >
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select department" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="Administration">Administration</SelectItem>
+                        <SelectItem value="Choir">Choir</SelectItem>
+                        <SelectItem value="Children Ministry">Children Ministry</SelectItem>
+                        <SelectItem value="Security">Security</SelectItem>
+                        <SelectItem value="Sanctuary Keeping">Sanctuary Keeping</SelectItem>
+                        <SelectItem value="ICT and Media">ICT and Media</SelectItem>
+                        <SelectItem value="Pastorate">Pastorate</SelectItem>
+                        <SelectItem value="Youth Ministry">Youth Ministry</SelectItem>
+                        <SelectItem value="Evangelism">Evangelism</SelectItem>
+                        <SelectItem value="Human Resource">Human Resource</SelectItem>
+                        <SelectItem value="Finance">Finance</SelectItem>
+                        <SelectItem value="Maintenance">Maintenance</SelectItem>
+                        <SelectItem value="Legal">Legal</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="edit-position">Position</Label>
+                    <Input
+                      id="edit-position"
+                      value={editEmployeeForm.position}
+                      onChange={(e) =>
+                        setEditEmployeeForm({
+                          ...editEmployeeForm,
+                          position: e.target.value,
+                        })
+                      }
+                      placeholder="Enter job position"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="edit-employmentType">Employment Type</Label>
+                    <Select
+                      value={editEmployeeForm.employmentType}
+                      onValueChange={(value) =>
+                        setEditEmployeeForm({
+                          ...editEmployeeForm,
+                          employmentType: value,
+                        })
+                      }
+                    >
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select employment type" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="Full-time">Full-time</SelectItem>
+                        <SelectItem value="Part-time">Part-time</SelectItem>
+                        <SelectItem value="Volunteer">Volunteer</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="edit-basicSalary">Basic Salary (KSH)</Label>
+                    <Input
+                      id="edit-basicSalary"
+                      type="number"
+                      value={editEmployeeForm.basicSalary}
+                      onChange={(e) =>
+                        setEditEmployeeForm({
+                          ...editEmployeeForm,
+                          basicSalary: e.target.value,
+                        })
+                      }
+                      placeholder="Enter basic salary"
+                    />
+                  </div>
+                </div>
+              </div>
+
+              {/* Action Buttons */}
+              <div className="flex justify-end gap-2">
+                <Button
+                  variant="outline"
+                  onClick={() => setShowEditEmployeeDialog(false)}
+                >
+                  Cancel
+                </Button>
+                <Button onClick={() => handleUpdateEmployee()}>
+                  Update Employee
+                </Button>
+              </div>
+            </div>
+          </DialogContent>
+        </Dialog>
+
         {/* Enterprise Leave Request Dialog */}
         <Dialog
           open={showLeaveRequestDialog}
@@ -8294,7 +8484,7 @@ ${performanceFormData.managerComments || 'Not specified'}
                             <div className="space-y-2">
                               <div className="flex items-center gap-2">
                                 <h4 className="font-semibold">
-                                  {report.status === "Approved" ? "✅ APPROVED" : "❌ REJECTED"} Disbursement - {report.period}
+                                  {report.status === "Approved" ? "✅ APPROVED" : "��� REJECTED"} Disbursement - {report.period}
                                 </h4>
                                 <Badge
                                   variant={
