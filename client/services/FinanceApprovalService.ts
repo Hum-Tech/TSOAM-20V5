@@ -374,6 +374,10 @@ class FinanceApprovalService {
         batch.metadata.priority = 'low';
       }
 
+      // Remove from pending immediately when first approval happens
+      this.moveToHistory(batch, [action]);
+      this.removePendingBatch(batchId);
+
       // Notify HR immediately that batch is approved
       this.notifyHRModule('batch_approved', {
         batchId,
@@ -391,9 +395,11 @@ class FinanceApprovalService {
         this.createDisbursementReport(batchId, approvedBy);
       }
 
-      // Move to history only when all processing is complete
-      this.moveToHistory(batch, [action]);
-      this.removePendingBatch(batchId);
+      // Batch already moved to history above if approved, only move if fully rejected
+      if (approvedTotal === 0) {
+        this.moveToHistory(batch, [action]);
+        this.removePendingBatch(batchId);
+      }
     }
 
     // Create notification
