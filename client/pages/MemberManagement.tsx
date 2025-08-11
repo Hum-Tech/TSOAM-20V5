@@ -2480,6 +2480,88 @@ export default function MemberManagement() {
           </DialogContent>
         </Dialog>
 
+        {/* Home Cell Details Dialog */}
+        <Dialog
+          open={showHomeCellDetailsDialog}
+          onOpenChange={setShowHomeCellDetailsDialog}
+        >
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>Home Cell Details</DialogTitle>
+            </DialogHeader>
+            {selectedHomeCellForDetails && (
+              <div className="space-y-4">
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <Label className="text-sm font-medium">Home Cell Name</Label>
+                    <p className="text-lg font-semibold">{selectedHomeCellForDetails.name}</p>
+                  </div>
+                  <div>
+                    <Label className="text-sm font-medium">Status</Label>
+                    <Badge variant={selectedHomeCellForDetails.isActive ? "default" : "secondary"}>
+                      {selectedHomeCellForDetails.isActive ? "Active" : "Inactive"}
+                    </Badge>
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <Label className="text-sm font-medium">Cell Leader</Label>
+                    <p className="text-sm">{selectedHomeCellForDetails.leader || "Not assigned"}</p>
+                  </div>
+                  <div>
+                    <Label className="text-sm font-medium">Leader Phone</Label>
+                    <p className="text-sm">{selectedHomeCellForDetails.leaderPhone || "Not provided"}</p>
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <Label className="text-sm font-medium">Meeting Day</Label>
+                    <p className="text-sm">{selectedHomeCellForDetails.meetingDay || "Not scheduled"}</p>
+                  </div>
+                  <div>
+                    <Label className="text-sm font-medium">Meeting Time</Label>
+                    <p className="text-sm">{selectedHomeCellForDetails.meetingTime || "Not scheduled"}</p>
+                  </div>
+                </div>
+
+                <div>
+                  <Label className="text-sm font-medium">Meeting Location</Label>
+                  <p className="text-sm">{selectedHomeCellForDetails.location || "Not specified"}</p>
+                </div>
+
+                {selectedHomeCellForDetails.description && (
+                  <div>
+                    <Label className="text-sm font-medium">Description</Label>
+                    <p className="text-sm">{selectedHomeCellForDetails.description}</p>
+                  </div>
+                )}
+
+                <div className="grid grid-cols-2 gap-4 text-xs text-muted-foreground">
+                  <div>
+                    <Label className="text-xs font-medium">Created</Label>
+                    <p>{new Date(selectedHomeCellForDetails.createdAt).toLocaleDateString()}</p>
+                  </div>
+                  <div>
+                    <Label className="text-xs font-medium">Last Updated</Label>
+                    <p>{new Date(selectedHomeCellForDetails.updatedAt).toLocaleDateString()}</p>
+                  </div>
+                </div>
+
+                <div className="flex justify-end pt-4">
+                  <Button
+                    variant="outline"
+                    onClick={() => setShowHomeCellDetailsDialog(false)}
+                  >
+                    Close
+                  </Button>
+                </div>
+              </div>
+            )}
+          </DialogContent>
+        </Dialog>
+
         {/* Transfer Home Cell Dialog */}
         <Dialog
           open={showTransferHomeCellDialog}
