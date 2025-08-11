@@ -732,8 +732,8 @@ export default function SystemLogs() {
                     </TableRow>
                   </TableHeader>
                   <TableBody>
-                    {filteredLogs.map((log) => (
-                      <TableRow key={log.id}>
+                    {filteredLogs.map((log, index) => (
+                      <TableRow key={`${log.id}-${index}-${log.timestamp}`}>
                         <TableCell className="font-medium">
                           {log.timestamp}
                         </TableCell>
