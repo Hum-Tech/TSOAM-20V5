@@ -193,27 +193,47 @@ export function Header() {
   // Load notifications from localStorage on mount
   useEffect(() => {
     if (user) {
-      const storedNotifications = JSON.parse(localStorage.getItem('notifications') || '[]');
-      // Filter notifications for current user (employees only see their internal messages)
-      const userNotifications = storedNotifications.filter((notif: any) => {
+      // Check user-specific notifications first
+      const userSpecificKey = `notifications_${user.id}`;
+      const userSpecificNotifications = JSON.parse(localStorage.getItem(userSpecificKey) || '[]');
+
+      // Also check general notifications for backward compatibility
+      const generalNotifications = JSON.parse(localStorage.getItem('notifications') || '[]');
+
+      // Combine and filter notifications for current user
+      const allNotifications = [...userSpecificNotifications, ...generalNotifications];
+      const userNotifications = allNotifications.filter((notif: any, index: number, arr: any[]) => {
+        // Remove duplicates based on ID
+        const isUnique = arr.findIndex(n => n.id === notif.id) === index;
+        if (!isUnique) return false;
+
         // If it's an internal message, only show to the specific recipient
         if (notif.type === "internal" && notif.recipientId) {
-          return notif.recipientId === `E00${user.id}` || notif.recipientId === user.id;
+          return notif.recipientId === user.id ||
+                 notif.recipientEmail === user.email ||
+                 notif.recipientId === `E00${user.id}`;
         }
         // Show all other types of notifications
         return true;
       });
 
-      // Convert to header notification format
-      const headerNotifications = userNotifications.slice(0, 10).map((notif: any) => ({
-        id: notif.id || Date.now(),
-        type: (notif.type === "internal" ? "message" : "system") as "message" | "system" | "welfare" | "maintenance",
-        title: notif.title || "New Notification",
-        message: notif.message || "You have a new notification",
-        time: notif.timestamp ? formatTime(notif.timestamp) : "Recently",
-        unread: !notif.read,
-        priority: "medium" as "high" | "medium" | "low",
-      }));
+      // Convert to header notification format and sort by timestamp
+      const headerNotifications = userNotifications
+        .sort((a: any, b: any) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime())
+        .slice(0, 10)
+        .map((notif: any) => ({
+          id: notif.id || Date.now(),
+          type: (notif.type === "internal" ? "message" : "system") as "message" | "system" | "welfare" | "maintenance",
+          title: notif.title || "New Notification",
+          message: notif.message || "You have a new notification",
+          time: notif.timestamp ? formatTime(notif.timestamp) : "Recently",
+          unread: !notif.read,
+          priority: notif.type === "internal" ? "high" : "medium" as "high" | "medium" | "low",
+          fullMessage: notif.fullMessage,
+          sender: notif.sender,
+          subject: notif.subject,
+          messageType: notif.messageType
+        }));
 
       setNotifications(headerNotifications);
     }
