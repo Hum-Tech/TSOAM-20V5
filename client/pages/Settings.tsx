@@ -1148,48 +1148,48 @@ export default function Settings() {
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-2">
-                    <div className="flex justify-between items-center p-3 bg-muted rounded-lg">
-                      <div>
-                        <div className="font-medium">Full System Backup</div>
-                        <div className="text-sm text-muted-foreground">
-                          January 15, 2025 • 2:00 AM ��� 245.3 MB
+                    {getRecentBackups().length > 0 ? (
+                      getRecentBackups().map((backup) => (
+                        <div key={backup.id} className="flex justify-between items-center p-3 bg-muted rounded-lg">
+                          <div>
+                            <div className="font-medium">{backup.name}</div>
+                            <div className="text-sm text-muted-foreground">
+                              {new Date(backup.timestamp).toLocaleDateString()} • {new Date(backup.timestamp).toLocaleTimeString()} • {(backup.size / 1024 / 1024).toFixed(1)} MB
+                            </div>
+                          </div>
+                          <div className="flex gap-2">
+                            <Badge
+                              variant={
+                                backup.status === "completed"
+                                  ? "default"
+                                  : backup.status === "failed"
+                                  ? "destructive"
+                                  : "secondary"
+                              }
+                            >
+                              {backup.status === "completed" ? "Success" :
+                               backup.status === "failed" ? "Failed" : "In Progress"}
+                            </Badge>
+                            {backup.status === "completed" && (
+                              <Button
+                                size="sm"
+                                variant="outline"
+                                onClick={() => downloadBackup(backup.id)}
+                              >
+                                <Download className="h-4 w-4 mr-1" />
+                                Download
+                              </Button>
+                            )}
+                          </div>
                         </div>
+                      ))
+                    ) : (
+                      <div className="text-center py-8 text-muted-foreground">
+                        <Database className="h-12 w-12 mx-auto mb-4 opacity-50" />
+                        <p>No backups found</p>
+                        <p className="text-sm">Create your first backup to see it here</p>
                       </div>
-                      <div className="flex gap-2">
-                        <Badge variant="default">Success</Badge>
-                        <Button size="sm" variant="outline">
-                          Download
-                        </Button>
-                      </div>
-                    </div>
-                    <div className="flex justify-between items-center p-3 bg-muted rounded-lg">
-                      <div>
-                        <div className="font-medium">Full System Backup</div>
-                        <div className="text-sm text-muted-foreground">
-                          January 14, 2025 • 2:00 AM • 243.1 MB
-                        </div>
-                      </div>
-                      <div className="flex gap-2">
-                        <Badge variant="default">Success</Badge>
-                        <Button size="sm" variant="outline">
-                          Download
-                        </Button>
-                      </div>
-                    </div>
-                    <div className="flex justify-between items-center p-3 bg-muted rounded-lg">
-                      <div>
-                        <div className="font-medium">Full System Backup</div>
-                        <div className="text-sm text-muted-foreground">
-                          January 13, 2025 • 2:00 AM • 241.8 MB
-                        </div>
-                      </div>
-                      <div className="flex gap-2">
-                        <Badge variant="default">Success</Badge>
-                        <Button size="sm" variant="outline">
-                          Download
-                        </Button>
-                      </div>
-                    </div>
+                    )}
                   </div>
                 </CardContent>
               </Card>
