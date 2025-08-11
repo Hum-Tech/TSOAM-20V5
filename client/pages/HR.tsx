@@ -8196,7 +8196,7 @@ ${performanceFormData.managerComments || 'Not specified'}
                         <TableBody>
                           {selectedDisbursementReport.employees.map(
                             (emp, index) => (
-                              <TableRow key={index}>
+                              <TableRow key={`disbursement-emp-${emp.employeeId || emp.id || index}-${selectedDisbursementReport.id}`}>
                                 <TableCell>
                                   <div>
                                     <p className="font-medium">
