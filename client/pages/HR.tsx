@@ -6753,10 +6753,10 @@ ${performanceFormData.managerComments || 'Not specified'}
                 <div>
                   <Label htmlFor="p9Employee">Select Employee *</Label>
                   <Select
-                    value={selectedP9Employee?.id.toString() || ""}
+                    value={selectedP9Employee?.id?.toString() || ""}
                     onValueChange={(value) => {
                       const employee = employees.find(
-                        (e) => e.id.toString() === value,
+                        (e) => e.id?.toString() === value,
                       );
                       setSelectedP9Employee(employee || null);
                     }}
@@ -6766,13 +6766,13 @@ ${performanceFormData.managerComments || 'Not specified'}
                     </SelectTrigger>
                     <SelectContent>
                       {employees
-                        .filter((e) => e.employmentStatus === "Active")
+                        .filter((e) => e.employmentStatus === "Active" && e.id && (e.fullName || e.full_name))
                         .map((employee) => (
                           <SelectItem
                             key={employee.id}
                             value={employee.id.toString()}
                           >
-                            {employee.fullName} - {employee.employeeId}
+                            {employee.fullName || employee.full_name} - {employee.employeeId || employee.employee_id}
                           </SelectItem>
                         ))}
                     </SelectContent>
