@@ -190,6 +190,35 @@ export function Header() {
     };
   }, []);
 
+  // Listen for new notifications from messaging system
+  useEffect(() => {
+    const handleNotificationAdded = (event: CustomEvent) => {
+      const { count, type, sender } = event.detail;
+
+      // Add new notification to the list
+      const newNotification = {
+        id: Date.now(),
+        type: "message",
+        title: `New ${type} Message`,
+        message: `You have a new ${type.toLowerCase()} message from ${sender}`,
+        time: "Just now",
+        unread: true,
+        priority: "medium" as const,
+      };
+
+      setNotifications(prev => [newNotification, ...prev]);
+
+      // Show toast notification (optional)
+      console.log(`🔔 New ${type} message from ${sender}`);
+    };
+
+    window.addEventListener('notificationAdded', handleNotificationAdded as EventListener);
+
+    return () => {
+      window.removeEventListener('notificationAdded', handleNotificationAdded as EventListener);
+    };
+  }, []);
+
   // Mark notification as read
   const markNotificationAsRead = (id: number) => {
     setNotifications((prev) =>
