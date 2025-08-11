@@ -929,8 +929,9 @@ export function Header() {
             </div>
           </DialogContent>
         </Dialog>
+      )}
 
-        {/* Reply Dialog */}
+      {/* Reply Dialog */}
         <Dialog open={showReplyDialog} onOpenChange={setShowReplyDialog}>
           <DialogContent className="sm:max-w-[500px]">
             <DialogHeader>
