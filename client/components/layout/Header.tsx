@@ -995,7 +995,6 @@ export function Header() {
             )}
           </DialogContent>
         </Dialog>
-      )}
     </header>
   );
 }
