@@ -835,14 +835,7 @@ export default function Messaging() {
                     Compose Message
                   </Button>
                 </DialogTrigger>
-            ) : (
-              <Button disabled title="You don't have permission to send messages">
-                <Plus className="h-4 w-4 mr-2" />
-                Compose Message
-              </Button>
-            )}
-            {canSendMessages && (
-              <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+                <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
                 <DialogHeader>
                   <DialogTitle>Compose New Message</DialogTitle>
                 </DialogHeader>
