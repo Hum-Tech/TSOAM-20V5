@@ -354,11 +354,11 @@ export default function Messaging() {
   const { user } = useAuth();
 
   // Role-based access check - Admin, HR Officer, Finance Officer, User, and Pastor can send messages
-  const canSendMessages = user?.role === "admin" ||
-                         user?.role === "pastor" ||
-                         user?.role === "hr" ||
-                         user?.role === "finance" ||
-                         user?.role === "user";
+  const canSendMessages = user?.role?.toLowerCase() === "admin" ||
+                         user?.role?.toLowerCase() === "pastor" ||
+                         user?.role?.toLowerCase() === "hr" ||
+                         user?.role?.toLowerCase() === "finance" ||
+                         user?.role?.toLowerCase() === "user";
 
 
   const [searchTerm, setSearchTerm] = useState("");
