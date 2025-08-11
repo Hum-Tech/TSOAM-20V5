@@ -8086,7 +8086,7 @@ ${performanceFormData.managerComments || 'Not specified'}
                               <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
                                 <div>
                                   <p className="text-muted-foreground">
-                                    Employees
+                                    {report.status === "Approved" ? "Disbursed" : "Rejected"} Employees
                                   </p>
                                   <p className="font-medium">
                                     {report.totalEmployees}
@@ -8094,9 +8094,9 @@ ${performanceFormData.managerComments || 'Not specified'}
                                 </div>
                                 <div>
                                   <p className="text-muted-foreground">
-                                    Total Amount
+                                    {report.status === "Approved" ? "Amount Disbursed" : "Amount NOT Disbursed"}
                                   </p>
-                                  <p className="font-medium text-green-600">
+                                  <p className={`font-medium ${report.status === "Approved" ? "text-green-600" : "text-red-600"}`}>
                                     KSh {(report.totalNetAmount || 0).toLocaleString()}
                                   </p>
                                 </div>
