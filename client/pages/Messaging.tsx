@@ -748,6 +748,9 @@ export default function Messaging() {
             <p className="text-muted-foreground">
               Send SMS and emails to church members and staff
             </p>
+            <p className="text-xs text-blue-600 bg-blue-50 px-2 py-1 rounded">
+              Debug: User: {user?.name} | Role: {user?.role} | Can Send: {canSendMessages ? "Yes" : "No"}
+            </p>
           </div>
           <div className="flex gap-2">
             <Dialog open={isContactsOpen} onOpenChange={setIsContactsOpen}>
