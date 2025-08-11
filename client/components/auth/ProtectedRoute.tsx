@@ -106,6 +106,16 @@ export function ProtectedRoute({
 
     const normalizedRole = roleMappingLookup[user.role] || user.role.toLowerCase();
 
+    // Debug logging (remove in production)
+    console.log('ProtectedRoute Debug:', {
+      userRole: user.role,
+      normalizedRole,
+      allowedRoles,
+      currentPath: location.pathname,
+      roleIncluded: allowedRoles.includes(normalizedRole),
+      originalRoleIncluded: allowedRoles.includes(user.role)
+    });
+
     // Check if user's normalized role is in allowedRoles
     // Also check the original role for backward compatibility
     if (!allowedRoles.includes(normalizedRole) && !allowedRoles.includes(user.role)) {
