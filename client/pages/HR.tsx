@@ -188,13 +188,15 @@ interface DisbursementReport {
   approvedDate: string;
   disbursementDate: string;
   disbursementMethod: string;
-  status: "Approved" | "Disbursed" | "Failed";
+  status: "Approved" | "Disbursed" | "Failed" | "Rejected";
   employees: {
+    id?: string;
     employeeId: string;
     employeeName: string;
     netSalary: number;
     accountNumber?: string;
-    disbursementStatus: "Pending" | "Success" | "Failed";
+    disbursementStatus: "Pending" | "Success" | "Failed" | "Rejected" | "Disbursed";
+    rejectionReason?: string;
   }[];
   notes?: string;
 }
@@ -2218,7 +2220,7 @@ ${performanceFormData.managerComments || 'Not specified'}
             alert(
               `❌ Payroll Rejected by Finance!\n\n` +
                 `�� Period: ${rejectionData.period}\n` +
-                `💰 Amount: KSh ${rejectionData.amount?.toLocaleString()}\n` +
+                `���� Amount: KSh ${rejectionData.amount?.toLocaleString()}\n` +
                 `👤 Rejected by: ${rejectionData.rejectedBy}\n` +
                 `�� Reason: ${rejectionData.rejectionReason}\n` +
                 `📅 Date: ${new Date(rejectionData.rejectedDate).toLocaleDateString()}\n\n` +
@@ -4758,7 +4760,7 @@ ${performanceFormData.managerComments || 'Not specified'}
                                   const financialImpact = FinanceApprovalService.calculateFinancialImpact(batch.batchId);
                                   alert(
                                     `📦 PRODUCTION BATCH DETAILS\n\n` +
-                                    `🆔 Batch ID: ${batch.batchId}\n` +
+                                    `��� Batch ID: ${batch.batchId}\n` +
                                     `📅 Period: ${batch.period}\n` +
                                     `👥 Employees: ${batch.totalEmployees || 0}\n` +
                                     `💰 Gross Amount: KSh ${(batch.totalGrossAmount || 0).toLocaleString()}\n` +
@@ -4788,7 +4790,7 @@ ${performanceFormData.managerComments || 'Not specified'}
                                   const confirmed = confirm(
                                     `🔔 Send Reminder to Finance?\n\n` +
                                     `This will notify the Finance team about:\n` +
-                                    `��� Batch ID: ${batch.batchId}\n` +
+                                    `����� Batch ID: ${batch.batchId}\n` +
                                     `• Amount: KSh ${(batch.totalNetAmount || batch.totalAmount || 0).toLocaleString()}\n` +
                                     `• Submitted: ${new Date(batch.submittedDate).toLocaleDateString()}\n\n` +
                                     `Continue with reminder?`
