@@ -4710,7 +4710,7 @@ ${performanceFormData.managerComments || 'Not specified'}
                                     `🔔 Send Reminder to Finance?\n\n` +
                                     `This will notify the Finance team about:\n` +
                                     `��� Batch ID: ${batch.batchId}\n` +
-                                    `• Amount: KSh ${batch.totalAmount.toLocaleString()}\n` +
+                                    `• Amount: KSh ${(batch.totalNetAmount || batch.totalAmount || 0).toLocaleString()}\n` +
                                     `• Submitted: ${new Date(batch.submittedDate).toLocaleDateString()}\n\n` +
                                     `Continue with reminder?`
                                   );
@@ -5673,7 +5673,7 @@ ${performanceFormData.managerComments || 'Not specified'}
                                 size="sm"
                                 className="h-8 w-8 p-0 border-red-200"
                                 onClick={() => {
-                                  alert('⚠️ Performance review is 7 days overdue. Manager has been notified.');
+                                  alert('⚠��� Performance review is 7 days overdue. Manager has been notified.');
                                   console.log('Overdue alert triggered for Mike Johnson');
                                 }}
                                 title="Review Overdue Alert"
