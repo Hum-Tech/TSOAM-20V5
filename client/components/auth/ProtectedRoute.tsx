@@ -94,7 +94,7 @@ export function ProtectedRoute({
   }
 
   // Check role-based access if roles are specified
-  if (allowedRoles && !allowedRoles.includes(user.role)) {
+  if (allowedRoles) {
     // Map old role format to new format for compatibility
     const roleMappingLookup: Record<string, string> = {
       "Admin": "admin",
@@ -105,6 +105,9 @@ export function ProtectedRoute({
     };
 
     const normalizedRole = roleMappingLookup[user.role] || user.role;
+
+    // Check if user's normalized role is in allowedRoles
+    if (!allowedRoles.includes(normalizedRole)) {
     const userAllowedPages = rolePages[normalizedRole as keyof typeof rolePages] || [
       "/",
     ];
