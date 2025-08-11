@@ -89,6 +89,7 @@ interface NewMember {
   address: string;
   emergencyContactName: string;
   emergencyContactPhone: string;
+  homeCell: string;
   visitDate: string;
   daysAsNewMember: number;
   baptized: boolean;
