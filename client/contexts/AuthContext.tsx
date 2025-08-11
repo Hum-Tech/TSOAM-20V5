@@ -186,6 +186,9 @@ const getRolePermissions = (role: string) => {
 
   switch (role) {
     case "Admin":
+    case "admin":
+    case "Pastor":
+    case "pastor":
       return {
         dashboard: true,
         members: true,
