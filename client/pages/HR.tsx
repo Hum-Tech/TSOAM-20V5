@@ -1638,8 +1638,9 @@ ${performanceFormData.managerComments || 'Not specified'}
           let totalAllowances: number = 0;
 
           if (typeof allowancesObj === 'object' && allowancesObj !== null) {
-            totalAllowances = Object.values(allowancesObj).reduce(
-              (sum: number, allowance: unknown) => sum + (Number(allowance) || 0),
+            const allowanceValues = Object.values(allowancesObj) as number[];
+            totalAllowances = allowanceValues.reduce(
+              (sum: number, allowance: number) => sum + (Number(allowance) || 0),
               0
             );
           }
