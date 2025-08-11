@@ -2098,11 +2098,20 @@ ${performanceFormData.managerComments || 'Not specified'}
           setPayrollRecords(prevRecords =>
             prevRecords.map(record =>
               record.batchId === data.batchId
-                ? { ...record, status: "Approved", approvedBy: data.approvedBy, approvedDate: data.approvedDate }
+                ? {
+                    ...record,
+                    status: "Approved",
+                    approvedBy: data.approvedBy,
+                    approvedDate: data.approvedDate,
+                    priority: undefined // Remove priority status
+                  }
                 : record
             )
           );
-          alert(`✅ Payroll Batch Approved!\n\nBatch: ${data.batchId}\nApproved by: ${data.approvedBy}\nTotal: KSh ${(data.totalAmount || 0).toLocaleString()}\n\nAll payments are now ready for disbursement.`);
+
+          // Show appropriate message based on whether it's partial or full approval
+          const approvalType = data.partialApproval ? "partially approved" : "fully approved";
+          alert(`✅ Payroll Batch ${approvalType.toUpperCase()}!\n\nBatch: ${data.batchId}\nApproved by: ${data.approvedBy}\nTotal: KSh ${(data.totalAmount || 0).toLocaleString()}\n\n${data.partialApproval ? "Some payments approved - others may still be pending review." : "All payments are now ready for disbursement."}`);
           break;
 
         case 'batch_rejected':
