@@ -844,14 +844,14 @@ export default function SystemLogs() {
                       <div className="flex justify-between items-start mb-2">
                         <div className="flex items-center gap-2">
                           <AlertTriangle className="h-4 w-4 text-red-500" />
-                          <span className="font-semibold">{log.event}</span>
+                          <span className="font-semibold">{log.action}</span>
                           <Badge variant="destructive">{log.level}</Badge>
                         </div>
                         <span className="text-sm text-muted-foreground">
                           {log.timestamp}
                         </span>
                       </div>
-                      <p className="text-sm mb-2">{log.description}</p>
+                      <p className="text-sm mb-2">{log.details}</p>
                       <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
                         <div>
                           <span className="font-medium">Module:</span>{" "}
