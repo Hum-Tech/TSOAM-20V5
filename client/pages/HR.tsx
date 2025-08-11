@@ -2706,62 +2706,144 @@ ${performanceFormData.managerComments || 'Not specified'}
     );
   };
 
-  const generatePayslip = (employee: Employee) => {
+  const generatePayslip = async (employee: Employee) => {
     try {
-      // Handle different property names for basic salary
-      const basicSalary = employee.basicSalary || employee.basic_salary || 0;
+      // Comprehensive employee validation
+      if (!employee) {
+        alert("❌ No employee selected");
+        return;
+      }
 
-      // Handle allowances from different property structures
+      const employeeName = employee.fullName || employee.full_name;
+      const employeeId = employee.employeeId || employee.employee_id;
+
+      if (!employeeName || !employeeId) {
+        alert("❌ Employee data incomplete. Missing name or ID.");
+        return;
+      }
+
+      // Handle different property names for basic salary with validation
+      const basicSalary = Number(employee.basicSalary || employee.basic_salary || 0);
+
+      if (basicSalary <= 0) {
+        alert(`❌ Cannot generate payslip for ${employeeName}\n\nReason: Basic salary not set or invalid\nPlease update employee salary information first.`);
+        return;
+      }
+
+      // Handle allowances from different property structures with better validation
       let allowancesTotal = 0;
+      const allowancesBreakdown = {
+        housing: 0,
+        transport: 0,
+        medical: 0,
+        other: 0
+      };
+
       if (employee.allowances && typeof employee.allowances === 'object') {
-        allowancesTotal = Object.values(employee.allowances).reduce((a, b) => (Number(a) || 0) + (Number(b) || 0), 0) as number;
+        allowancesBreakdown.housing = Number(employee.allowances.housing || 0);
+        allowancesBreakdown.transport = Number(employee.allowances.transport || 0);
+        allowancesBreakdown.medical = Number(employee.allowances.medical || 0);
+        allowancesBreakdown.other = Number(employee.allowances.other || 0);
+        allowancesTotal = Object.values(allowancesBreakdown).reduce((a, b) => a + b, 0);
       } else {
         // Try individual allowance properties
-        allowancesTotal = (employee.housing_allowance || 0) +
-                         (employee.transport_allowance || 0) +
-                         (employee.medical_allowance || 0) +
-                         (employee.other_allowances || 0);
+        allowancesBreakdown.housing = Number(employee.housing_allowance || 0);
+        allowancesBreakdown.transport = Number(employee.transport_allowance || 0);
+        allowancesBreakdown.medical = Number(employee.medical_allowance || 0);
+        allowancesBreakdown.other = Number(employee.other_allowances || 0);
+        allowancesTotal = Object.values(allowancesBreakdown).reduce((a, b) => a + b, 0);
       }
 
       const grossSalary = basicSalary + allowancesTotal;
 
-      if (grossSalary <= 0) {
-        alert("Cannot generate payslip: Invalid salary data for this employee");
+      // Validate minimum salary requirements
+      if (grossSalary < 1000) {
+        alert(`❌ Cannot generate payslip for ${employeeName}\n\nReason: Gross salary too low (KSh ${grossSalary.toLocaleString()})\nMinimum required: KSh 1,000`);
         return;
       }
 
-      // Kenya tax calculations
+      // Kenya tax calculations with 2024/2025 rates
       const paye = calculatePayrollPAYE(grossSalary);
-      const sha = grossSalary * 0.0275; // 2.75% SHA
-      const nssf = Math.min(grossSalary * 0.06, 2160); // 6% capped at KSH 2,160
-      const housingLevy = grossSalary * 0.015; // 1.5% Housing Levy
+      const sha = Math.round(grossSalary * 0.0275); // 2.75% SHA (Social Health Authority)
+      const nssf = Math.round(Math.min(grossSalary * 0.06, 2160)); // 6% capped at KSH 2,160
+      const housingLevy = Math.round(grossSalary * 0.015); // 1.5% Affordable Housing Levy
 
       const totalDeductions = paye + sha + nssf + housingLevy;
       const netSalary = grossSalary - totalDeductions;
 
+      // Get church settings for payslip header
+      const churchSettings = settingsService.getChurchSettings();
+
       const payslipData = {
-        employee,
+        employee: {
+          ...employee,
+          fullName: employeeName,
+          employeeId: employeeId,
+          kraPin: employee.kraPin || employee.kra_pin || 'Not Set',
+          nhifNumber: employee.nhifNumber || employee.nhif_number || 'Not Set',
+          nssfNumber: employee.nssfNumber || employee.nssf_number || 'Not Set',
+          department: employee.department || 'General'
+        },
+        organization: {
+          name: churchSettings.name || 'THE SEED OF ABRAHAM MINISTRY',
+          address: churchSettings.address || 'P.O. Box 123, Nairobi',
+          phone: churchSettings.phone || '+254 700 000 000',
+          email: churchSettings.email || 'hr@tsoam.org',
+          kraPin: churchSettings.kraPin || 'P123456789X'
+        },
         period: new Date().toLocaleDateString("en-US", {
           month: "long",
           year: "numeric",
         }),
-        basicSalary,
-        allowances: allowancesTotal,
-        grossSalary,
-        paye,
-        sha,
-        nssf,
-        housingLevy,
-        totalDeductions,
-        netSalary,
+        payPeriod: {
+          from: new Date(new Date().getFullYear(), new Date().getMonth(), 1).toLocaleDateString(),
+          to: new Date(new Date().getFullYear(), new Date().getMonth() + 1, 0).toLocaleDateString()
+        },
+        basicSalary: Math.round(basicSalary),
+        allowances: {
+          housing: Math.round(allowancesBreakdown.housing),
+          transport: Math.round(allowancesBreakdown.transport),
+          medical: Math.round(allowancesBreakdown.medical),
+          other: Math.round(allowancesBreakdown.other),
+          total: Math.round(allowancesTotal)
+        },
+        grossSalary: Math.round(grossSalary),
+        deductions: {
+          paye: Math.round(paye),
+          sha: Math.round(sha),
+          nssf: Math.round(nssf),
+          housingLevy: Math.round(housingLevy),
+          total: Math.round(totalDeductions)
+        },
+        netSalary: Math.round(netSalary),
         generatedDate: new Date().toLocaleDateString(),
+        generatedTime: new Date().toLocaleTimeString(),
+        generatedBy: 'HR System',
+        payslipNumber: `PS-${employeeId}-${new Date().getFullYear()}${String(new Date().getMonth() + 1).padStart(2, '0')}`
       };
 
+      // Show confirmation before generating
+      const confirmed = confirm(
+        `Generate payslip for ${employeeName}?\n\n` +
+        `Period: ${payslipData.period}\n` +
+        `Gross Salary: KSh ${grossSalary.toLocaleString()}\n` +
+        `Net Salary: KSh ${netSalary.toLocaleString()}\n\n` +
+        `Click OK to generate and print payslip.`
+      );
+
+      if (!confirmed) return;
+
       // Generate and print payslip
-      printPayslip(payslipData);
+      await printPayslip(payslipData);
+
+      // Show success message
+      setTimeout(() => {
+        alert(`✅ Payslip generated successfully!\n\nEmployee: ${employeeName}\nPayslip Number: ${payslipData.payslipNumber}\nNet Salary: KSh ${netSalary.toLocaleString()}\n\nPayslip has been sent to printer.`);
+      }, 1000);
+
     } catch (error) {
       console.error("Error generating payslip:", error);
-      alert("Failed to generate payslip. Please check employee data and try again.");
+      alert(`❌ Failed to generate payslip\n\nError: ${error instanceof Error ? error.message : 'Unknown error'}\n\nPlease check employee data and try again.`);
     }
   };
 
