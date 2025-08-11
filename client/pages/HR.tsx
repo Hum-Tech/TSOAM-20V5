@@ -66,6 +66,7 @@ import {
 } from "lucide-react";
 import { exportService } from "@/services/ExportService";
 import { financialTransactionService } from "@/services/FinancialTransactionService";
+import FinanceApprovalService from "@/services/FinanceApprovalService";
 import { cn } from "@/lib/utils";
 import { settingsService } from "@/services/SettingsService";
 import { AbortHandler } from "@/utils/abortHandler";
