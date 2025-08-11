@@ -51,6 +51,10 @@ interface Notification {
   sender?: string;
   recipient?: string;
   priority: "low" | "medium" | "high";
+  messageType?: string;
+  subject?: string;
+  fullMessage?: string;
+  senderId?: string;
 }
 
 interface Message {
