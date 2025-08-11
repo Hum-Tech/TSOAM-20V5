@@ -2497,6 +2497,73 @@ export default function MemberManagement() {
           </DialogContent>
         </Dialog>
 
+        {/* Transfer Home Cell Dialog */}
+        <Dialog
+          open={showTransferHomeCellDialog}
+          onOpenChange={setShowTransferHomeCellDialog}
+        >
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>Transfer Member to Different Home Cell</DialogTitle>
+            </DialogHeader>
+            {memberToTransfer && (
+              <div className="space-y-4">
+                <div className="p-4 bg-gray-50 rounded-lg">
+                  <h4 className="font-medium">{memberToTransfer.fullName}</h4>
+                  <p className="text-sm text-muted-foreground">
+                    Member ID: {memberToTransfer.memberId}
+                  </p>
+                  <p className="text-sm text-muted-foreground">
+                    Current Home Cell: {memberToTransfer.homeCell || "Not assigned"}
+                  </p>
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="transferHomeCell">Select New Home Cell</Label>
+                  <Select
+                    value={newHomeCellForTransfer}
+                    onValueChange={setNewHomeCellForTransfer}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select new home cell" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {homeCells
+                        .filter(cell => cell.name !== memberToTransfer.homeCell)
+                        .map((cell) => (
+                          <SelectItem key={cell.id} value={cell.name}>
+                            {cell.name}
+                          </SelectItem>
+                        ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                <div className="flex gap-2 pt-4">
+                  <Button
+                    variant="outline"
+                    onClick={() => {
+                      setShowTransferHomeCellDialog(false);
+                      setMemberToTransfer(null);
+                      setNewHomeCellForTransfer("");
+                    }}
+                    className="flex-1"
+                  >
+                    Cancel
+                  </Button>
+                  <Button
+                    onClick={handleTransferHomeCell}
+                    className="flex-1"
+                    disabled={!newHomeCellForTransfer}
+                  >
+                    Transfer Member
+                  </Button>
+                </div>
+              </div>
+            )}
+          </DialogContent>
+        </Dialog>
+
         {/* Member Tithe Records Dialog */}
         <MemberTitheRecords
           isOpen={showTitheRecords}
