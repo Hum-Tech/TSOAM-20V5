@@ -2943,27 +2943,37 @@ ${performanceFormData.managerComments || 'Not specified'}
     }
   };
 
-  const calculatePayrollPAYE = (grossSalary: number): number => {
-    // Kenya PAYE calculation for 2024/2025
-    let paye = 0;
-    const monthlyIncome = grossSalary;
+  // Production-grade PAYE calculation with enhanced accuracy
+  const calculateProductionPAYE = (grossSalary: number): number => {
+    if (grossSalary <= 0) return 0;
 
+    // Kenya PAYE calculation for 2024/2025 (exact rates)
+    let paye = 0;
+    const monthlyIncome = Math.round(grossSalary);
+
+    // Tax bands (per month)
     if (monthlyIncome <= 24000) {
-      paye = monthlyIncome * 0.1; // 10%
+      paye = monthlyIncome * 0.1; // 10% on first KSh 24,000
     } else if (monthlyIncome <= 32333) {
-      paye = 2400 + (monthlyIncome - 24000) * 0.25; // 25%
+      paye = 24000 * 0.1 + (monthlyIncome - 24000) * 0.25; // 25% on next KSh 8,333
     } else if (monthlyIncome <= 500000) {
-      paye = 2400 + 2083.25 + (monthlyIncome - 32333) * 0.3; // 30%
+      paye = 24000 * 0.1 + 8333 * 0.25 + (monthlyIncome - 32333) * 0.3; // 30% on next KSh 467,667
     } else if (monthlyIncome <= 800000) {
-      paye = 2400 + 2083.25 + 140300.1 + (monthlyIncome - 500000) * 0.325; // 32.5%
+      paye = 24000 * 0.1 + 8333 * 0.25 + 467667 * 0.3 + (monthlyIncome - 500000) * 0.325; // 32.5% on next KSh 300,000
     } else {
-      paye =
-        2400 + 2083.25 + 140300.1 + 97500 + (monthlyIncome - 800000) * 0.35; // 35%
+      paye = 24000 * 0.1 + 8333 * 0.25 + 467667 * 0.3 + 300000 * 0.325 + (monthlyIncome - 800000) * 0.35; // 35% on excess
     }
 
-    // Personal relief
-    paye -= 2400;
-    return Math.max(0, paye);
+    // Personal relief (KSh 2,400 per month)
+    const personalRelief = 2400;
+    paye = Math.max(paye - personalRelief, 0);
+
+    return Math.round(paye);
+  };
+
+  // Legacy function for backward compatibility
+  const calculatePayrollPAYE = (grossSalary: number): number => {
+    return calculateProductionPAYE(grossSalary);
   };
 
   const printPayslip = async (payslipData: any) => {
