@@ -67,6 +67,7 @@ import { exportService } from "@/services/ExportService";
 import { offlineService } from "@/services/OfflineService";
 import { financialTransactionService } from "@/services/FinancialTransactionService";
 import { FinanceApprovalCenter } from "@/components/FinanceApprovalCenter";
+import { PayrollApprovalCenter } from "@/components/PayrollApprovalCenter";
 
 // Real-time dashboard refresh utility
 const triggerDashboardRefresh = () => {
