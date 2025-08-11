@@ -84,7 +84,8 @@ class RoleBasedAccessService {
    * Check if user has specific permission
    */
   public hasPermission(permission: keyof UserPermissions): boolean {
-    return this.currentUser?.permissions[permission] ?? false;
+    const permissionValue = this.currentUser?.permissions[permission] ?? false;
+    return typeof permissionValue === 'boolean' ? permissionValue : false;
   }
 
   /**
