@@ -3108,10 +3108,11 @@ ${performanceFormData.managerComments || 'Not specified'}
 
                 .totals-section {
                   margin-top: 25px;
-                  background: linear-gradient(135deg, #2d3748 0%, #4a5568 100%);
+                  background: linear-gradient(135deg, #991b1b 0%, #7f1d1d 100%);
                   color: white;
                   border-radius: 8px;
                   overflow: hidden;
+                  border: 2px solid #dc2626;
                 }
 
                 .totals-header {
@@ -4821,7 +4822,7 @@ ${performanceFormData.managerComments || 'Not specified'}
                                     <Textarea
                                       placeholder="• Core competencies demonstrating excellence
 • Skills that stand out
-• Leadership qualities exhibited
+��� Leadership qualities exhibited
 ��� Positive feedback from others"
                                       className="min-h-24"
                                     />
