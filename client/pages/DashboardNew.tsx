@@ -1115,7 +1115,7 @@ export default function Dashboard() {
             )}
 
             {/* Admin Actions */}
-            {user?.role === "Admin" && (
+            {user?.role === "admin" && (
               <>
                 <Button
                   variant="outline"
