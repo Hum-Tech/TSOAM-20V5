@@ -3592,7 +3592,7 @@ export default function Inventory() {
                     <Label htmlFor="editCategory">Category *</Label>
                     <Select
                       value={editStockForm.category || ''}
-                      onValueChange={(value) => setEditStockForm({...editStockForm, category: value})}
+                      onValueChange={(value) => setEditStockForm({...editStockForm, category: value as InventoryItem['category']})}
                     >
                       <SelectTrigger>
                         <SelectValue placeholder="Select category" />
