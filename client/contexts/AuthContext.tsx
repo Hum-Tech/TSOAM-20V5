@@ -101,7 +101,7 @@ interface User {
   id: string;
   name: string;
   email: string;
-  role: "Admin" | "HR Officer" | "Finance Officer" | "User";
+  role: "admin" | "pastor" | "hr" | "finance" | "user";
   department?: string;
   employeeId?: string;
   lastLogin?: string;
