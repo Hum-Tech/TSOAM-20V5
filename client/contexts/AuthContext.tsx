@@ -305,7 +305,7 @@ let systemUsers: (User & { password: string; isActive: boolean })[] = [
       hr: true,
       finance: false,
       welfare: true,
-      inventory: false,
+      inventory: true,
       events: true,
       appointments: true,
       messaging: true,
