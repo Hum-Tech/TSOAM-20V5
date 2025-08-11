@@ -1959,7 +1959,7 @@ ${performanceFormData.managerComments || 'Not specified'}
           const confirmed = confirm(
             `🎯 Payroll Sent to Finance Successfully!\n\n` +
             `📦 Batch ID: ${batchId}\n` +
-            `��� Total Amount: KSh ${totalNetPayroll.toLocaleString()}\n` +
+            `💰 Total Amount: KSh ${totalNetPayroll.toLocaleString()}\n` +
             `👥 Employees: ${payrollRecords.length}\n\n` +
             `✅ Finance team has been notified and will review within 48 hours.\n` +
             `📱 You will be notified of approval/rejection status.\n\n` +
@@ -2201,6 +2201,28 @@ ${performanceFormData.managerComments || 'Not specified'}
                 : record
             )
           );
+
+          // Add to recently processed batches for display in pending section
+          setRecentlyProcessedBatches(prev => {
+            const rejectedBatch = {
+              batchId: data.batchId,
+              status: "Rejected",
+              rejectedBy: data.rejectedBy,
+              rejectedDate: data.rejectedDate,
+              reason: data.reason,
+              totalAmount: data.totalAmount,
+              employeeCount: data.employeeCount,
+              period: new Date().toISOString().slice(0, 7), // current month
+              totalEmployees: data.employeeCount,
+              totalNetAmount: data.totalAmount
+            };
+            return [rejectedBatch, ...prev.filter(batch => batch.batchId !== data.batchId)];
+          });
+
+          // Remove rejected batch after 5 seconds
+          setTimeout(() => {
+            setRecentlyProcessedBatches(prev => prev.filter(batch => batch.batchId !== data.batchId));
+          }, 5000);
 
           // Log Finance rejection
           SystemLogService.logFinance(
