@@ -832,6 +832,7 @@ export default function NewMembers() {
       address: "",
       emergencyContactName: "",
       emergencyContactPhone: "",
+      homeCell: "",
       employmentStatus: "",
       previousChurchName: "",
       reasonForLeavingPreviousChurch: "",
