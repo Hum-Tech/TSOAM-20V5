@@ -267,6 +267,12 @@ const safeToFixed = (value: any, decimals: number = 1): string => {
 
 export default function HR() {
   const [employees, setEmployees] = useState<Employee[]>([]);
+
+  // Debug log for employees state changes
+  useEffect(() => {
+    console.log("Employees state updated:", employees.length, "employees loaded");
+    employees.forEach(emp => console.log("Employee:", emp.fullName || emp.full_name, "ID:", emp.employeeId || emp.employee_id));
+  }, [employees]);
   const [leaveRequests, setLeaveRequests] = useState<LeaveRequest[]>([]);
   const [payrollRecords, setPayrollRecords] = useState<PayrollRecord[]>([]);
 
