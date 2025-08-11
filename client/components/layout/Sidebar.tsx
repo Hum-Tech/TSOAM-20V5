@@ -110,14 +110,17 @@ export function Sidebar() {
   const menuItems = allMenuItems.filter((item) => {
     if (!user?.permissions) return false;
 
+    // Admin and Pastor see ALL navigation items
+    if (user.role === "admin" || user.role === "Admin" || user.role === "pastor" || user.role === "Pastor") {
+      return true;
+    }
+
+    // For other roles, check role-based access control
     const navItemName = pathToNavMap[item.path];
     const hasRoleAccess = allowedNavItems.includes(navItemName);
     const hasPermission = user.permissions[item.permission as keyof typeof user.permissions];
 
     return hasRoleAccess && hasPermission;
-
-    // For other roles, use standard permission filtering
-    return user.permissions[item.permission as keyof typeof user.permissions];
   });
 
   return (
