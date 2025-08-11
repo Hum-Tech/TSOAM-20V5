@@ -353,11 +353,12 @@ const mockMessages: Message[] = [
 export default function Messaging() {
   const { user } = useAuth();
 
-  // Role-based access check
-  const canSendMessages = user?.role === "admin" ||
-                         user?.role === "pastor" ||
-                         user?.role === "hr" ||
-                         user?.role === "finance";
+  // Role-based access check - Admin, HR Officer, Finance Officer, User, and Pastor can send messages
+  const canSendMessages = user?.role === "admin" || user?.role === "Admin" ||
+                         user?.role === "pastor" || user?.role === "Pastor" ||
+                         user?.role === "hr" || user?.role === "HR Officer" ||
+                         user?.role === "finance" || user?.role === "Finance Officer" ||
+                         user?.role === "user" || user?.role === "User";
 
   // Debug logging
   console.log("Messaging Debug:", {
