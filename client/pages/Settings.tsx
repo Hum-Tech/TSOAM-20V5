@@ -619,6 +619,10 @@ export default function Settings() {
       const deleted = homeCellService.deleteHomeCell(id);
       if (deleted) {
         setHomeCells(homeCells.filter(c => c.id !== id));
+
+        // Emit event to notify other components
+        window.dispatchEvent(new CustomEvent('homeCellUpdated'));
+
         toast({
           title: "Success",
           description: `Home cell "${cell.name}" has been deleted`,
