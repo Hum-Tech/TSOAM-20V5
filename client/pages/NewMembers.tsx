@@ -4669,6 +4669,147 @@ export default function NewMembers() {
           </DialogContent>
         </Dialog>
 
+        {/* View Visitor Dialog */}
+        <Dialog
+          open={showViewVisitorDialog}
+          onOpenChange={setShowViewVisitorDialog}
+        >
+          <DialogContent className="sm:max-w-[700px] max-h-[90vh] overflow-y-auto">
+            <DialogHeader>
+              <DialogTitle>Visitor Details</DialogTitle>
+            </DialogHeader>
+
+            {selectedVisitorForView && (
+              <div className="space-y-6">
+                {/* Visitor Header */}
+                <div className="bg-blue-50 p-4 rounded-lg border-l-4 border-blue-500">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <h3 className="text-lg font-semibold text-blue-900">
+                        {selectedVisitorForView.fullName}
+                      </h3>
+                      <p className="text-blue-700">
+                        Visitor ID: {selectedVisitorForView.visitorId}
+                      </p>
+                    </div>
+                    <div className="text-right">
+                      <p className="text-sm text-blue-600">Visit Date</p>
+                      <p className="font-medium text-blue-900">
+                        {new Date(selectedVisitorForView.visitDate).toLocaleDateString()}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Contact Information */}
+                <div className="space-y-4">
+                  <h4 className="text-lg font-semibold border-b pb-2">Contact Information</h4>
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="flex items-center gap-3">
+                      <Phone className="h-5 w-5 text-gray-500" />
+                      <div>
+                        <p className="text-sm text-gray-600">Phone Number</p>
+                        <p className="font-medium">{selectedVisitorForView.phoneNumber}</p>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-3">
+                      <Users className="h-5 w-5 text-gray-500" />
+                      <div>
+                        <p className="text-sm text-gray-600">Current Church</p>
+                        <p className="font-medium">{selectedVisitorForView.currentChurch || 'Not specified'}</p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Visit Information */}
+                <div className="space-y-4">
+                  <h4 className="text-lg font-semibold border-b pb-2">Visit Information</h4>
+                  <div className="grid grid-cols-1 gap-4">
+                    <div>
+                      <p className="text-sm text-gray-600">Purpose of Visit</p>
+                      <p className="font-medium">{selectedVisitorForView.purposeOfVisit}</p>
+                    </div>
+                    <div>
+                      <p className="text-sm text-gray-600">How did you hear about us?</p>
+                      <p className="font-medium">{selectedVisitorForView.howHeardAboutUs}</p>
+                    </div>
+                    <div>
+                      <p className="text-sm text-gray-600">What did you like most about your visit?</p>
+                      <p className="font-medium bg-gray-50 p-3 rounded">
+                        {selectedVisitorForView.whatLikedMost || 'No feedback provided'}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Prayer Requests */}
+                {selectedVisitorForView.prayerRequests && selectedVisitorForView.prayerRequests.length > 0 && (
+                  <div className="space-y-4">
+                    <h4 className="text-lg font-semibold border-b pb-2">Prayer Requests</h4>
+                    <div className="bg-purple-50 p-4 rounded-lg">
+                      <ul className="space-y-2">
+                        {selectedVisitorForView.prayerRequests.map((request, index) => (
+                          <li key={index} className="flex items-start gap-2">
+                            <Heart className="h-4 w-4 text-purple-600 mt-0.5 flex-shrink-0" />
+                            <span className="text-purple-800">{request}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  </div>
+                )}
+
+                {/* Follow-up Information */}
+                <div className="space-y-4">
+                  <h4 className="text-lg font-semibold border-b pb-2">Follow-up Information</h4>
+                  <div className="grid grid-cols-1 gap-4">
+                    <div className="flex items-center gap-3">
+                      <CheckCircle className={`h-5 w-5 ${selectedVisitorForView.followUpRequired ? 'text-orange-500' : 'text-green-500'}`} />
+                      <div>
+                        <p className="text-sm text-gray-600">Follow-up Required</p>
+                        <Badge variant={selectedVisitorForView.followUpRequired ? "default" : "secondary"}>
+                          {selectedVisitorForView.followUpRequired ? "Yes" : "No"}
+                        </Badge>
+                      </div>
+                    </div>
+                    {selectedVisitorForView.followUpRequired && selectedVisitorForView.followUpNotes && (
+                      <div>
+                        <p className="text-sm text-gray-600">Follow-up Notes</p>
+                        <p className="font-medium bg-orange-50 p-3 rounded border-l-4 border-orange-500">
+                          {selectedVisitorForView.followUpNotes}
+                        </p>
+                      </div>
+                    )}
+                  </div>
+                </div>
+
+                {/* Action Buttons */}
+                <div className="flex justify-between gap-2 pt-4 border-t">
+                  <div className="flex gap-2">
+                    <Button
+                      variant="outline"
+                      onClick={() => {
+                        setShowViewVisitorDialog(false);
+                        handleEditVisitor(selectedVisitorForView);
+                      }}
+                    >
+                      <Edit className="h-4 w-4 mr-2" />
+                      Edit Details
+                    </Button>
+                  </div>
+                  <Button
+                    variant="outline"
+                    onClick={() => setShowViewVisitorDialog(false)}
+                  >
+                    Close
+                  </Button>
+                </div>
+              </div>
+            )}
+          </DialogContent>
+        </Dialog>
+
         {/* Edit Visitor Dialog */}
         <Dialog
           open={showEditVisitorDialog}
