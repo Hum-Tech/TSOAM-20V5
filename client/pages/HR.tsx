@@ -1639,9 +1639,9 @@ ${performanceFormData.managerComments || 'Not specified'}
 
           if (typeof allowancesObj === 'object' && allowancesObj !== null) {
             totalAllowances = Object.values(allowancesObj).reduce(
-              (sum, allowance) => sum + (Number(allowance) || 0),
+              (sum: number, allowance: unknown) => sum + (Number(allowance) || 0),
               0
-            ) as number;
+            );
           }
 
           // Ensure minimum wage compliance (Kenya minimum wage)
