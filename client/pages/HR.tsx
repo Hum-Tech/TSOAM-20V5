@@ -273,6 +273,148 @@ export default function HR() {
     console.log("Employees state updated:", employees.length, "employees loaded");
     employees.forEach(emp => console.log("Employee:", emp.fullName || emp.full_name, "ID:", emp.employeeId || emp.employee_id));
   }, [employees]);
+
+  // Manual demo data loading function
+  const loadDemoData = () => {
+    console.log("Manually loading demo data...");
+    const mockEmployees = [
+      {
+        id: 1,
+        employeeId: "TSOAM-EMP-001",
+        fullName: "John Kamau",
+        name: "John Kamau",
+        email: "john.kamau@tsoam.org",
+        phone: "+254712345678",
+        address: "123 Nairobi Street, Nairobi",
+        dateOfBirth: "1985-03-15",
+        gender: "Male",
+        maritalStatus: "Married",
+        nationalId: "12345678",
+        kraPin: "A123456789X",
+        nhifNumber: "NH123456",
+        nssfNumber: "NS123456",
+        department: "Administration",
+        position: "Administrator",
+        employmentType: "Full-time",
+        employmentStatus: "Active",
+        hireDate: "2020-01-15",
+        basicSalary: 80000,
+        allowances: {
+          housing: 20000,
+          transport: 10000,
+          medical: 5000,
+          other: 5000,
+        },
+        bankDetails: {
+          bankName: "KCB Bank",
+          accountNumber: "1234567890",
+          branchCode: "001",
+        },
+      },
+      {
+        id: 2,
+        employeeId: "TSOAM-EMP-002",
+        fullName: "Grace Wanjiku",
+        name: "Grace Wanjiku",
+        email: "grace.wanjiku@tsoam.org",
+        phone: "+254798765432",
+        address: "456 Mombasa Road, Nairobi",
+        dateOfBirth: "1990-08-22",
+        gender: "Female",
+        maritalStatus: "Single",
+        nationalId: "87654321",
+        kraPin: "B987654321Y",
+        nhifNumber: "NH654321",
+        nssfNumber: "NS654321",
+        department: "Finance",
+        position: "Accountant",
+        employmentType: "Full-time",
+        employmentStatus: "Active",
+        hireDate: "2021-03-01",
+        basicSalary: 75000,
+        allowances: {
+          housing: 18000,
+          transport: 8000,
+          medical: 5000,
+          other: 2000,
+        },
+        bankDetails: {
+          bankName: "Equity Bank",
+          accountNumber: "0987654321",
+          branchCode: "002",
+        },
+      },
+      {
+        id: 3,
+        employeeId: "TSOAM-EMP-003",
+        fullName: "Sarah Njeri",
+        name: "Sarah Njeri",
+        email: "sarah.njeri@tsoam.org",
+        phone: "+254756789012",
+        address: "321 Tom Mboya Street, Nairobi",
+        dateOfBirth: "1992-05-18",
+        gender: "Female",
+        maritalStatus: "Single",
+        nationalId: "98765432",
+        kraPin: "D987654321W",
+        nhifNumber: "NH987654",
+        nssfNumber: "NS987654",
+        department: "Human Resources",
+        position: "HR Officer",
+        employmentType: "Full-time",
+        employmentStatus: "Active",
+        hireDate: "2023-06-01",
+        basicSalary: 65000,
+        allowances: {
+          housing: 15000,
+          transport: 8000,
+          medical: 4000,
+          other: 3000,
+        },
+        bankDetails: {
+          bankName: "Standard Chartered",
+          accountNumber: "5566778899",
+          branchCode: "004",
+        },
+      },
+      {
+        id: 4,
+        employeeId: "TSOAM-EMP-004",
+        fullName: "Paul Kiprotich",
+        name: "Paul Kiprotich",
+        email: "paul.kiprotich@tsoam.org",
+        phone: "+254778901234",
+        address: "654 Waiyaki Way, Nairobi",
+        dateOfBirth: "1987-12-03",
+        gender: "Male",
+        maritalStatus: "Married",
+        nationalId: "55667788",
+        kraPin: "E556677889V",
+        nhifNumber: "NH556677",
+        nssfNumber: "NS556677",
+        department: "IT",
+        position: "System Administrator",
+        employmentType: "Full-time",
+        employmentStatus: "Active",
+        hireDate: "2020-09-15",
+        basicSalary: 90000,
+        allowances: {
+          housing: 25000,
+          transport: 12000,
+          medical: 6000,
+          other: 7000,
+        },
+        bankDetails: {
+          bankName: "NCBA Bank",
+          accountNumber: "9988776655",
+          branchCode: "005",
+        },
+      },
+    ];
+
+    setEmployees(mockEmployees as any as Employee[]);
+    console.log("Demo data loaded manually:", mockEmployees.length, "employees");
+  };
   const [leaveRequests, setLeaveRequests] = useState<LeaveRequest[]>([]);
   const [payrollRecords, setPayrollRecords] = useState<PayrollRecord[]>([]);
 
