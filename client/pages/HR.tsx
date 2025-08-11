@@ -2870,83 +2870,466 @@ ${performanceFormData.managerComments || 'Not specified'}
     return Math.max(0, paye);
   };
 
-  const printPayslip = (payslipData: any) => {
-    const printWindow = window.open("", "_blank");
-    if (!printWindow) return;
+  const printPayslip = async (payslipData: any) => {
+    try {
+      const printWindow = window.open("", "_blank", "width=800,height=600");
+      if (!printWindow) {
+        alert("❌ Popup blocked! Please allow popups for this site to print payslips.");
+        return;
+      }
 
-    const payslipHTML = `
-      <!DOCTYPE html>
-      <html>
-      <head>
-          <title>Payslip - ${payslipData.employee.fullName}</title>
-          <style>
-              body { font-family: Arial, sans-serif; margin: 20px; }
-              .header { text-align: center; margin-bottom: 30px; }
-              .company-name { font-size: 24px; font-weight: bold; color: #2c5282; }
-              .payslip-title { font-size: 18px; margin-top: 10px; }
-              .employee-info { margin: 20px 0; }
-              .table { width: 100%; border-collapse: collapse; margin: 20px 0; }
-              .table th, .table td { border: 1px solid #ddd; padding: 8px; text-align: left; }
-              .table th { background-color: #f8f9fa; }
-              .total-row { font-weight: bold; background-color: #e9ecef; }
-              .amount { text-align: right; }
-              .footer { margin-top: 30px; text-align: center; font-size: 12px; color: #6c757d; }
-          </style>
-      </head>
-      <body>
-          <div class="header">
-              <div class="company-name">The Seed of Abraham Ministry (TSOAM)</div>
-              <div>P.O. Box 12345, Nairobi, Kenya</div>
-              <div>Email: admin@tsoam.org | Phone: +254 700 000 000</div>
-              <div class="payslip-title">PAYSLIP FOR ${payslipData.period.toUpperCase()}</div>
-          </div>
+      const payslipHTML = `
+        <!DOCTYPE html>
+        <html>
+        <head>
+            <title>Payslip - ${payslipData.employee.fullName}</title>
+            <meta charset="UTF-8">
+            <style>
+                @media print {
+                  @page { margin: 0.5in; size: A4; }
+                  body { margin: 0; }
+                  .no-print { display: none; }
+                }
 
-          <div class="employee-info">
-              <table class="table">
-                  <tr>
-                      <td><strong>Employee Name:</strong></td>
-                      <td>${payslipData.employee.fullName || payslipData.employee.full_name || 'N/A'}</td>
-                      <td><strong>Employee ID:</strong></td>
-                      <td>${payslipData.employee.employeeId || payslipData.employee.employee_id || 'N/A'}</td>
-                  </tr>
-                  <tr>
-                      <td><strong>Department:</strong></td>
-                      <td>${payslipData.employee.department || 'N/A'}</td>
-                      <td><strong>Position:</strong></td>
-                      <td>${payslipData.employee.position || payslipData.employee.job_title || 'N/A'}</td>
-                  </tr>
-                  <tr>
-                      <td><strong>KRA PIN:</strong></td>
-                      <td>${payslipData.employee.kraPin || payslipData.employee.kra_pin || 'N/A'}</td>
-                      <td><strong>NSSF No:</strong></td>
-                      <td>${payslipData.employee.nssfNumber || payslipData.employee.nssf_number || 'N/A'}</td>
-                  </tr>
-                  <tr>
-                      <td><strong>Bank:</strong></td>
-                      <td>${payslipData.employee.bankDetails?.bankName || payslipData.employee.bank_name || 'N/A'}</td>
-                      <td><strong>Account No:</strong></td>
-                      <td>${payslipData.employee.bankDetails?.accountNumber || payslipData.employee.account_number || 'N/A'}</td>
-                  </tr>
-              </table>
-          </div>
+                body {
+                  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+                  margin: 0;
+                  padding: 20px;
+                  background: #f8f9fa;
+                  color: #333;
+                  line-height: 1.4;
+                }
 
-          <table class="table">
-              <thead>
-                  <tr>
-                      <th>EARNINGS</th>
-                      <th class="amount">AMOUNT (KSH)</th>
-                      <th>DEDUCTIONS</th>
-                      <th class="amount">AMOUNT (KSH)</th>
-                  </tr>
-              </thead>
-              <tbody>
-                  <tr>
-                      <td>Basic Salary</td>
-                      <td class="amount">${payslipData.basicSalary.toLocaleString()}</td>
-                      <td>P.A.Y.E</td>
-                      <td class="amount">${payslipData.paye.toLocaleString()}</td>
-                  </tr>
-                  <tr>
+                .payslip-container {
+                  max-width: 800px;
+                  margin: 0 auto;
+                  background: white;
+                  box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+                  border-radius: 8px;
+                  overflow: hidden;
+                }
+
+                .header {
+                  background: linear-gradient(135deg, #2c5282 0%, #3182ce 100%);
+                  color: white;
+                  text-align: center;
+                  padding: 30px 20px;
+                  position: relative;
+                }
+
+                .header::before {
+                  content: '';
+                  position: absolute;
+                  top: 0;
+                  left: 0;
+                  right: 0;
+                  bottom: 0;
+                  background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="20" cy="20" r="2" fill="white" opacity="0.1"/><circle cx="80" cy="80" r="2" fill="white" opacity="0.1"/><circle cx="40" cy="60" r="1" fill="white" opacity="0.1"/></svg>');
+                }
+
+                .company-name {
+                  font-size: 28px;
+                  font-weight: bold;
+                  margin-bottom: 8px;
+                  position: relative;
+                  z-index: 1;
+                }
+
+                .company-details {
+                  font-size: 14px;
+                  opacity: 0.9;
+                  position: relative;
+                  z-index: 1;
+                }
+
+                .payslip-title {
+                  font-size: 20px;
+                  font-weight: 600;
+                  margin-top: 15px;
+                  padding: 10px 20px;
+                  background: rgba(255,255,255,0.1);
+                  border-radius: 20px;
+                  display: inline-block;
+                  position: relative;
+                  z-index: 1;
+                }
+
+                .content { padding: 30px; }
+
+                .payslip-meta {
+                  display: flex;
+                  justify-content: space-between;
+                  margin-bottom: 25px;
+                  padding: 15px;
+                  background: #f8f9fa;
+                  border-radius: 8px;
+                  border-left: 4px solid #3182ce;
+                }
+
+                .meta-item {
+                  text-align: center;
+                }
+
+                .meta-label {
+                  font-size: 12px;
+                  color: #6c757d;
+                  font-weight: 500;
+                  text-transform: uppercase;
+                  letter-spacing: 0.5px;
+                }
+
+                .meta-value {
+                  font-size: 14px;
+                  font-weight: 600;
+                  color: #2d3748;
+                  margin-top: 4px;
+                }
+
+                .employee-section {
+                  margin-bottom: 25px;
+                }
+
+                .section-title {
+                  font-size: 16px;
+                  font-weight: 600;
+                  color: #2d3748;
+                  margin-bottom: 15px;
+                  padding-bottom: 8px;
+                  border-bottom: 2px solid #e2e8f0;
+                }
+
+                .employee-grid {
+                  display: grid;
+                  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+                  gap: 15px;
+                }
+
+                .employee-item {
+                  display: flex;
+                  justify-content: space-between;
+                  padding: 10px;
+                  background: #f7fafc;
+                  border-radius: 6px;
+                  border-left: 3px solid #4299e1;
+                }
+
+                .employee-label {
+                  font-weight: 500;
+                  color: #4a5568;
+                }
+
+                .employee-value {
+                  font-weight: 600;
+                  color: #2d3748;
+                }
+
+                .earnings-deductions {
+                  display: grid;
+                  grid-template-columns: 1fr 1fr;
+                  gap: 30px;
+                  margin: 25px 0;
+                }
+
+                .earnings-section, .deductions-section {
+                  background: #f7fafc;
+                  border-radius: 8px;
+                  overflow: hidden;
+                }
+
+                .section-header {
+                  background: #4299e1;
+                  color: white;
+                  padding: 15px;
+                  font-weight: 600;
+                  text-align: center;
+                  font-size: 16px;
+                }
+
+                .deductions-section .section-header {
+                  background: #e53e3e;
+                }
+
+                .items-list {
+                  padding: 0;
+                }
+
+                .item-row {
+                  display: flex;
+                  justify-content: space-between;
+                  padding: 12px 15px;
+                  border-bottom: 1px solid #e2e8f0;
+                }
+
+                .item-row:last-child {
+                  border-bottom: none;
+                }
+
+                .item-label {
+                  font-weight: 500;
+                  color: #4a5568;
+                }
+
+                .item-amount {
+                  font-weight: 600;
+                  color: #2d3748;
+                }
+
+                .totals-section {
+                  margin-top: 25px;
+                  background: linear-gradient(135deg, #2d3748 0%, #4a5568 100%);
+                  color: white;
+                  border-radius: 8px;
+                  overflow: hidden;
+                }
+
+                .totals-header {
+                  padding: 15px;
+                  text-align: center;
+                  font-weight: 600;
+                  font-size: 16px;
+                  background: rgba(255,255,255,0.1);
+                }
+
+                .totals-content {
+                  padding: 20px;
+                }
+
+                .total-item {
+                  display: flex;
+                  justify-content: space-between;
+                  padding: 10px 0;
+                  border-bottom: 1px solid rgba(255,255,255,0.1);
+                }
+
+                .total-item:last-child {
+                  border-bottom: none;
+                  margin-top: 10px;
+                  padding-top: 15px;
+                  border-top: 2px solid rgba(255,255,255,0.2);
+                  font-size: 18px;
+                  font-weight: bold;
+                }
+
+                .footer {
+                  margin-top: 30px;
+                  padding: 20px;
+                  text-align: center;
+                  font-size: 12px;
+                  color: #6c757d;
+                  background: #f8f9fa;
+                  border-top: 1px solid #e9ecef;
+                }
+
+                .signature-section {
+                  display: flex;
+                  justify-content: space-between;
+                  margin-top: 40px;
+                  padding: 0 20px;
+                }
+
+                .signature-box {
+                  text-align: center;
+                  width: 200px;
+                }
+
+                .signature-line {
+                  border-top: 1px solid #666;
+                  margin-top: 40px;
+                  padding-top: 5px;
+                  font-size: 12px;
+                  color: #666;
+                }
+
+                .print-button {
+                  position: fixed;
+                  top: 20px;
+                  right: 20px;
+                  background: #4299e1;
+                  color: white;
+                  border: none;
+                  padding: 12px 24px;
+                  border-radius: 6px;
+                  cursor: pointer;
+                  font-weight: 600;
+                  z-index: 1000;
+                  box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+                }
+
+                .print-button:hover {
+                  background: #3182ce;
+                }
+            </style>
+        </head>
+        <body>
+            <button class="print-button no-print" onclick="window.print()">🖨️ Print Payslip</button>
+
+            <div class="payslip-container">
+                <div class="header">
+                    <div class="company-name">${payslipData.organization.name}</div>
+                    <div class="company-details">
+                        ${payslipData.organization.address}<br>
+                        📧 ${payslipData.organization.email} | 📞 ${payslipData.organization.phone}<br>
+                        KRA PIN: ${payslipData.organization.kraPin}
+                    </div>
+                    <div class="payslip-title">EMPLOYEE PAYSLIP</div>
+                </div>
+
+                <div class="content">
+                    <div class="payslip-meta">
+                        <div class="meta-item">
+                            <div class="meta-label">Pay Period</div>
+                            <div class="meta-value">${payslipData.period}</div>
+                        </div>
+                        <div class="meta-item">
+                            <div class="meta-label">Payslip Number</div>
+                            <div class="meta-value">${payslipData.payslipNumber}</div>
+                        </div>
+                        <div class="meta-item">
+                            <div class="meta-label">Generated Date</div>
+                            <div class="meta-value">${payslipData.generatedDate}</div>
+                        </div>
+                        <div class="meta-item">
+                            <div class="meta-label">Generated Time</div>
+                            <div class="meta-value">${payslipData.generatedTime}</div>
+                        </div>
+                    </div>
+
+                    <div class="employee-section">
+                        <div class="section-title">Employee Information</div>
+                        <div class="employee-grid">
+                            <div class="employee-item">
+                                <span class="employee-label">Full Name:</span>
+                                <span class="employee-value">${payslipData.employee.fullName}</span>
+                            </div>
+                            <div class="employee-item">
+                                <span class="employee-label">Employee ID:</span>
+                                <span class="employee-value">${payslipData.employee.employeeId}</span>
+                            </div>
+                            <div class="employee-item">
+                                <span class="employee-label">Department:</span>
+                                <span class="employee-value">${payslipData.employee.department}</span>
+                            </div>
+                            <div class="employee-item">
+                                <span class="employee-label">Position:</span>
+                                <span class="employee-value">${payslipData.employee.position || 'Staff'}</span>
+                            </div>
+                            <div class="employee-item">
+                                <span class="employee-label">KRA PIN:</span>
+                                <span class="employee-value">${payslipData.employee.kraPin}</span>
+                            </div>
+                            <div class="employee-item">
+                                <span class="employee-label">NSSF Number:</span>
+                                <span class="employee-value">${payslipData.employee.nssfNumber}</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="earnings-deductions">
+                        <div class="earnings-section">
+                            <div class="section-header">💰 EARNINGS</div>
+                            <div class="items-list">
+                                <div class="item-row">
+                                    <span class="item-label">Basic Salary</span>
+                                    <span class="item-amount">KSh ${payslipData.basicSalary.toLocaleString()}</span>
+                                </div>
+                                <div class="item-row">
+                                    <span class="item-label">Housing Allowance</span>
+                                    <span class="item-amount">KSh ${payslipData.allowances.housing.toLocaleString()}</span>
+                                </div>
+                                <div class="item-row">
+                                    <span class="item-label">Transport Allowance</span>
+                                    <span class="item-amount">KSh ${payslipData.allowances.transport.toLocaleString()}</span>
+                                </div>
+                                <div class="item-row">
+                                    <span class="item-label">Medical Allowance</span>
+                                    <span class="item-amount">KSh ${payslipData.allowances.medical.toLocaleString()}</span>
+                                </div>
+                                <div class="item-row">
+                                    <span class="item-label">Other Allowances</span>
+                                    <span class="item-amount">KSh ${payslipData.allowances.other.toLocaleString()}</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="deductions-section">
+                            <div class="section-header">📉 DEDUCTIONS</div>
+                            <div class="items-list">
+                                <div class="item-row">
+                                    <span class="item-label">P.A.Y.E Tax</span>
+                                    <span class="item-amount">KSh ${payslipData.deductions.paye.toLocaleString()}</span>
+                                </div>
+                                <div class="item-row">
+                                    <span class="item-label">N.S.S.F (6%)</span>
+                                    <span class="item-amount">KSh ${payslipData.deductions.nssf.toLocaleString()}</span>
+                                </div>
+                                <div class="item-row">
+                                    <span class="item-label">S.H.A (2.75%)</span>
+                                    <span class="item-amount">KSh ${payslipData.deductions.sha.toLocaleString()}</span>
+                                </div>
+                                <div class="item-row">
+                                    <span class="item-label">Housing Levy (1.5%)</span>
+                                    <span class="item-amount">KSh ${payslipData.deductions.housingLevy.toLocaleString()}</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="totals-section">
+                        <div class="totals-header">�� SALARY SUMMARY</div>
+                        <div class="totals-content">
+                            <div class="total-item">
+                                <span>Total Earnings:</span>
+                                <span>KSh ${payslipData.grossSalary.toLocaleString()}</span>
+                            </div>
+                            <div class="total-item">
+                                <span>Total Deductions:</span>
+                                <span>KSh ${payslipData.deductions.total.toLocaleString()}</span>
+                            </div>
+                            <div class="total-item">
+                                <span>NET SALARY:</span>
+                                <span>KSh ${payslipData.netSalary.toLocaleString()}</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="signature-section">
+                        <div class="signature-box">
+                            <div class="signature-line">Employee Signature</div>
+                        </div>
+                        <div class="signature-box">
+                            <div class="signature-line">HR Manager</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="footer">
+                    <p><strong>Important Notice:</strong> This payslip is computer generated and does not require a signature.</p>
+                    <p>Generated by ${payslipData.generatedBy} on ${payslipData.generatedDate} at ${payslipData.generatedTime}</p>
+                    <p>For any queries regarding this payslip, please contact the HR Department.</p>
+                    <p style="margin-top: 15px; font-size: 10px; color: #999;">
+                        Tax calculations are based on Kenya Revenue Authority (KRA) 2024/2025 tax rates and regulations.
+                    </p>
+                </div>
+            </div>
+        </body>
+        </html>`;
+
+      printWindow.document.write(payslipHTML);
+      printWindow.document.close();
+
+      // Wait for content to load then focus and print
+      printWindow.onload = () => {
+        printWindow.focus();
+        setTimeout(() => {
+          printWindow.print();
+        }, 500);
+      };
+
+    } catch (error) {
+      console.error("Error printing payslip:", error);
+      alert(`❌ Failed to print payslip\n\nError: ${error instanceof Error ? error.message : 'Unknown error'}`);
+    }
+  };
                       <td>Housing Allowance</td>
                       <td class="amount">${payslipData.employee.allowances.housing.toLocaleString()}</td>
                       <td>S.H.A</td>
