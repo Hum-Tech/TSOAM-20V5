@@ -243,10 +243,10 @@ const mockMembers: Member[] = [
 
 export default function MemberManagement() {
   const { user } = useAuth();
-  const isAdmin = user?.role === "Admin";
+  const isAdmin = user?.role === "admin";
 
   // Check if user can access tithe management (disabled for normal users)
-  const canAccessTitheManagement = user?.role !== "user" && user?.role !== "User";
+  const canAccessTitheManagement = user?.role !== "user";
   const [searchTerm, setSearchTerm] = useState("");
   const [members, setMembers] = useState(mockMembers);
   const [selectedMember, setSelectedMember] = useState<Member | null>(null);
