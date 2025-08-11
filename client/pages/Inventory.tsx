@@ -3774,6 +3774,264 @@ export default function Inventory() {
             )}
           </DialogContent>
         </Dialog>
+
+        {/* View Inventory Item Dialog */}
+        <Dialog open={showViewDialog} onOpenChange={setShowViewDialog}>
+          <DialogContent className="max-w-2xl max-h-[85vh] overflow-y-auto">
+            <DialogHeader>
+              <DialogTitle>Inventory Item Details</DialogTitle>
+            </DialogHeader>
+            {selectedInventoryItem && (
+              <div className="space-y-6">
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <Label className="text-sm font-medium text-muted-foreground">Item Code</Label>
+                    <p className="text-sm font-mono">{selectedInventoryItem.itemCode}</p>
+                  </div>
+                  <div>
+                    <Label className="text-sm font-medium text-muted-foreground">Status</Label>
+                    <div className="mt-1">
+                      {getStatusBadge(selectedInventoryItem.status)}
+                    </div>
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <Label className="text-sm font-medium text-muted-foreground">Item Name</Label>
+                    <p className="text-sm">{selectedInventoryItem.itemName}</p>
+                  </div>
+                  <div>
+                    <Label className="text-sm font-medium text-muted-foreground">Category</Label>
+                    <p className="text-sm">{selectedInventoryItem.category}</p>
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <Label className="text-sm font-medium text-muted-foreground">Brand</Label>
+                    <p className="text-sm">{selectedInventoryItem.brand}</p>
+                  </div>
+                  <div>
+                    <Label className="text-sm font-medium text-muted-foreground">Model</Label>
+                    <p className="text-sm">{selectedInventoryItem.model}</p>
+                  </div>
+                </div>
+
+                <div>
+                  <Label className="text-sm font-medium text-muted-foreground">Description</Label>
+                  <p className="text-sm">{selectedInventoryItem.description}</p>
+                </div>
+
+                <div className="grid grid-cols-3 gap-4">
+                  <div>
+                    <Label className="text-sm font-medium text-muted-foreground">Purchase Date</Label>
+                    <p className="text-sm">{selectedInventoryItem.purchaseDate}</p>
+                  </div>
+                  <div>
+                    <Label className="text-sm font-medium text-muted-foreground">Purchase Price</Label>
+                    <p className="text-sm">KSH {selectedInventoryItem.purchasePrice.toLocaleString()}</p>
+                  </div>
+                  <div>
+                    <Label className="text-sm font-medium text-muted-foreground">Current Value</Label>
+                    <p className="text-sm">KSH {selectedInventoryItem.currentValue.toLocaleString()}</p>
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <Label className="text-sm font-medium text-muted-foreground">Location</Label>
+                    <p className="text-sm">{selectedInventoryItem.location}</p>
+                  </div>
+                  <div>
+                    <Label className="text-sm font-medium text-muted-foreground">Condition</Label>
+                    <div className="mt-1">
+                      {getConditionBadge(selectedInventoryItem.condition)}
+                    </div>
+                  </div>
+                </div>
+
+                <div>
+                  <Label className="text-sm font-medium text-muted-foreground">Supplier</Label>
+                  <p className="text-sm">{selectedInventoryItem.supplier}</p>
+                </div>
+              </div>
+            )}
+          </DialogContent>
+        </Dialog>
+
+        {/* Edit Inventory Item Dialog */}
+        <Dialog open={showEditDialog} onOpenChange={setShowEditDialog}>
+          <DialogContent className="max-w-2xl max-h-[85vh] overflow-y-auto">
+            <DialogHeader>
+              <DialogTitle>Edit Inventory Item</DialogTitle>
+            </DialogHeader>
+            <div className="space-y-4">
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <Label htmlFor="editItemName">Item Name *</Label>
+                  <Input
+                    id="editItemName"
+                    value={editInventoryForm.itemName || ''}
+                    onChange={(e) => setEditInventoryForm({...editInventoryForm, itemName: e.target.value})}
+                    placeholder="Enter item name"
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="editCategory">Category *</Label>
+                  <Select
+                    value={editInventoryForm.category || ''}
+                    onValueChange={(value) => setEditInventoryForm({...editInventoryForm, category: value as "Office Supplies" | "Cleaning Supplies" | "Furniture" | "Consumables" | "Food & Beverages" | "Electronic Assets" | "Musical Instruments" | "Audio/Visual Equipment" | "Maintenance Tools"})}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select category" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="Office Supplies">Office Supplies</SelectItem>
+                      <SelectItem value="Cleaning Supplies">Cleaning Supplies</SelectItem>
+                      <SelectItem value="Furniture">Furniture</SelectItem>
+                      <SelectItem value="Consumables">Consumables</SelectItem>
+                      <SelectItem value="Food & Beverages">Food & Beverages</SelectItem>
+                      <SelectItem value="Electronic Assets">Electronic Assets</SelectItem>
+                      <SelectItem value="Musical Instruments">Musical Instruments</SelectItem>
+                      <SelectItem value="Audio/Visual Equipment">Audio/Visual Equipment</SelectItem>
+                      <SelectItem value="Maintenance Tools">Maintenance Tools</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <Label htmlFor="editBrand">Brand</Label>
+                  <Input
+                    id="editBrand"
+                    value={editInventoryForm.brand || ''}
+                    onChange={(e) => setEditInventoryForm({...editInventoryForm, brand: e.target.value})}
+                    placeholder="Enter brand"
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="editModel">Model</Label>
+                  <Input
+                    id="editModel"
+                    value={editInventoryForm.model || ''}
+                    onChange={(e) => setEditInventoryForm({...editInventoryForm, model: e.target.value})}
+                    placeholder="Enter model"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <Label htmlFor="editDescription">Description</Label>
+                <Textarea
+                  id="editDescription"
+                  value={editInventoryForm.description || ''}
+                  onChange={(e) => setEditInventoryForm({...editInventoryForm, description: e.target.value})}
+                  placeholder="Enter description"
+                  rows={3}
+                />
+              </div>
+
+              <div className="grid grid-cols-3 gap-4">
+                <div>
+                  <Label htmlFor="editLocation">Location *</Label>
+                  <Input
+                    id="editLocation"
+                    value={editInventoryForm.location || ''}
+                    onChange={(e) => setEditInventoryForm({...editInventoryForm, location: e.target.value})}
+                    placeholder="Enter location"
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="editCurrentValue">Current Value (KSH)</Label>
+                  <Input
+                    id="editCurrentValue"
+                    type="number"
+                    value={editInventoryForm.currentValue || ''}
+                    onChange={(e) => setEditInventoryForm({...editInventoryForm, currentValue: parseFloat(e.target.value) || 0})}
+                    placeholder="Enter current value"
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="editSupplier">Supplier</Label>
+                  <Input
+                    id="editSupplier"
+                    value={editInventoryForm.supplier || ''}
+                    onChange={(e) => setEditInventoryForm({...editInventoryForm, supplier: e.target.value})}
+                    placeholder="Enter supplier"
+                  />
+                </div>
+              </div>
+
+              <div className="flex gap-2">
+                <Button onClick={() => {
+                  if (editInventoryForm.itemName && editInventoryForm.category && editInventoryForm.location) {
+                    // Update the item in the list
+                    setItems(prev => prev.map(item =>
+                      item.id === selectedInventoryItem?.id
+                        ? { ...item, ...editInventoryForm }
+                        : item
+                    ));
+                    setShowEditDialog(false);
+                    setSelectedInventoryItem(null);
+                    setEditInventoryForm({});
+                    alert('Inventory item updated successfully!');
+                  } else {
+                    alert('Please fill in all required fields.');
+                  }
+                }}>
+                  <Save className="h-4 w-4 mr-2" />
+                  Update Item
+                </Button>
+                <Button variant="outline" onClick={() => {
+                  setShowEditDialog(false);
+                  setSelectedInventoryItem(null);
+                  setEditInventoryForm({});
+                }}>
+                  Cancel
+                </Button>
+              </div>
+            </div>
+          </DialogContent>
+        </Dialog>
+
+        {/* Delete Inventory Item Dialog */}
+        <Dialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
+          <DialogContent className="max-w-md">
+            <DialogHeader>
+              <DialogTitle>Delete Inventory Item</DialogTitle>
+            </DialogHeader>
+            <div className="space-y-4">
+              <p className="text-sm text-muted-foreground">
+                Are you sure you want to delete <strong>{selectedInventoryItem?.itemName}</strong>?
+                This action cannot be undone.
+              </p>
+              <div className="flex gap-2">
+                <Button
+                  variant="destructive"
+                  onClick={() => {
+                    if (selectedInventoryItem) {
+                      setItems(prev => prev.filter(item => item.id !== selectedInventoryItem.id));
+                      setShowDeleteDialog(false);
+                      setSelectedInventoryItem(null);
+                      alert('Inventory item deleted successfully!');
+                    }
+                  }}
+                >
+                  <Trash2 className="h-4 w-4 mr-2" />
+                  Delete
+                </Button>
+                <Button variant="outline" onClick={() => {
+                  setShowDeleteDialog(false);
+                  setSelectedInventoryItem(null);
+                }}>
+                  Cancel
+                </Button>
+              </div>
+            </div>
+          </DialogContent>
+        </Dialog>
       </div>
     </Layout>
   );
