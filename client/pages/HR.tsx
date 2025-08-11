@@ -2133,6 +2133,20 @@ ${performanceFormData.managerComments || 'Not specified'}
             )
           );
 
+          // Log Finance approval
+          SystemLogService.logFinance(
+            'Payroll Batch Approved',
+            `Batch ${data.batchId} approved by ${data.approvedBy} - Amount: KSh ${(data.totalAmount || 0).toLocaleString()}`,
+            undefined,
+            data.approvedBy,
+            {
+              batchId: data.batchId,
+              totalAmount: data.totalAmount,
+              employeeCount: data.employeeCount,
+              partialApproval: data.partialApproval
+            }
+          );
+
           // Force refresh of component to show updated status immediately
           setRefreshKey(prev => prev + 1); // Trigger re-render
 
@@ -4796,7 +4810,7 @@ ${performanceFormData.managerComments || 'Not specified'}
                                     `📈 Fiscal Year: ${batch.metadata?.fiscalYear || new Date().getFullYear()} Q${batch.metadata?.quarter || Math.ceil((new Date().getMonth() + 1) / 3)}\n\n` +
                                     `📋 STATUS BREAKDOWN:\n` +
                                     `• Approved: ${financialImpact?.approved?.count || 0} (KSh ${(financialImpact?.approved?.amount || 0).toLocaleString()})\n` +
-                                    `�� Rejected: ${financialImpact?.rejected?.count || 0} (KSh ${(financialImpact?.rejected?.amount || 0).toLocaleString()})\n` +
+                                    `• Rejected: ${financialImpact?.rejected?.count || 0} (KSh ${(financialImpact?.rejected?.amount || 0).toLocaleString()})\n` +
                                     `• Pending: ${financialImpact?.pending?.count || 0} (KSh ${(financialImpact?.pending?.amount || 0).toLocaleString()})\n\n` +
                                     `💼 SYSTEM: Production Finance Approval Service`
                                   );
