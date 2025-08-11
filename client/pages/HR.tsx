@@ -7226,8 +7226,8 @@ ${performanceFormData.managerComments || 'Not specified'}
                       <h4 className="font-medium text-sm text-blue-800 mb-2">Leave Balance</h4>
                       {leaveBalances
                         .filter(balance => balance.leaveTypeId === enterpriseLeaveForm.leaveTypeId)
-                        .map(balance => (
-                          <div key={balance.leaveTypeId} className="text-sm text-blue-700">
+                        .map((balance, index) => (
+                          <div key={`leave-balance-${balance.leaveTypeId}-${index}`} className="text-sm text-blue-700">
                             <div className="flex justify-between">
                               <span>Available:</span>
                               <span className="font-medium">{balance.available} days</span>
