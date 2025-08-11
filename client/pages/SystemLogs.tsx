@@ -791,7 +791,7 @@ export default function SystemLogs() {
                       <div className="flex justify-between items-start mb-2">
                         <div className="flex items-center gap-2">
                           <Shield className="h-4 w-4 text-red-500" />
-                          <span className="font-semibold">{log.event}</span>
+                          <span className="font-semibold">{log.action}</span>
                           <Badge variant="destructive">{log.level}</Badge>
                         </div>
                         <span className="text-sm text-muted-foreground">
@@ -801,7 +801,7 @@ export default function SystemLogs() {
                       <p className="text-sm mb-2">{log.description}</p>
                       <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
                         <div>
-                          <span className="font-medium">User:</span> {log.user}
+                          <span className="font-medium">User:</span> {log.userName || log.userId || 'System'}
                         </div>
                         <div>
                           <span className="font-medium">IP:</span>{" "}
