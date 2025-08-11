@@ -543,6 +543,21 @@ export default function MemberManagement() {
   };
 
   /**
+   * Calculate age from date of birth
+   */
+  const calculateAge = (dateOfBirth: string) => {
+    if (!dateOfBirth) return "N/A";
+    const today = new Date();
+    const birthDate = new Date(dateOfBirth);
+    let age = today.getFullYear() - birthDate.getFullYear();
+    const monthDiff = today.getMonth() - birthDate.getMonth();
+    if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
+      age--;
+    }
+    return age.toString();
+  };
+
+  /**
    * Export members data with comprehensive demographics using ExportService
    */
   const handleExport = async (format: "pdf" | "excel" | "csv") => {
