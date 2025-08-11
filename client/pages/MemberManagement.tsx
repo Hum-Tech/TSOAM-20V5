@@ -284,6 +284,8 @@ export default function MemberManagement() {
   const [showTransferHomeCellDialog, setShowTransferHomeCellDialog] = useState(false);
   const [memberToTransfer, setMemberToTransfer] = useState<Member | null>(null);
   const [newHomeCellForTransfer, setNewHomeCellForTransfer] = useState("");
+  const [showHomeCellDetailsDialog, setShowHomeCellDetailsDialog] = useState(false);
+  const [selectedHomeCellForDetails, setSelectedHomeCellForDetails] = useState<any>(null);
   const [showAddMemberDialog, setShowAddMemberDialog] = useState(false);
   const [isTransferMode, setIsTransferMode] = useState(false);
   const [showTitheRecords, setShowTitheRecords] = useState(false);
