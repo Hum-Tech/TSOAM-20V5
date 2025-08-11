@@ -187,8 +187,8 @@ export default function Login() {
       // } else if (requireOTP && otp) {
       //   setError("Invalid OTP. Please check and try again.");
       // } else {
-        setError("Invalid email or password");
-      }
+      setError("Invalid email or password");
+      // }
     }
 
     setAttemptingLogin(false);
