@@ -882,6 +882,7 @@ export default function MemberManagement() {
                 <TableRow>
                   <TableHead>Member Details</TableHead>
                   <TableHead>Contact</TableHead>
+                  <TableHead>Home Cell</TableHead>
                   <TableHead>Status</TableHead>
                   <TableHead>Employment</TableHead>
                   <TableHead>Service Groups</TableHead>
