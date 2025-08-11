@@ -477,6 +477,7 @@ export default function HR() {
   const [performanceReviews, setPerformanceReviews] = useState<
     PerformanceReview[]
   >([]);
+  const [refreshKey, setRefreshKey] = useState<number>(0);
 
   // Dialog states
   const [showAddEmployeeDialog, setShowAddEmployeeDialog] = useState(false);
@@ -1946,7 +1947,7 @@ ${performanceFormData.managerComments || 'Not specified'}
       const successMessage =
         `✅ Payroll Batch Created Successfully!\n\n` +
         `📦 BATCH SUMMARY:\n` +
-        `• Batch ID: ${batchId}\n` +
+        `��� Batch ID: ${batchId}\n` +
         `• Period: ${currentMonth}\n` +
         `• Employees: ${payrollRecords.length}\n` +
         `• Total Amount: KSh ${totalNetPayroll.toLocaleString()}\n\n` +
@@ -4774,7 +4775,7 @@ ${performanceFormData.managerComments || 'Not specified'}
                                     `📊 Total Deductions: KSh ${(batch.summary?.totalDeductions || 0).toLocaleString()}\n\n` +
                                     `��� PRIORITY: ${(batch.metadata?.priority || 'medium').toUpperCase()}\n` +
                                     `📅 Submitted: ${new Date(batch.submittedDate).toLocaleString()}\n` +
-                                    `⏰ Deadline: ${new Date(batch.metadata?.approvalDeadline || Date.now() + 48 * 60 * 60 * 1000).toLocaleString()}\n` +
+                                    `��� Deadline: ${new Date(batch.metadata?.approvalDeadline || Date.now() + 48 * 60 * 60 * 1000).toLocaleString()}\n` +
                                     `🏛️ Department: ${batch.metadata?.department || 'HR'}\n` +
                                     `📈 Fiscal Year: ${batch.metadata?.fiscalYear || new Date().getFullYear()} Q${batch.metadata?.quarter || Math.ceil((new Date().getMonth() + 1) / 3)}\n\n` +
                                     `📋 STATUS BREAKDOWN:\n` +
@@ -6098,7 +6099,7 @@ ${performanceFormData.managerComments || 'Not specified'}
                   <CardContent>
                     <div className="text-center py-8 text-muted-foreground">
                       <Users className="h-12 w-12 mx-auto mb-4 opacity-50" />
-                      <h3 className="text-lg font-medium mb-2">360° Feedback Coming Soon</h3>
+                      <h3 className="text-lg font-medium mb-2">360�� Feedback Coming Soon</h3>
                       <p>Multi-source feedback collection and analysis tools are in development</p>
                     </div>
                   </CardContent>
