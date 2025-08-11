@@ -131,7 +131,7 @@ class FinanceApprovalService {
   private initEventListeners(): void {
     // Listen for payroll submissions from HR
     window.addEventListener('hr_payroll_batch', this.handlePayrollSubmission.bind(this));
-    
+
     // Listen for approval actions from Finance module
     window.addEventListener('finance_approval_action', this.handleApprovalAction.bind(this));
   }
@@ -163,8 +163,8 @@ class FinanceApprovalService {
       priority: this.calculatePriority(payrollData.totalNetAmount, payrollData.totalEmployees),
       metadata: {
         submittedBy: payrollData.submittedBy,
-        department: payrollData.metadata.department,
-        deadline: payrollData.metadata.approvalDeadline
+        department: payrollData.metadata?.department || 'HR',
+        deadline: payrollData.metadata?.approvalDeadline || new Date(Date.now() + 48 * 60 * 60 * 1000).toISOString()
       }
     });
 
@@ -283,9 +283,9 @@ class FinanceApprovalService {
    * Approve individual employees within a batch
    */
   public approveIndividualPayments(
-    batchId: string, 
-    employeeIds: string[], 
-    approvedBy: string, 
+    batchId: string,
+    employeeIds: string[],
+    approvedBy: string,
     notes?: string
   ): boolean {
     const batch = this.findPendingBatch(batchId);
@@ -326,7 +326,7 @@ class FinanceApprovalService {
     // Update batch status based on approval state
     const pendingCount = batch.employees.filter(emp => emp.status === 'Pending').length;
     const approvedTotal = batch.employees.filter(emp => emp.status === 'Approved').length;
-    
+
     if (pendingCount === 0) {
       batch.status = 'Fully_Approved';
       this.moveToHistory(batch, [action]);
@@ -354,8 +354,8 @@ class FinanceApprovalService {
    * Reject individual employees within a batch
    */
   public rejectIndividualPayments(
-    batchId: string, 
-    rejections: { employeeId: string; reason: string }[], 
+    batchId: string,
+    rejections: { employeeId: string; reason: string }[],
     rejectedBy: string
   ): boolean {
     const batch = this.findPendingBatch(batchId);
@@ -399,7 +399,7 @@ class FinanceApprovalService {
     // Update batch status
     const pendingCount = batch.employees.filter(emp => emp.status === 'Pending').length;
     const approvedCount = batch.employees.filter(emp => emp.status === 'Approved').length;
-    
+
     if (pendingCount === 0 && approvedCount === 0) {
       batch.status = 'Rejected';
       this.moveToHistory(batch, [action]);
@@ -431,7 +431,7 @@ class FinanceApprovalService {
    * Get notifications for Finance module
    */
   public getNotifications(): FinanceApprovalNotification[] {
-    return [...this.notifications].sort((a, b) => 
+    return [...this.notifications].sort((a, b) =>
       new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
     );
   }
@@ -445,11 +445,11 @@ class FinanceApprovalService {
     pending: { count: number; amount: number };
     cashFlowImpact: number;
   } {
-    const batch = this.findPendingBatch(batchId) || 
+    const batch = this.findPendingBatch(batchId) ||
                   this.approvalHistory.find(h => h.batchId === batchId);
-    
+
     if (!batch) {
-      return { approved: { count: 0, amount: 0 }, rejected: { count: 0, amount: 0 }, 
+      return { approved: { count: 0, amount: 0 }, rejected: { count: 0, amount: 0 },
                pending: { count: 0, amount: 0 }, cashFlowImpact: 0 };
     }
 
@@ -514,7 +514,7 @@ class FinanceApprovalService {
   private handleApprovalAction(event: CustomEvent): void {
     try {
       const { action, batchId, data } = event.detail;
-      
+
       switch (action) {
         case 'approve_batch':
           this.approveBatch(batchId, data.approvedBy, data.notes);
@@ -552,7 +552,7 @@ class FinanceApprovalService {
     // Also store in localStorage for persistence
     const storageKey = `hr_${eventType}_${Date.now()}`;
     localStorage.setItem(storageKey, JSON.stringify(data));
-    
+
     // Clean up old events (keep only last 10)
     Object.keys(localStorage).filter(key => key.startsWith('hr_')).slice(10).forEach(key => {
       localStorage.removeItem(key);
