@@ -4681,10 +4681,10 @@ ${performanceFormData.managerComments || 'Not specified'}
                                     `📦 PRODUCTION BATCH DETAILS\n\n` +
                                     `🆔 Batch ID: ${batch.batchId}\n` +
                                     `📅 Period: ${batch.period}\n` +
-                                    `👥 Employees: ${batch.totalEmployees}\n` +
-                                    `💰 Gross Amount: KSh ${batch.totalGrossAmount.toLocaleString()}\n` +
-                                    `💵 Net Amount: KSh ${batch.totalNetAmount.toLocaleString()}\n` +
-                                    `📊 Total Deductions: KSh ${batch.summary.totalDeductions.toLocaleString()}\n\n` +
+                                    `👥 Employees: ${batch.totalEmployees || 0}\n` +
+                                    `💰 Gross Amount: KSh ${(batch.totalGrossAmount || 0).toLocaleString()}\n` +
+                                    `💵 Net Amount: KSh ${(batch.totalNetAmount || 0).toLocaleString()}\n` +
+                                    `📊 Total Deductions: KSh ${(batch.summary?.totalDeductions || 0).toLocaleString()}\n\n` +
                                     `⚡ PRIORITY: ${(batch.metadata?.priority || 'medium').toUpperCase()}\n` +
                                     `📅 Submitted: ${new Date(batch.submittedDate).toLocaleString()}\n` +
                                     `⏰ Deadline: ${new Date(batch.metadata?.approvalDeadline || Date.now() + 48 * 60 * 60 * 1000).toLocaleString()}\n` +
