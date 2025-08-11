@@ -1311,7 +1311,12 @@ export default function NewMembers() {
                         </TableCell>
                         <TableCell>
                           <div className="flex gap-2">
-                            <Button variant="outline" size="sm" title="View Visitor">
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              onClick={() => handleViewVisitor(visitor)}
+                              title="View Visitor"
+                            >
                               <Eye className="h-4 w-4" />
                             </Button>
                             <Button
