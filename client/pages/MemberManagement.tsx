@@ -726,7 +726,7 @@ export default function MemberManagement() {
       await exportService.exportData({
         data: memberData,
         filename: `${homeCellName}_Home_Cell_Members_${new Date().toISOString().split("T")[0]}`,
-        format: "excel",
+        format: format,
         title: `${homeCellName} Home Cell Members`,
         subtitle: `Total Members: ${cellMembers.length}`,
         columns: [
