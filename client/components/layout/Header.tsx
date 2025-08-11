@@ -153,6 +153,9 @@ export function Header() {
 
   const [showNotifications, setShowNotifications] = useState(false);
   const [selectedMessage, setSelectedMessage] = useState<Message | null>(null);
+  const [showReplyDialog, setShowReplyDialog] = useState(false);
+  const [replyingToNotification, setReplyingToNotification] = useState<any>(null);
+  const [replyContent, setReplyContent] = useState("");
 
   // Get time-based greeting
   const getTimeBasedGreeting = () => {
