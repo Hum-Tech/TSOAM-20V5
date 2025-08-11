@@ -363,7 +363,27 @@ export default function Messaging() {
 
   const [searchTerm, setSearchTerm] = useState("");
   const [contacts] = useState<Contact[]>(getSystemContacts());
-  const [messages, setMessages] = useState<Message[]>(mockMessages);
+  const [messages, setMessages] = useState<Message[]>(() => {
+    // Load messages including user's sent in-app messages
+    const senderKey = `sent_messages_${user?.id}`;
+    const sentMessages = JSON.parse(localStorage.getItem(senderKey) || '[]');
+    // Combine with mock messages, ensuring proper format
+    const formattedSentMessages = sentMessages.map((msg: any) => ({
+      id: msg.id,
+      type: msg.type || "Internal Message",
+      recipient: msg.recipient,
+      recipientType: msg.recipientType || "Employee",
+      subject: msg.subject,
+      message: msg.message,
+      status: msg.status || "Sent",
+      sentDate: msg.sentDate,
+      sentBy: msg.sentBy,
+      recipientCount: msg.recipientCount || 1,
+      deliveryRate: msg.deliveryRate || 100,
+      deliveryMethod: msg.deliveryMethod || "In-App Notification"
+    }));
+    return [...formattedSentMessages, ...mockMessages];
+  });
   const [templates] = useState<MessageTemplate[]>(messageTemplates);
   const [selectedMessages, setSelectedMessages] = useState<string[]>([]);
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
@@ -615,7 +635,7 @@ export default function Messaging() {
 
       // For employees, in-app notifications are always successful if created
       if (employeeCount > 0) {
-        successMessage += `• ${employeeCount} staff member(s) notified in-app ��\n`;
+        successMessage += `• ${employeeCount} staff member(s) notified in-app ✓\n`;
       }
 
       // For members, attempt API call for SMS/Email
