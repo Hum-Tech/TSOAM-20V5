@@ -267,6 +267,10 @@ export default function NewMembers() {
   // Visitor editing states
   const [showEditVisitorDialog, setShowEditVisitorDialog] = useState(false);
   const [selectedVisitorForEdit, setSelectedVisitorForEdit] = useState<Visitor | null>(null);
+
+  // Visitor viewing states
+  const [showViewVisitorDialog, setShowViewVisitorDialog] = useState(false);
+  const [selectedVisitorForView, setSelectedVisitorForView] = useState<Visitor | null>(null);
   const [editVisitorForm, setEditVisitorForm] = useState({
     fullName: "",
     phoneNumber: "",
