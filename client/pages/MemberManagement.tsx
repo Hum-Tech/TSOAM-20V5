@@ -1174,6 +1174,18 @@ export default function MemberManagement() {
                                   Excommunicate
                                 </DropdownMenuItem>
                               )}
+                            <DropdownMenuSeparator />
+                            <DropdownMenuItem
+                              onClick={() => {
+                                setMemberToTransfer(member);
+                                setNewHomeCellForTransfer(member.homeCell || "");
+                                setShowTransferHomeCellDialog(true);
+                              }}
+                              className="text-blue-600"
+                            >
+                              <Users className="mr-2 h-4 w-4" />
+                              Transfer Home Cell
+                            </DropdownMenuItem>
                           </DropdownMenuContent>
                         </DropdownMenu>
                       </div>
