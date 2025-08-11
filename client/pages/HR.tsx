@@ -4646,13 +4646,13 @@ ${performanceFormData.managerComments || 'Not specified'}
                                 </div>
                                 <div className="text-right">
                                   <p className="font-semibold text-lg text-gray-900">
-                                    KSh {batch.totalNetAmount.toLocaleString()}
+                                    KSh {(batch.totalNetAmount || 0).toLocaleString()}
                                   </p>
                                   <p className="text-xs text-gray-500">
                                     Net Amount
                                   </p>
                                   <p className="text-xs text-gray-400">
-                                    Gross: KSh {batch.totalGrossAmount.toLocaleString()}
+                                    Gross: KSh {(batch.totalGrossAmount || 0).toLocaleString()}
                                   </p>
                                 </div>
                               </div>
