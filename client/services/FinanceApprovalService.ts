@@ -462,12 +462,22 @@ class FinanceApprovalService {
     const approvedCount = batch.employees.filter(emp => emp.status === 'Approved').length;
     const totalRejectedCount = batch.employees.filter(emp => emp.status === 'Rejected').length;
 
+    // If any employees are approved, mark batch as approved immediately
+    if (approvedCount > 0) {
+      batch.status = 'Fully_Approved';
+      // Remove priority status for approved batches
+      if (batch.metadata) {
+        batch.metadata.priority = 'low';
+      }
+    }
+
     if (pendingCount === 0) {
       // All payments have been processed - create disbursement reports
       if (approvedCount > 0 || totalRejectedCount > 0) {
         this.createDisbursementReport(batchId, rejectedBy);
       }
 
+      // Final status determination
       if (approvedCount === 0) {
         batch.status = 'Rejected';
       } else {
@@ -475,8 +485,6 @@ class FinanceApprovalService {
       }
       this.moveToHistory(batch, [action]);
       this.removePendingBatch(batchId);
-    } else if (approvedCount > 0) {
-      batch.status = 'Partially_Approved';
     }
 
     this.saveData();
