@@ -8356,7 +8356,7 @@ ${performanceFormData.managerComments || 'Not specified'}
                           <p className="text-sm font-medium text-muted-foreground mb-2">Approval History</p>
                           <div className="space-y-2">
                             {selectedLeaveRequest.approvalHistory.map((step, index) => (
-                              <div key={index} className="border rounded-lg p-3">
+                              <div key={`approval-step-${selectedLeaveRequest.id}-${index}-${step.timestamp || Date.now()}`} className="border rounded-lg p-3">
                                 <div className="flex justify-between items-start">
                                   <div>
                                     <p className="font-medium">Level {step.level} - {step.approverType}</p>
