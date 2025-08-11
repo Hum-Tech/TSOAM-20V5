@@ -311,6 +311,87 @@ export function Header() {
     };
   }, [user]);
 
+  // Handle sending a reply to a notification
+  const handleSendReply = () => {
+    if (!replyingToNotification || !replyContent.trim() || !user) return;
+
+    const replyNotification = {
+      id: `reply-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+      title: `Reply from ${user.name}`,
+      message: replyContent.length > 100 ? replyContent.substring(0, 100) + "..." : replyContent,
+      fullMessage: replyContent,
+      sender: user.name,
+      senderId: user.id,
+      recipient: replyingToNotification.sender,
+      recipientId: replyingToNotification.senderId,
+      recipientEmail: replyingToNotification.senderEmail,
+      type: "internal",
+      isPublic: false,
+      timestamp: new Date().toISOString(),
+      read: false,
+      deliveryMethod: "notification",
+      messageType: "Reply",
+      originalMessageId: replyingToNotification.id,
+      isReply: true
+    };
+
+    // Store reply notification for the original sender
+    if (replyingToNotification.senderId) {
+      const senderKey = `notifications_${replyingToNotification.senderId}`;
+      const senderNotifications = JSON.parse(localStorage.getItem(senderKey) || '[]');
+      senderNotifications.unshift(replyNotification);
+      localStorage.setItem(senderKey, JSON.stringify(senderNotifications));
+
+      // Also store in general notifications
+      const generalNotifications = JSON.parse(localStorage.getItem('notifications') || '[]');
+      generalNotifications.unshift(replyNotification);
+      localStorage.setItem('notifications', JSON.stringify(generalNotifications));
+    }
+
+    // Create sent message record for sender's (replying user's) history
+    const sentReplyRecord = {
+      id: `sent-reply-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+      type: "Reply",
+      recipient: replyingToNotification.sender,
+      recipientType: "Employee",
+      recipientId: replyingToNotification.senderId,
+      subject: `Re: ${replyingToNotification.title}`,
+      message: replyContent,
+      status: "Sent",
+      sentDate: new Date().toISOString().replace("T", " ").substring(0, 16),
+      sentBy: user.name,
+      recipientCount: 1,
+      deliveryRate: 100,
+      deliveryMethod: "In-App Notification",
+      originalNotificationId: replyingToNotification.id,
+      isReply: true
+    };
+
+    // Store in sender's sent messages
+    const senderKey = `sent_messages_${user.id}`;
+    const senderMessages = JSON.parse(localStorage.getItem(senderKey) || '[]');
+    senderMessages.unshift(sentReplyRecord);
+    localStorage.setItem(senderKey, JSON.stringify(senderMessages));
+
+    // Dispatch notification event
+    window.dispatchEvent(new CustomEvent('notificationAdded', {
+      detail: {
+        count: 1,
+        type: "Reply",
+        sender: user.name,
+        recipient: replyingToNotification.sender,
+        recipientId: replyingToNotification.senderId
+      }
+    }));
+
+    // Close dialog and reset state
+    setShowReplyDialog(false);
+    setReplyingToNotification(null);
+    setReplyContent("");
+
+    alert(`Reply sent to ${replyingToNotification.sender} successfully!`);
+  };
+
   // Mark notification as read and track delivery
   const markNotificationAsRead = (id: number) => {
     setNotifications((prev) =>
