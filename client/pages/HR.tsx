@@ -670,9 +670,15 @@ export default function HR() {
       console.log("Performance reviews loaded successfully:", reviewsData.length, "reviews");
       setPerformanceReviews(reviewsData);
 
-    } catch (error) {
-      console.error("Error loading HR data:", error);
-      console.log("Loading demo data for HR module...");
+      console.error("Error loading performance reviews from API:", error);
+      console.log("Loading demo performance reviews data...");
+      // Load demo performance reviews
+      setPerformanceReviews([]);
+    }
+  };
+
+  const loadDemoDataFallback = () => {
+    console.log("Loading complete demo data as fallback...");
       // Fallback to demo data
       const mockEmployees = [
       {
