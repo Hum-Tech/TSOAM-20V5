@@ -111,6 +111,18 @@ export function Sidebar() {
       return true;
     }
 
+    // For normal users, explicitly handle appointments and welfare
+    if (user.role === "user" || user.role === "User") {
+      // Explicitly deny appointments for normal users
+      if (item.permission === "appointments") {
+        return false;
+      }
+      // Explicitly allow welfare for normal users
+      if (item.permission === "welfare") {
+        return true;
+      }
+    }
+
     // For other roles, use the existing permission system
     return user.permissions[item.permission as keyof typeof user.permissions];
   });
