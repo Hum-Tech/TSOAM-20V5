@@ -334,10 +334,7 @@ export default function MemberManagement() {
 
   // Load home cells and refresh when settings change
   const loadHomeCells = () => {
-    const availableHomeCells = homeCellService.getActiveHomeCells().map(cell => ({
-      id: cell.id,
-      name: cell.name
-    }));
+    const availableHomeCells = homeCellService.getActiveHomeCells();
     setHomeCells(availableHomeCells);
   };
 
