@@ -3177,7 +3177,7 @@ ${performanceFormData.managerComments || 'Not specified'}
                   position: fixed;
                   top: 20px;
                   right: 20px;
-                  background: #4299e1;
+                  background: #dc2626;
                   color: white;
                   border: none;
                   padding: 12px 24px;
@@ -3189,7 +3189,7 @@ ${performanceFormData.managerComments || 'Not specified'}
                 }
 
                 .print-button:hover {
-                  background: #3182ce;
+                  background: #b91c1c;
                 }
             </style>
         </head>
@@ -4822,7 +4822,7 @@ ${performanceFormData.managerComments || 'Not specified'}
                                     <Textarea
                                       placeholder="• Core competencies demonstrating excellence
 • Skills that stand out
-��� Leadership qualities exhibited
+• Leadership qualities exhibited
 ��� Positive feedback from others"
                                       className="min-h-24"
                                     />
