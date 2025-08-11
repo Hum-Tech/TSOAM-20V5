@@ -479,6 +479,7 @@ export default function HR() {
     PerformanceReview[]
   >([]);
   const [refreshKey, setRefreshKey] = useState<number>(0);
+  const [recentlyProcessedBatches, setRecentlyProcessedBatches] = useState<any[]>([]);
 
   // Dialog states
   const [showAddEmployeeDialog, setShowAddEmployeeDialog] = useState(false);
