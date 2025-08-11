@@ -4308,11 +4308,14 @@ ${performanceFormData.managerComments || 'Not specified'}
                           Load Demo Data
                         </Button>
                         <Button
-                          onClick={() => setActiveTab("employees")}
-                          className="bg-blue-600 hover:bg-blue-700"
+                          onClick={() => {
+                            alert("💡 To add employees:\n\n1. Click on the 'Employees' tab above\n2. Use the 'Add Employee' button\n3. Fill in employee details including salary information\n4. Return to Payroll tab to generate payslips");
+                          }}
+                          variant="outline"
+                          className="border-green-300 text-green-600 hover:bg-green-50"
                         >
                           <Plus className="h-4 w-4 mr-2" />
-                          Add Employees
+                          How to Add Employees
                         </Button>
                       </div>
                     </div>
