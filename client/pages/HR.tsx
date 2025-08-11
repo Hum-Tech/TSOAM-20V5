@@ -2249,6 +2249,27 @@ ${performanceFormData.managerComments || 'Not specified'}
                 : record
             )
           );
+
+          // Update recently processed batches to show partial approval
+          setRecentlyProcessedBatches(prev => {
+            const existingBatch = prev.find(batch => batch.batchId === data.batchId);
+            if (!existingBatch) {
+              const partialBatch = {
+                batchId: data.batchId,
+                status: "Partially Processed",
+                approvedBy: data.approvedBy,
+                approvedDate: data.approvedDate,
+                totalAmount: data.amount || 0,
+                employeeCount: 1,
+                period: new Date().toISOString().slice(0, 7),
+                totalEmployees: 1,
+                totalNetAmount: data.amount || 0
+              };
+              return [partialBatch, ...prev];
+            }
+            return prev;
+          });
+
           // Force refresh to show updated status
           setRefreshKey(prev => prev + 1);
           break;
