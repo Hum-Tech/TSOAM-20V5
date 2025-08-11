@@ -279,7 +279,7 @@ export default function MemberManagement() {
   const [statusChangeReason, setStatusChangeReason] = useState("");
   const [filterEmployment, setFilterEmployment] = useState("All");
   const [filterHomeCell, setFilterHomeCell] = useState("All");
-  const [homeCells, setHomeCells] = useState<{id: number, name: string}[]>([]);
+  const [homeCells, setHomeCells] = useState<any[]>([]);
   const [activeTab, setActiveTab] = useState("members");
   const [showTransferHomeCellDialog, setShowTransferHomeCellDialog] = useState(false);
   const [memberToTransfer, setMemberToTransfer] = useState<Member | null>(null);
