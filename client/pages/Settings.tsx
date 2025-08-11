@@ -415,6 +415,35 @@ export default function Settings() {
   };
 
   /**
+   * Download a specific backup
+   */
+  const downloadBackup = async (backupId: string) => {
+    try {
+      await backupService.downloadBackup(backupId);
+      toast({
+        title: "Success",
+        description: "Backup downloaded successfully!",
+        duration: 3000,
+      });
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: error instanceof Error ? error.message : "Download failed",
+        variant: "destructive",
+        duration: 3000,
+      });
+    }
+  };
+
+  /**
+   * Get recent backups for display
+   */
+  const getRecentBackups = () => {
+    const backups = backupService.getBackupHistory();
+    return backups.slice(0, 3); // Show 3 most recent backups
+  };
+
+  /**
    * Test settings integration - generate a sample report to show settings work
    */
   const testSettingsIntegration = async () => {
