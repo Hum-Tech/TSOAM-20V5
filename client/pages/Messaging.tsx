@@ -539,13 +539,17 @@ export default function Messaging() {
       });
 
       // Dispatch event to update notification bell in header for employees
-      window.dispatchEvent(new CustomEvent('notificationAdded', {
-        detail: {
-          count: employeeContacts.length,
-          type: "Internal",
-          sender: user?.name
-        }
-      }));
+      employeeContacts.forEach(contact => {
+        window.dispatchEvent(new CustomEvent('notificationAdded', {
+          detail: {
+            count: 1,
+            type: "Internal",
+            sender: user?.name,
+            recipient: contact.name,
+            recipientId: contact.id
+          }
+        }));
+      });
     }
 
     // For members: Continue with SMS/Email delivery
