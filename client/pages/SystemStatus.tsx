@@ -54,7 +54,7 @@ export default function SystemStatus() {
   const [lastUpdated, setLastUpdated] = useState(new Date());
 
   // Check if user has permission to view system status
-  if (!user?.permissions?.systemLogs && user?.role !== "Admin") {
+  if (!user?.permissions?.systemLogs && user?.role !== "admin") {
     return (
       <Layout>
         <div className="flex items-center justify-center h-[60vh]">
