@@ -364,9 +364,15 @@ class FinanceApprovalService {
     // Update batch status based on approval state
     const pendingCount = batch.employees.filter(emp => emp.status === 'Pending').length;
     const approvedTotal = batch.employees.filter(emp => emp.status === 'Approved').length;
+    const rejectedTotal = batch.employees.filter(emp => emp.status === 'Rejected').length;
 
     if (pendingCount === 0) {
-      batch.status = 'Fully_Approved';
+      // All payments have been processed - create disbursement reports
+      if (approvedTotal > 0 || rejectedTotal > 0) {
+        this.createDisbursementReport(batchId, approvedBy);
+      }
+
+      batch.status = approvedTotal > 0 ? 'Fully_Approved' : 'Rejected';
       this.moveToHistory(batch, [action]);
       this.removePendingBatch(batchId);
     } else if (approvedTotal > 0) {
