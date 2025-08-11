@@ -44,6 +44,7 @@ import {
   type EmailSettings,
 } from "@/services/SettingsService";
 import { backupService } from "@/services/BackupService";
+import { homeCellService, type HomeCell } from "@/services/HomeCellService";
 
 export default function Settings() {
   const { toast } = useToast();
