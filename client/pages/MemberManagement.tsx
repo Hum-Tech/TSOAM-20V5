@@ -330,6 +330,59 @@ export default function MemberManagement() {
     };
   }, []);
 
+  // Load home cells and refresh when settings change
+  const loadHomeCells = () => {
+    const availableHomeCells = homeCellService.getActiveHomeCells().map(cell => ({
+      id: cell.id,
+      name: cell.name
+    }));
+    setHomeCells(availableHomeCells);
+  };
+
+  // Refresh home cells when settings page updates them
+  useEffect(() => {
+    const handleHomeCellUpdate = () => {
+      loadHomeCells();
+    };
+
+    // Listen for home cell updates from settings
+    window.addEventListener('homeCellUpdated', handleHomeCellUpdate);
+
+    return () => {
+      window.removeEventListener('homeCellUpdated', handleHomeCellUpdate);
+    };
+  }, []);
+
+  // Function to switch to members tab with home cell filter
+  const viewHomeCellMembers = (homeCellName: string) => {
+    setFilterHomeCell(homeCellName);
+    setActiveTab("members");
+  };
+
+  // Function to transfer member to different home cell
+  const handleTransferHomeCell = () => {
+    if (!memberToTransfer || !newHomeCellForTransfer) {
+      alert("Please select a home cell for transfer");
+      return;
+    }
+
+    // Update the member's home cell
+    const updatedMembers = members.map(member =>
+      member.id === memberToTransfer.id
+        ? { ...member, homeCell: newHomeCellForTransfer }
+        : member
+    );
+
+    setMembers(updatedMembers);
+
+    // Reset transfer dialog
+    setShowTransferHomeCellDialog(false);
+    setMemberToTransfer(null);
+    setNewHomeCellForTransfer("");
+
+    alert(`${memberToTransfer.fullName} has been transferred to ${newHomeCellForTransfer} home cell`);
+  };
+
   // Function to open form with pre-filled data from new member transfer
   const openTransferForm = (newMemberData) => {
     setIsTransferMode(true);
