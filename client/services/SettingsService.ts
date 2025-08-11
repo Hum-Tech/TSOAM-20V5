@@ -153,6 +153,13 @@ class SettingsService {
         payrollReminders: true,
         membershipAlerts: true,
         eventReminders: true,
+        newMemberNotifications: true,
+        appointmentReminders: true,
+        financialAlerts: true,
+        eventNotifications: true,
+        backupNotifications: true,
+        securityAlerts: true,
+        frequency: "immediate",
       },
       system: {
         timezone: "Africa/Nairobi",
