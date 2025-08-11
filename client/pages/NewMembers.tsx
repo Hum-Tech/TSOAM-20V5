@@ -310,6 +310,23 @@ export default function NewMembers() {
     };
   }, []);
 
+  // Listen for home cell updates from settings
+  useEffect(() => {
+    const handleHomeCellUpdate = () => {
+      const availableHomeCells = homeCellService.getActiveHomeCells().map(cell => ({
+        id: cell.id,
+        name: cell.name
+      }));
+      setHomeCells(availableHomeCells);
+    };
+
+    window.addEventListener('homeCellUpdated', handleHomeCellUpdate);
+
+    return () => {
+      window.removeEventListener('homeCellUpdated', handleHomeCellUpdate);
+    };
+  }, []);
+
   // Initialize visitor tracking service
   useEffect(() => {
     const loadTrackedVisitors = () => {
@@ -2131,7 +2148,7 @@ export default function NewMembers() {
                             born again
                           </div>
                           <div>
-                            �� Visitors with 3+ consecutive Sundays auto-promote
+                            • Visitors with 3+ consecutive Sundays auto-promote
                             to New Members
                           </div>
                           <div>
