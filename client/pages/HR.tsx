@@ -4837,7 +4837,12 @@ ${performanceFormData.managerComments || 'Not specified'}
                                         "border-orange-300 text-orange-700 bg-orange-50"
                                       }
                                     >
-                                      <Clock className="h-3 w-3 mr-1" />
+                                      {batch.status === "Processed" ?
+                                        <CheckCircle className="h-3 w-3 mr-1" /> :
+                                        batch.status === "Rejected" ?
+                                        <XCircle className="h-3 w-3 mr-1" /> :
+                                        <Clock className="h-3 w-3 mr-1" />
+                                      }
                                       {batch.status.replace('_', ' ')}
                                     </Badge>
                                   </div>
