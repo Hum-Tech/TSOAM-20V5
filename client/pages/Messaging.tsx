@@ -703,6 +703,9 @@ export default function Messaging() {
       }
 
       alert(successMessage);
+
+      // Refresh message history to show new sent messages
+      refreshMessageHistory();
     } catch (error) {
       console.error("Failed to send message:", error);
       alert("Message processing failed. Please try again.");
