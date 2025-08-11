@@ -336,6 +336,13 @@ export default function Inventory() {
   const [showDisposalDialog, setShowDisposalDialog] = useState(false);
   const [selectedItem, setSelectedItem] = useState<InventoryItem | null>(null);
 
+  // Inventory item dialogs
+  const [showViewDialog, setShowViewDialog] = useState(false);
+  const [showEditDialog, setShowEditDialog] = useState(false);
+  const [showDeleteDialog, setShowDeleteDialog] = useState(false);
+  const [selectedInventoryItem, setSelectedInventoryItem] = useState<InventoryItem | null>(null);
+  const [editInventoryForm, setEditInventoryForm] = useState<Partial<InventoryItem>>({});
+
   // Stock Management Dialog States
   const [showAddStockDialog, setShowAddStockDialog] = useState(false);
   const [showStockMovementDialog, setShowStockMovementDialog] = useState(false);
