@@ -427,7 +427,19 @@ export function AuthProvider({ children }: { children: ReactNode }) {
               userData.permissions || getRolePermissions(userData.role),
           });
           setSessionTimeLeft(timeLeft);
-          console.log(`Session restored. ${timeLeft} minutes remaining.`);
+
+          // Initialize role-based access service for restored session
+          const roleMapping: Record<string, any> = {
+            "Admin": "admin",
+            "Pastor": "pastor",
+            "HR Officer": "hr",
+            "Finance Officer": "finance",
+            "User": "user"
+          };
+          const mappedRole = roleMapping[userData.role] || "user";
+          RoleBasedAccessService.setCurrentUser(userData.id, mappedRole);
+
+          console.log(`Session restored. ${timeLeft} minutes remaining. Role: ${userData.role} -> ${mappedRole}`);
         } else {
           // Session expired, clear storage
           clearSession();
