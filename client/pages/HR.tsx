@@ -6994,17 +6994,19 @@ ${performanceFormData.managerComments || 'Not specified'}
                         <SelectValue placeholder="Select department" />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="Administration">
-                          Administration
-                        </SelectItem>
+                        <SelectItem value="Administration">Administration</SelectItem>
+                        <SelectItem value="Choir">Choir</SelectItem>
+                        <SelectItem value="Children Ministry">Children Ministry</SelectItem>
+                        <SelectItem value="Security">Security</SelectItem>
+                        <SelectItem value="Sanctuary Keeping">Sanctuary Keeping</SelectItem>
+                        <SelectItem value="ICT and Media">ICT and Media</SelectItem>
+                        <SelectItem value="Pastorate">Pastorate</SelectItem>
+                        <SelectItem value="Youth Ministry">Youth Ministry</SelectItem>
+                        <SelectItem value="Evangelism">Evangelism</SelectItem>
+                        <SelectItem value="Human Resource">Human Resource</SelectItem>
                         <SelectItem value="Finance">Finance</SelectItem>
-                        <SelectItem value="Youth Ministry">
-                          Youth Ministry
-                        </SelectItem>
-                        <SelectItem value="Worship">Worship</SelectItem>
-                        <SelectItem value="Children Ministry">
-                          Children Ministry
-                        </SelectItem>
+                        <SelectItem value="Maintenance">Maintenance</SelectItem>
+                        <SelectItem value="Legal">Legal</SelectItem>
                       </SelectContent>
                     </Select>
                   </div>
