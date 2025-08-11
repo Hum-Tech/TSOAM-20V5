@@ -6784,9 +6784,29 @@ ${performanceFormData.managerComments || 'Not specified'}
                       <SelectItem value="2024">2024</SelectItem>
                       <SelectItem value="2023">2023</SelectItem>
                       <SelectItem value="2022">2022</SelectItem>
+                      <SelectItem value="2021">2021</SelectItem>
+                      <SelectItem value="2020">2020</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
+
+                {/* P9 Generation Preview */}
+                {selectedP9Employee && (
+                  <div className="bg-blue-50 p-3 rounded-lg border-l-4 border-blue-400">
+                    <div className="flex items-start gap-2">
+                      <FileText className="h-5 w-5 text-blue-600 mt-0.5" />
+                      <div>
+                        <h4 className="font-medium text-blue-900">Ready to Generate P9</h4>
+                        <p className="text-sm text-blue-700">
+                          Tax year {p9Year} P9 form for {selectedP9Employee.fullName || selectedP9Employee.full_name}
+                        </p>
+                        <p className="text-xs text-blue-600 mt-1">
+                          Available formats: PDF (printable) and Excel (editable)
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                )}
 
                 {selectedP9Employee && (
                   <div className="bg-gray-50 p-3 rounded">
