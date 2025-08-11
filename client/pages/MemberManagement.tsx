@@ -1214,22 +1214,25 @@ export default function MemberManagement() {
                               <Button
                                 size="sm"
                                 variant="outline"
-                                onClick={() => {
-                                  setFilterHomeCell(cell.name);
-                                  // Switch to members tab to show filtered results
-                                  const membersTab = document.querySelector('[value="members"]') as HTMLElement;
-                                  if (membersTab) membersTab.click();
-                                }}
+                                onClick={() => viewHomeCellMembers(cell.name)}
                               >
                                 View Members
                               </Button>
                               <Button
                                 size="sm"
                                 variant="outline"
-                                onClick={() => handleExportHomeCell(cell.name)}
+                                onClick={() => handleExportHomeCell(cell.name, "excel")}
                               >
                                 <Download className="h-4 w-4 mr-1" />
-                                Export
+                                Excel
+                              </Button>
+                              <Button
+                                size="sm"
+                                variant="outline"
+                                onClick={() => handleExportHomeCell(cell.name, "pdf")}
+                              >
+                                <FileText className="h-4 w-4 mr-1" />
+                                PDF
                               </Button>
                             </div>
                           </CardContent>
