@@ -719,6 +719,53 @@ export default function NewMembers() {
     setShowVisitorDialog(false);
   };
 
+  // Edit visitor handler
+  const handleEditVisitor = (visitor: Visitor) => {
+    setSelectedVisitorForEdit(visitor);
+    setEditVisitorForm({
+      fullName: visitor.fullName,
+      phoneNumber: visitor.phoneNumber,
+      purposeOfVisit: visitor.purposeOfVisit,
+      currentChurch: visitor.currentChurch,
+      howHeardAboutUs: visitor.howHeardAboutUs,
+      whatLikedMost: visitor.whatLikedMost,
+      prayerRequests: visitor.prayerRequests,
+      followUpRequired: visitor.followUpRequired,
+      followUpNotes: visitor.followUpNotes,
+    });
+    setShowEditVisitorDialog(true);
+  };
+
+  // Save edited visitor
+  const handleSaveEditedVisitor = () => {
+    if (!selectedVisitorForEdit) return;
+
+    if (!editVisitorForm.fullName || !editVisitorForm.phoneNumber) {
+      alert("Please fill in required fields");
+      return;
+    }
+
+    const updatedVisitors = visitors.map(visitor =>
+      visitor.id === selectedVisitorForEdit.id
+        ? { ...visitor, ...editVisitorForm }
+        : visitor
+    );
+
+    setVisitors(updatedVisitors);
+    setShowEditVisitorDialog(false);
+    setSelectedVisitorForEdit(null);
+    alert("Visitor updated successfully!");
+  };
+
+  // Delete visitor handler
+  const handleDeleteVisitor = (visitor: Visitor) => {
+    if (window.confirm(`Are you sure you want to delete visitor "${visitor.fullName}"?`)) {
+      const updatedVisitors = visitors.filter(v => v.id !== visitor.id);
+      setVisitors(updatedVisitors);
+      alert("Visitor deleted successfully!");
+    }
+  };
+
   const handleNewMemberSubmit = () => {
     if (
       !newMemberForm.fullName ||
