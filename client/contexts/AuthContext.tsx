@@ -524,7 +524,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
       // Check if OTP is required for this user (Admin roles require OTP)
       if (
-        (foundUser.role === "Admin" || foundUser.role === "HR Officer") &&
+        (foundUser.role === "admin" || foundUser.role === "hr") &&
         !otp
       ) {
         setRequireOTP(true);
