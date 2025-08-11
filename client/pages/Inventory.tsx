@@ -342,7 +342,10 @@ export default function Inventory() {
   const [showStockTakingDialog, setShowStockTakingDialog] = useState(false);
   const [showViewStockDialog, setShowViewStockDialog] = useState(false);
   const [showRestockDialog, setShowRestockDialog] = useState(false);
+  const [showEditStockDialog, setShowEditStockDialog] = useState(false);
+  const [showDeleteStockDialog, setShowDeleteStockDialog] = useState(false);
   const [selectedStockItem, setSelectedStockItem] = useState<StockItem | null>(null);
+  const [editStockForm, setEditStockForm] = useState<Partial<StockItem>>({});
 
   // Form states
   const [itemForm, setItemForm] = useState({
