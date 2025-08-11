@@ -1805,10 +1805,50 @@ ${performanceFormData.managerComments || 'Not specified'}
       };
       localStorage.setItem("hr_module_data", JSON.stringify(hrModuleData));
 
-      // Send payroll batch to Finance module for approval
+      // Send payroll batch to Finance for approval using production service
       try {
-        // Save payroll batch for Finance module
-        localStorage.setItem("pending_payroll_batch", JSON.stringify(payrollBatch));
+        // Prepare production payroll approval request
+        const approvalRequest = {
+          batchId: batchId,
+          period: currentMonth,
+          totalEmployees: payrollRecords.length,
+          totalGrossAmount: Math.round(totalGrossPayroll),
+          totalNetAmount: Math.round(totalNetPayroll),
+          submittedBy: "HR_System",
+          employees: payrollRecords.map(record => ({
+            id: record.id,
+            employeeId: record.employeeId,
+            employeeName: record.employeeName,
+            grossSalary: record.grossSalary,
+            netSalary: record.netSalary,
+            deductions: record.deductions,
+            status: 'Pending' as const
+          })),
+          summary: {
+            totalBasicSalary: Math.round(payrollRecords.reduce((sum, r) => sum + r.basicSalary, 0)),
+            totalAllowances: Math.round(payrollRecords.reduce((sum, r) => sum + r.allowances, 0)),
+            totalPAYE: Math.round(payrollRecords.reduce((sum, r) => sum + r.deductions.paye, 0)),
+            totalNSSF: Math.round(payrollRecords.reduce((sum, r) => sum + r.deductions.nssf, 0)),
+            totalSHA: Math.round(payrollRecords.reduce((sum, r) => sum + r.deductions.sha, 0)),
+            totalHousingLevy: Math.round(payrollRecords.reduce((sum, r) => sum + r.deductions.housingLevy, 0)),
+            totalLoans: Math.round(payrollRecords.reduce((sum, r) => sum + (r.deductions.loan || 0), 0)),
+            totalInsurance: Math.round(payrollRecords.reduce((sum, r) => sum + (r.deductions.insurance || 0), 0)),
+            totalDeductions: Math.round(payrollRecords.reduce((sum, r) => sum + r.deductions.total, 0)),
+            projectedCashFlow: Math.round(totalNetPayroll),
+            bankBalance: 0, // This would come from Finance module
+            approvalRequired: true
+          },
+          metadata: {
+            approvalDeadline: new Date(Date.now() + 48 * 60 * 60 * 1000).toISOString(),
+            priority: totalNetPayroll > 2000000 ? 'high' as const : 'medium' as const,
+            department: 'HR',
+            fiscalYear: currentDate.getFullYear(),
+            quarter: Math.ceil((currentDate.getMonth() + 1) / 3)
+          }
+        };
+
+        // Submit to production Finance approval service
+        const submissionResult = FinanceApprovalService.submitPayrollForApproval(approvalRequest);
 
         // Save to pending batches list for HR tracking
         const existingPendingBatches = JSON.parse(localStorage.getItem("hr_pending_batches") || "[]");
