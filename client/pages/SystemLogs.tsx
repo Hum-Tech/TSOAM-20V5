@@ -862,7 +862,7 @@ export default function SystemLogs() {
                           {log.action}
                         </div>
                         <div>
-                          <span className="font-medium">User:</span> {log.user}
+                          <span className="font-medium">User:</span> {log.userName || log.userId || 'System'}
                         </div>
                         <div>
                           <span className="font-medium">IP:</span>{" "}
