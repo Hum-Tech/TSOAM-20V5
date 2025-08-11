@@ -2039,7 +2039,7 @@ ${performanceFormData.managerComments || 'Not specified'}
     // Show notification
     setTimeout(() => {
       alert(
-        `����� Payroll Disbursement Approved!\n\n` +
+        `���� Payroll Disbursement Approved!\n\n` +
           `👥 Employees: ${disbursementData.totalEmployees}\n` +
           `💵 Total Amount: KSh ${disbursementData.totalNetAmount?.toLocaleString()}\n` +
           `✅ Approved by: ${disbursementData.approvedBy}\n` +
@@ -3544,7 +3544,7 @@ ${performanceFormData.managerComments || 'Not specified'}
                             <div class="company-name">${payslipData.organization.name}</div>
                             <div class="company-details">
                                 ${payslipData.organization.address}<br>
-                                ��� ${payslipData.organization.email} | 📞 ${payslipData.organization.phone}<br>
+                                📧 ${payslipData.organization.email} | 📞 ${payslipData.organization.phone}<br>
                                 KRA PIN: ${payslipData.organization.kraPin}
                             </div>
                         </div>
@@ -4669,11 +4669,11 @@ ${performanceFormData.managerComments || 'Not specified'}
                                     `💰 Gross Amount: KSh ${batch.totalGrossAmount.toLocaleString()}\n` +
                                     `💵 Net Amount: KSh ${batch.totalNetAmount.toLocaleString()}\n` +
                                     `📊 Total Deductions: KSh ${batch.summary.totalDeductions.toLocaleString()}\n\n` +
-                                    `⚡ PRIORITY: ${batch.metadata.priority.toUpperCase()}\n` +
+                                    `⚡ PRIORITY: ${(batch.metadata?.priority || 'medium').toUpperCase()}\n` +
                                     `📅 Submitted: ${new Date(batch.submittedDate).toLocaleString()}\n` +
-                                    `⏰ Deadline: ${new Date(batch.metadata.approvalDeadline).toLocaleString()}\n` +
-                                    `🏛️ Department: ${batch.metadata.department}\n` +
-                                    `📈 Fiscal Year: ${batch.metadata.fiscalYear} Q${batch.metadata.quarter}\n\n` +
+                                    `⏰ Deadline: ${new Date(batch.metadata?.approvalDeadline || Date.now() + 48 * 60 * 60 * 1000).toLocaleString()}\n` +
+                                    `🏛️ Department: ${batch.metadata?.department || 'HR'}\n` +
+                                    `📈 Fiscal Year: ${batch.metadata?.fiscalYear || new Date().getFullYear()} Q${batch.metadata?.quarter || Math.ceil((new Date().getMonth() + 1) / 3)}\n\n` +
                                     `📋 STATUS BREAKDOWN:\n` +
                                     `• Approved: ${financialImpact.approved.count} (KSh ${financialImpact.approved.amount.toLocaleString()})\n` +
                                     `• Rejected: ${financialImpact.rejected.count} (KSh ${financialImpact.rejected.amount.toLocaleString()})\n` +
