@@ -1924,7 +1924,7 @@ ${performanceFormData.managerComments || 'Not specified'}
         // Trigger a visual notification that Finance has been notified
         setTimeout(() => {
           const confirmed = confirm(
-            `���� Payroll Sent to Finance Successfully!\n\n` +
+            `🎯 Payroll Sent to Finance Successfully!\n\n` +
             `📦 Batch ID: ${batchId}\n` +
             `💰 Total Amount: KSh ${totalNetPayroll.toLocaleString()}\n` +
             `👥 Employees: ${payrollRecords.length}\n\n` +
@@ -1939,7 +1939,7 @@ ${performanceFormData.managerComments || 'Not specified'}
         }, 1000);
 
       } catch (error) {
-        console.error("��� Error sending payroll to Finance:", error);
+        console.error("���� Error sending payroll to Finance:", error);
         alert(`❌ Failed to send payroll to Finance!\n\nError: ${error instanceof Error ? error.message : 'Unknown error'}\n\nPlease try again or contact system administrator.`);
       }
 
@@ -2187,7 +2187,7 @@ ${performanceFormData.managerComments || 'Not specified'}
     const handleStorageChange = (event: StorageEvent) => {
       if (event.key?.startsWith('finance_') || event.key?.startsWith('hr_')) {
         // Force refresh when Finance approval data changes
-        setActiveTab(prev => prev);
+        setRefreshKey(prev => prev + 1);
       }
     };
 
@@ -2228,7 +2228,7 @@ ${performanceFormData.managerComments || 'Not specified'}
               `❌ Payroll Rejected by Finance!\n\n` +
                 `�� Period: ${rejectionData.period}\n` +
                 `💰 Amount: KSh ${rejectionData.amount?.toLocaleString()}\n` +
-                `👤 Rejected by: ${rejectionData.rejectedBy}\n` +
+                `��� Rejected by: ${rejectionData.rejectedBy}\n` +
                 `�� Reason: ${rejectionData.rejectionReason}\n` +
                 `📅 Date: ${new Date(rejectionData.rejectedDate).toLocaleDateString()}\n\n` +
                 `���️ Please review and resubmit the payroll if necessary.`,
@@ -4820,7 +4820,7 @@ ${performanceFormData.managerComments || 'Not specified'}
                                     notifications.unshift(reminderNotification);
                                     localStorage.setItem("finance_notifications", JSON.stringify(notifications));
 
-                                    alert("✅ Reminder sent to Finance team!");
+                                    alert("�� Reminder sent to Finance team!");
                                   }
                                 }}
                                 className="border-yellow-300 text-yellow-600"
