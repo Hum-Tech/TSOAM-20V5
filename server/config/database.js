@@ -22,27 +22,37 @@ const dbConfig = {
 // Create connection pool for better performance (MySQL)
 const pool = mysql.createPool(dbConfig);
 
-// Test database connection with automatic fallback
+// Test database connection with MySQL priority
 async function testConnection() {
+  console.log("🔄 Attempting MySQL database connection...");
+  console.log("📍 DB Config:", {
+    host: dbConfig.host,
+    port: dbConfig.port,
+    user: dbConfig.user,
+    database: dbConfig.database,
+    USE_SQLITE: USE_SQLITE
+  });
+
   if (USE_SQLITE) {
-    console.log("🔄 Using SQLite database for development...");
-    const sqliteResult = await sqlite.testConnection();
-    if (sqliteResult) {
-      console.log("✅ SQLite database ready for synchronization");
-    }
-    return sqliteResult;
+    console.log("⚠️  SQLite mode enabled in config - switching to MySQL...");
   }
 
   try {
+    // Force MySQL connection attempt
     const connection = await pool.getConnection();
     console.log("✅ MySQL database connected successfully to:", dbConfig.database);
     console.log("📍 Host:", dbConfig.host, "Port:", dbConfig.port);
-    console.log("🔄 Database synchronization ready");
+    console.log("🔄 MySQL database synchronization ready");
     connection.release();
+
+    // Override USE_SQLITE since MySQL is working
+    global.FORCE_MYSQL = true;
     return true;
   } catch (error) {
     console.error("❌ MySQL connection failed:", error.message);
-    console.log("🔄 Falling back to SQLite database...");
+    console.error("🔧 Check MySQL server status and credentials");
+    console.error("📋 Falling back to SQLite for this session...");
+
     const sqliteResult = await sqlite.testConnection();
     if (sqliteResult) {
       console.log("✅ SQLite fallback ready - database synchronization enabled");
@@ -99,20 +109,25 @@ async function initializeDatabase() {
   }
 }
 
-// Execute query with error handling
+// Execute query with MySQL priority
 async function query(sql, params = []) {
-  if (USE_SQLITE) {
-    return await sqlite.query(sql, params);
+  // Try MySQL first unless explicitly disabled
+  if (!USE_SQLITE || global.FORCE_MYSQL) {
+    try {
+      const [results] = await pool.execute(sql, params);
+      console.log("✅ MySQL query executed successfully");
+      return { success: true, data: results };
+    } catch (error) {
+      console.error("❌ MySQL query error:", error.message);
+      if (global.FORCE_MYSQL) {
+        throw error; // Don't fallback if we're forcing MySQL
+      }
+      console.log("🔄 Falling back to SQLite for this query...");
+    }
   }
 
-  try {
-    const [results] = await pool.execute(sql, params);
-    return { success: true, data: results };
-  } catch (error) {
-    console.error("MySQL query error:", error.message);
-    console.log("🔄 Falling back to SQLite...");
-    return await sqlite.query(sql, params);
-  }
+  // Fallback to SQLite
+  return await sqlite.query(sql, params);
 }
 
 // Get connection from pool
