@@ -12,10 +12,10 @@ router.get("/", async (req, res) => {
       `SELECT m.*, u.name as sender_name, u.email as sender_email,
               r.original_message_id, r.thread_depth,
               (SELECT COUNT(*) FROM message_replies WHERE original_message_id = m.id) as reply_count
-       FROM messages m
-       LEFT JOIN users u ON m.sender_id = u.id
+       FROM messages m 
+       LEFT JOIN users u ON m.sender_id = u.id 
        LEFT JOIN message_replies r ON m.id = r.reply_message_id
-       WHERE m.sender_id = ? OR JSON_CONTAINS(m.recipient_ids, ?)
+       WHERE m.sender_id = ? OR JSON_CONTAINS(m.recipient_ids, ?) 
        ORDER BY m.created_at DESC`,
       [userId, `"${userId}"`]
     );
@@ -40,8 +40,8 @@ router.get("/thread/:messageId", async (req, res) => {
     const result = await query(
       `SELECT m.*, u.name as sender_name, u.email as sender_email,
               r.thread_depth, r.original_message_id
-       FROM messages m
-       LEFT JOIN users u ON m.sender_id = u.id
+       FROM messages m 
+       LEFT JOIN users u ON m.sender_id = u.id 
        LEFT JOIN message_replies r ON m.id = r.reply_message_id OR m.id = r.original_message_id
        WHERE m.id = ? OR r.original_message_id = ?
        ORDER BY m.created_at ASC`,
@@ -62,15 +62,15 @@ router.get("/thread/:messageId", async (req, res) => {
 // Send a new message
 router.post("/", async (req, res) => {
   try {
-    const {
-      sender_id,
-      recipient_ids,
-      message_content,
-      message_type,
+    const { 
+      sender_id, 
+      recipient_ids, 
+      message_content, 
+      message_type, 
       subject,
       recipient_type,
       parent_message_id,
-      is_reply
+      is_reply 
     } = req.body;
 
     if (!sender_id || !recipient_ids || !message_content) {
@@ -79,7 +79,7 @@ router.post("/", async (req, res) => {
 
     // Insert message into database
     const result = await query(
-      `INSERT INTO messages (sender_id, recipient_ids, content, message_type, subject, recipient_type, status, parent_message_id, is_reply, created_at)
+      `INSERT INTO messages (sender_id, recipient_ids, content, message_type, subject, recipient_type, status, parent_message_id, is_reply, created_at) 
        VALUES (?, ?, ?, ?, ?, ?, 'sent', ?, ?, NOW())`,
       [
         sender_id,
@@ -99,7 +99,7 @@ router.post("/", async (req, res) => {
       // If this is a reply, add to message_replies table
       if (is_reply && parent_message_id) {
         await query(
-          `INSERT INTO message_replies (original_message_id, reply_message_id, thread_depth)
+          `INSERT INTO message_replies (original_message_id, reply_message_id, thread_depth) 
            VALUES (?, ?, (SELECT COALESCE(MAX(thread_depth), 0) + 1 FROM message_replies WHERE original_message_id = ?))`,
           [parent_message_id, messageId, parent_message_id]
         );
@@ -107,7 +107,7 @@ router.post("/", async (req, res) => {
 
       // Log the activity
       await query(
-        `INSERT INTO system_logs (action, module, details, severity, user_id, created_at)
+        `INSERT INTO system_logs (action, module, details, severity, user_id, created_at) 
          VALUES (?, ?, ?, ?, ?, NOW())`,
         [
           is_reply ? 'Reply Sent' : 'Message Sent',
@@ -118,8 +118,8 @@ router.post("/", async (req, res) => {
         ]
       );
 
-      res.json({
-        success: true,
+      res.json({ 
+        success: true, 
         messageId: messageId,
         message: is_reply ? "Reply sent successfully" : "Message sent successfully"
       });
@@ -135,8 +135,8 @@ router.post("/", async (req, res) => {
 // Send a reply to a message
 router.post("/reply", async (req, res) => {
   try {
-    const {
-      sender_id,
+    const { 
+      sender_id, 
       original_message_id,
       reply_content,
       recipient_id
@@ -148,8 +148,8 @@ router.post("/reply", async (req, res) => {
 
     // Get original message details
     const originalMessage = await query(
-      `SELECT m.*, u.name as sender_name FROM messages m
-       LEFT JOIN users u ON m.sender_id = u.id
+      `SELECT m.*, u.name as sender_name FROM messages m 
+       LEFT JOIN users u ON m.sender_id = u.id 
        WHERE m.id = ?`,
       [original_message_id]
     );
@@ -162,7 +162,7 @@ router.post("/reply", async (req, res) => {
 
     // Insert reply message
     const result = await query(
-      `INSERT INTO messages (sender_id, recipient_ids, content, message_type, subject, recipient_type, status, parent_message_id, is_reply, created_at)
+      `INSERT INTO messages (sender_id, recipient_ids, content, message_type, subject, recipient_type, status, parent_message_id, is_reply, created_at) 
        VALUES (?, ?, ?, 'Internal', ?, 'employee', 'sent', ?, 1, NOW())`,
       [
         sender_id,
@@ -178,7 +178,7 @@ router.post("/reply", async (req, res) => {
 
       // Add to message_replies table
       await query(
-        `INSERT INTO message_replies (original_message_id, reply_message_id, thread_depth)
+        `INSERT INTO message_replies (original_message_id, reply_message_id, thread_depth) 
          VALUES (?, ?, (SELECT COALESCE(MAX(thread_depth), 0) + 1 FROM message_replies WHERE original_message_id = ?))`,
         [original_message_id, replyId, original_message_id]
       );
@@ -191,7 +191,7 @@ router.post("/reply", async (req, res) => {
 
       // Log the reply
       await query(
-        `INSERT INTO system_logs (action, module, details, severity, user_id, created_at)
+        `INSERT INTO system_logs (action, module, details, severity, user_id, created_at) 
          VALUES (?, ?, ?, ?, ?, NOW())`,
         [
           'Reply Sent',
@@ -202,8 +202,8 @@ router.post("/reply", async (req, res) => {
         ]
       );
 
-      res.json({
-        success: true,
+      res.json({ 
+        success: true, 
         replyId: replyId,
         message: "Reply sent successfully"
       });
@@ -230,7 +230,7 @@ router.patch("/:messageId/read", async (req, res) => {
     if (result.success) {
       // Log the read action
       await query(
-        `INSERT INTO system_logs (action, module, details, severity, user_id, created_at)
+        `INSERT INTO system_logs (action, module, details, severity, user_id, created_at) 
          VALUES (?, ?, ?, ?, ?, NOW())`,
         [
           'Message Read',
@@ -297,24 +297,6 @@ router.get("/stats", async (req, res) => {
     );
 
     if (totalResult.success && todayResult.success && deliveryResult.success) {
-      res.json({
-        success: true,
-        stats: {
-          total: totalResult.data[0].total,
-          today: todayResult.data[0].today,
-          deliveryRate: deliveryResult.data[0].rate || 0
-        }
-      });
-    } else {
-      res.status(500).json({ error: "Failed to fetch statistics" });
-    }
-  } catch (error) {
-    console.error("Message stats error:", error);
-    res.status(500).json({ error: "Internal server error" });
-  }
-});
-
-module.exports = router;
       res.json({
         success: true,
         stats: {
