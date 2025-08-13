@@ -1,6 +1,26 @@
 import React from "react";
 import "./global.css";
 
+// Handle third-party service errors gracefully
+window.addEventListener('error', (event) => {
+  // Suppress FullStory and other third-party fetch errors
+  if (event.message?.includes('Failed to fetch') &&
+      (event.filename?.includes('fs.js') || event.filename?.includes('fullstory'))) {
+    console.warn('Third-party service error suppressed:', event.message);
+    event.preventDefault();
+    return false;
+  }
+});
+
+// Handle unhandled promise rejections from third-party services
+window.addEventListener('unhandledrejection', (event) => {
+  if (event.reason?.message?.includes('Failed to fetch') ||
+      event.reason?.toString().includes('fullstory')) {
+    console.warn('Third-party service promise rejection suppressed:', event.reason);
+    event.preventDefault();
+  }
+});
+
 import { Toaster } from "@/components/ui/toaster";
 import { createRoot } from "react-dom/client";
 import { Toaster as Sonner } from "@/components/ui/sonner";
