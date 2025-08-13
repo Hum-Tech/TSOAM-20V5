@@ -246,7 +246,10 @@ export default function MemberManagement() {
   const isAdmin = user?.role === "admin";
 
   // Check if user can access tithe management (disabled for normal users)
-  const canAccessTitheManagement = user?.role !== "user";
+  const canAccessTitheManagement = user?.role !== "user" &&
+    (user?.role === "admin" || user?.role === "Admin" ||
+     user?.role === "pastor" || user?.role === "Pastor" ||
+     user?.role === "finance" || user?.role === "Finance Officer");
   const [searchTerm, setSearchTerm] = useState("");
   const [members, setMembers] = useState(mockMembers);
   const [selectedMember, setSelectedMember] = useState<Member | null>(null);
