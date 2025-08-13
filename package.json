@@ -9,7 +9,7 @@
     "install-all": "npm install && cd client && npm install && cd ../server && npm install",
     "build": "npm run client:build",
     "build:client": "cd client && npm install && npm run build-only",
-    "build-production": "node scripts/build-optimize.js",
+    "build-production": "node build-production-final.js",
     "start": "node server/server.js",
     "dev": "concurrently \"cd client && npm run dev\" \"cd server && npm run dev\"",
     "dev-server": "cd server && npm run dev",
