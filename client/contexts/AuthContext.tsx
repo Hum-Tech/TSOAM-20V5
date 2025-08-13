@@ -94,6 +94,7 @@ import {
 } from "react";
 import RoleBasedAccessService from "@/services/RoleBasedAccessService";
 import { safeFetch } from "@/utils/requestDebounce";
+import { authFetch } from "@/utils/responseHandler";
 
 /**
  * User interface defining the structure of authenticated users
@@ -492,29 +493,19 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setIsLoading(true);
 
     try {
-      // Call backend authentication API with enhanced error handling
-      let data;
-      try {
-        // Try with safeFetch first
-        data = await safeFetch("/api/auth/login", {
-          method: "POST",
-          body: JSON.stringify({
-            email,
-            password,
-            otp,
-            rememberMe,
-          }),
-        });
-      } catch (fetchError) {
-        console.warn("SafeFetch failed, trying direct fetch:", fetchError);
+      // Call backend authentication API with multiple fallback strategies
+      console.log("Attempting authentication for:", email);
 
-        // Fallback to direct fetch if safeFetch fails
+      // Primary method: Use robust auth fetch
+      let authResult = await authFetch(email, password, otp, rememberMe);
+
+      if (!authResult.success) {
+        console.warn("Primary auth method failed:", authResult.error);
+
+        // Fallback method: Try safeFetch
         try {
-          const response = await fetch("/api/auth/login", {
+          const fallbackData = await safeFetch("/api/auth/login", {
             method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
             body: JSON.stringify({
               email,
               password,
@@ -523,32 +514,24 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             }),
           });
 
-          const responseText = await response.text();
-
-          if (!responseText) {
-            throw new Error("Empty response from server");
+          if (fallbackData && fallbackData.success) {
+            authResult = {
+              success: true,
+              data: fallbackData,
+              status: 200
+            };
           }
-
-          try {
-            data = JSON.parse(responseText);
-          } catch (jsonError) {
-            console.error("JSON parse failed:", jsonError, "Response:", responseText);
-            throw new Error("Invalid response format from server");
-          }
-
-          if (!response.ok) {
-            throw new Error(data.error || `HTTP ${response.status}: ${response.statusText}`);
-          }
-        } catch (directFetchError) {
-          console.error("Direct fetch also failed:", directFetchError);
-          throw new Error("Unable to connect to authentication server");
+        } catch (fallbackError) {
+          console.warn("Fallback auth method also failed:", fallbackError);
         }
       }
 
-      if (!data || !data.success) {
-        console.error("Login failed:", data?.error || "Invalid credentials");
-        throw new Error(data?.error || "Invalid credentials");
+      if (!authResult.success) {
+        console.error("All authentication methods failed:", authResult.error);
+        throw new Error(authResult.error || "Authentication failed");
       }
+
+      const data = authResult.data;
 
       // Backend returned successful login
       const foundUser = data.user;
