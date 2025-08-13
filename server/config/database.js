@@ -2,11 +2,9 @@ const mysql = require("mysql2/promise");
 const sqlite = require("./sqlite-adapter");
 require("dotenv").config();
 
-// Determine which database to use - prioritize reliability
+// Determine which database to use - prioritize MySQL first
 const USE_SQLITE = process.env.USE_SQLITE === "true" ||
-                   process.env.NODE_ENV === "development" ||
-                   !process.env.DB_HOST ||
-                   !process.env.DB_USER;
+                   (!process.env.DB_HOST && !process.env.DB_USER);
 
 // Database configuration for localhost deployment
 const dbConfig = {
