@@ -492,20 +492,62 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setIsLoading(true);
 
     try {
-      // Call backend authentication API with safe fetch utility
-      const data = await safeFetch("/api/auth/login", {
-        method: "POST",
-        body: JSON.stringify({
-          email,
-          password,
-          otp,
-          rememberMe,
-        }),
-      });
+      // Call backend authentication API with enhanced error handling
+      let data;
+      try {
+        // Try with safeFetch first
+        data = await safeFetch("/api/auth/login", {
+          method: "POST",
+          body: JSON.stringify({
+            email,
+            password,
+            otp,
+            rememberMe,
+          }),
+        });
+      } catch (fetchError) {
+        console.warn("SafeFetch failed, trying direct fetch:", fetchError);
 
-      if (!data.success) {
-        console.error("Login failed:", data.error || "Invalid credentials");
-        throw new Error(data.error || "Invalid credentials");
+        // Fallback to direct fetch if safeFetch fails
+        try {
+          const response = await fetch("/api/auth/login", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              email,
+              password,
+              otp,
+              rememberMe,
+            }),
+          });
+
+          const responseText = await response.text();
+
+          if (!responseText) {
+            throw new Error("Empty response from server");
+          }
+
+          try {
+            data = JSON.parse(responseText);
+          } catch (jsonError) {
+            console.error("JSON parse failed:", jsonError, "Response:", responseText);
+            throw new Error("Invalid response format from server");
+          }
+
+          if (!response.ok) {
+            throw new Error(data.error || `HTTP ${response.status}: ${response.statusText}`);
+          }
+        } catch (directFetchError) {
+          console.error("Direct fetch also failed:", directFetchError);
+          throw new Error("Unable to connect to authentication server");
+        }
+      }
+
+      if (!data || !data.success) {
+        console.error("Login failed:", data?.error || "Invalid credentials");
+        throw new Error(data?.error || "Invalid credentials");
       }
 
       // Backend returned successful login
