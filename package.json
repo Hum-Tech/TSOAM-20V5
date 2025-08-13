@@ -62,7 +62,8 @@
     "db:init": "cd server && node init-complete-db.js",
     "db:setup": "npm run db:init",
     "fix-admin": "node fix-admin-user.js",
-    "test-auth": "node test-auth.js"
+    "test-auth": "node test-auth.js",
+    "cleanup-production": "node cleanup-production-system.js"
   },
   "keywords": [
     "church",
