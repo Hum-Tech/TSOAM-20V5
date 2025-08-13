@@ -60,7 +60,8 @@
     "mysql:production": "node setup-mysql-production.js",
     "test:mysql": "node test-mysql.js",
     "db:init": "cd server && node init-complete-db.js",
-    "db:setup": "npm run db:init"
+    "db:setup": "npm run db:init",
+    "fix-admin": "node fix-admin-user.js"
   },
   "keywords": [
     "church",
