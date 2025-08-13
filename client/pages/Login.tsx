@@ -162,36 +162,46 @@ export default function Login() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setError("");
-    setAttemptingLogin(true);
+    e.stopPropagation();
 
-    if (!email || !password) {
-      setError("Please enter both email and password");
-      setAttemptingLogin(false);
+    // Prevent multiple submissions
+    if (attemptingLogin || isLoading) {
       return;
     }
 
-    // TODO: Uncomment for OTP implementation
-    // if (requireOTP && !otp) {
-    //   setError("Please enter the OTP sent to your email");
-    //   setAttemptingLogin(false);
-    //   return;
-    // }
+    setError("");
+    setAttemptingLogin(true);
 
-    const success = await login(email, password, "", rememberMe); // Pass empty string for OTP
+    try {
+      if (!email || !password) {
+        setError("Please enter both email and password");
+        return;
+      }
 
-    if (!success) {
       // TODO: Uncomment for OTP implementation
       // if (requireOTP && !otp) {
-      //   setError("OTP has been sent to your email. Please enter it below.");
-      // } else if (requireOTP && otp) {
-      //   setError("Invalid OTP. Please check and try again.");
-      // } else {
-      setError("Invalid email or password");
+      //   setError("Please enter the OTP sent to your email");
+      //   return;
       // }
-    }
 
-    setAttemptingLogin(false);
+      const success = await login(email, password, "", rememberMe); // Pass empty string for OTP
+
+      if (!success) {
+        // TODO: Uncomment for OTP implementation
+        // if (requireOTP && !otp) {
+        //   setError("OTP has been sent to your email. Please enter it below.");
+        // } else if (requireOTP && otp) {
+        //   setError("Invalid OTP. Please check and try again.");
+        // } else {
+        setError("Invalid email or password");
+        // }
+      }
+    } catch (error) {
+      console.error("Login submission error:", error);
+      setError("Login failed. Please try again.");
+    } finally {
+      setAttemptingLogin(false);
+    }
   };
 
   const handleCreateAccount = async (e: React.FormEvent) => {

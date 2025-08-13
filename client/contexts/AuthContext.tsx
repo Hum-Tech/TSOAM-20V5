@@ -482,10 +482,16 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     otp?: string,
     rememberMe: boolean = false,
   ): Promise<boolean> => {
+    // Prevent multiple concurrent login attempts
+    if (isLoading) {
+      console.warn("Login already in progress, skipping duplicate request");
+      return false;
+    }
+
     setIsLoading(true);
 
     try {
-      // Call backend authentication API
+      // Call backend authentication API with proper error handling
       const response = await fetch("/api/auth/login", {
         method: "POST",
         headers: {
@@ -499,10 +505,24 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         }),
       });
 
-      const data = await response.json();
+      // Clone response to avoid "body stream already read" error
+      const responseClone = response.clone();
+      let data;
+
+      try {
+        data = await response.json();
+      } catch (jsonError) {
+        console.error("Failed to parse response JSON:", jsonError);
+        // Try with cloned response
+        try {
+          data = await responseClone.json();
+        } catch (cloneError) {
+          console.error("Failed to parse cloned response:", cloneError);
+          throw new Error("Invalid server response");
+        }
+      }
 
       if (!response.ok || !data.success) {
-        setIsLoading(false);
         console.error("Login failed:", data.error || "Invalid credentials");
         throw new Error(data.error || "Invalid credentials");
       }
