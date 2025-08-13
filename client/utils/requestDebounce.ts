@@ -26,7 +26,7 @@ class RequestDebouncer {
   async debouncedFetch(url: string, options: RequestInit = {}): Promise<Response> {
     const method = options.method || 'GET';
     const requestKey = this.createRequestKey(url, method, options.body);
-    
+
     // Check if there's a pending request with the same parameters
     const existing = this.pendingRequests.get(requestKey);
     if (existing && Date.now() - existing.timestamp < this.DEBOUNCE_TIME) {
@@ -36,7 +36,7 @@ class RequestDebouncer {
 
     // Create new request
     const requestPromise = this.performFetch(url, options);
-    
+
     // Store the pending request
     this.pendingRequests.set(requestKey, {
       promise: requestPromise,
@@ -100,19 +100,24 @@ export const requestDebouncer = new RequestDebouncer();
  */
 export async function safeJsonParse(response: Response): Promise<any> {
   try {
-    // Clone the response to avoid "body stream already read" error
-    const responseClone = response.clone();
-    
+    // Check if response body has already been consumed
+    if (response.bodyUsed) {
+      throw new Error('Response body has already been consumed');
+    }
+
+    // Get response text first, then parse as JSON
+    const responseText = await response.text();
+
+    if (!responseText) {
+      throw new Error('Empty response from server');
+    }
+
     try {
-      return await response.json();
-    } catch (firstError) {
-      console.warn('First JSON parse failed, trying with cloned response:', firstError);
-      try {
-        return await responseClone.json();
-      } catch (secondError) {
-        console.error('Both JSON parse attempts failed:', secondError);
-        throw new Error('Invalid JSON response from server');
-      }
+      return JSON.parse(responseText);
+    } catch (jsonError) {
+      console.error('JSON parse error:', jsonError);
+      console.error('Response text:', responseText);
+      throw new Error('Invalid JSON response from server');
     }
   } catch (error) {
     console.error('Safe JSON parse error:', error);
@@ -126,13 +131,23 @@ export async function safeJsonParse(response: Response): Promise<any> {
 export async function safeFetch(url: string, options: RequestInit = {}): Promise<any> {
   try {
     const response = await requestDebouncer.debouncedFetch(url, options);
-    
-    if (!response.ok) {
-      const errorData = await safeJsonParse(response);
-      throw new Error(errorData.error || `HTTP ${response.status}: ${response.statusText}`);
+
+    // Get response text once and reuse it
+    const responseText = await response.text();
+
+    let responseData;
+    try {
+      responseData = JSON.parse(responseText);
+    } catch (jsonError) {
+      console.error('JSON parse failed for response:', responseText);
+      throw new Error('Invalid JSON response from server');
     }
 
-    return await safeJsonParse(response);
+    if (!response.ok) {
+      throw new Error(responseData.error || `HTTP ${response.status}: ${response.statusText}`);
+    }
+
+    return responseData;
   } catch (error) {
     console.error(`Request to ${url} failed:`, error);
     throw error;
