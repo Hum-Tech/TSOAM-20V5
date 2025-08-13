@@ -23,7 +23,7 @@ const systemLogsRoutes = require("./routes/system-logs");
 const messagesRoutes = require("./routes/messages");
 
 const app = express();
-const PORT = process.env.PORT || 3002;
+const PORT = process.env.PORT || 3001;
 
 // Create uploads directory if it doesn't exist
 const uploadsDir = path.join(__dirname, "uploads");
