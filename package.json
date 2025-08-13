@@ -54,7 +54,9 @@
     "db:migrate": "node scripts/sync-database.js",
     "demo:disable": "node scripts/manage-demo-data.js disable",
     "demo:enable": "node scripts/manage-demo-data.js enable",
-    "production:setup": "node cleanup-for-production.js"
+    "production:setup": "node cleanup-for-production.js",
+    "mysql:init": "cd server && node init-mysql.js",
+    "mysql:setup": "npm run mysql:init"
   },
   "keywords": [
     "church",
