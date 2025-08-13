@@ -616,8 +616,17 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       return true;
     } catch (error) {
       console.error("Login error:", error);
+      // Ensure loading state is always reset
       setIsLoading(false);
+      // Clear any partial authentication state
+      setUser(null);
+      clearSession();
       return false;
+    } finally {
+      // Failsafe to ensure loading state is always reset
+      if (isLoading) {
+        setIsLoading(false);
+      }
     }
   };
 
