@@ -20,6 +20,7 @@ const appointmentsRoutes = require("./routes/appointments");
 const documentsRoutes = require("./routes/documents");
 const dashboardRoutes = require("./routes/dashboard");
 const systemLogsRoutes = require("./routes/system-logs");
+const messagesRoutes = require("./routes/messages");
 
 const app = express();
 const PORT = process.env.PORT || 3002;
