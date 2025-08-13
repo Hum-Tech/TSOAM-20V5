@@ -315,3 +315,21 @@ router.get("/stats", async (req, res) => {
 });
 
 module.exports = router;
+      res.json({
+        success: true,
+        stats: {
+          total: totalResult.data[0].total,
+          today: todayResult.data[0].today,
+          deliveryRate: deliveryResult.data[0].rate || 0
+        }
+      });
+    } else {
+      res.status(500).json({ error: "Failed to fetch statistics" });
+    }
+  } catch (error) {
+    console.error("Message stats error:", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
+
+module.exports = router;
