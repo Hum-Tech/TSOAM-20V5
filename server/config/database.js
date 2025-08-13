@@ -3,8 +3,7 @@ const sqlite = require("./sqlite-adapter");
 require("dotenv").config();
 
 // Determine which database to use - prioritize MySQL first
-const USE_SQLITE = process.env.USE_SQLITE === "true" ||
-                   (!process.env.DB_HOST && !process.env.DB_USER);
+const USE_SQLITE = process.env.USE_SQLITE === "true";
 
 // Database configuration for localhost deployment
 const dbConfig = {

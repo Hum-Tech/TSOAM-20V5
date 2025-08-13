@@ -50,7 +50,6 @@
     "postinstall": "cd client && npm install && cd ../server && npm install",
     "client:build": "cd client && npm run build",
     "server:build": "cd server && npm run build",
-    "db:init": "node database/init.sql",
     "db:migrate": "node scripts/sync-database.js",
     "demo:disable": "node scripts/manage-demo-data.js disable",
     "demo:enable": "node scripts/manage-demo-data.js enable",
