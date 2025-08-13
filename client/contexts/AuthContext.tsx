@@ -507,12 +507,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       }
 
       // Backend returned successful login
-      const foundUser = data.user;
-
-      if (!foundUser) {
+      if (!data.success || !data.user) {
         setIsLoading(false);
+        console.error("Login failed:", data.error || "Unknown error");
         return false;
       }
+
+      const foundUser = data.user;
 
       /*
       // TODO: Future OTP Integration with Twilio/Infobip
