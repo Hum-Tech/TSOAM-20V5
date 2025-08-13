@@ -501,18 +501,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
       const data = await response.json();
 
-      if (!response.ok) {
+      if (!response.ok || !data.success) {
         setIsLoading(false);
-        throw new Error(data.error || "Login failed");
+        console.error("Login failed:", data.error || "Invalid credentials");
+        throw new Error(data.error || "Invalid credentials");
       }
 
       // Backend returned successful login
-      if (!data.success || !data.user) {
-        setIsLoading(false);
-        console.error("Login failed:", data.error || "Unknown error");
-        return false;
-      }
-
       const foundUser = data.user;
 
       /*
