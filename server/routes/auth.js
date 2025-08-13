@@ -124,6 +124,67 @@ router.post("/login", async (req, res) => {
   }
 });
 
+// User registration endpoint
+router.post("/register", async (req, res) => {
+  try {
+    const { fullName, email, role, department, phone, employeeId } = req.body;
+
+    if (!fullName || !email || !role) {
+      return res.status(400).json({ error: "Missing required fields" });
+    }
+
+    // Check if user already exists
+    const existingUserResult = await query(
+      "SELECT * FROM users WHERE email = ?",
+      [email]
+    );
+
+    if (existingUserResult.success && existingUserResult.data.length > 0) {
+      return res.status(400).json({ error: "Email already exists" });
+    }
+
+    // Generate temporary password
+    const tempPassword = `temp${Math.floor(Math.random() * 10000)}`;
+    const hashedPassword = await bcrypt.hash(tempPassword, 12);
+
+    // Generate employee ID if not provided
+    const generatedEmployeeId = employeeId || `TSOAM-EMP-${String(Date.now()).slice(-6)}`;
+
+    // Insert new user
+    const insertResult = await query(
+      `INSERT INTO users (name, email, role, department, phone, employee_id, password_hash, is_active, created_at)
+       VALUES (?, ?, ?, ?, ?, ?, ?, false, NOW())`,
+      [fullName, email, role, department || "General", phone || "", generatedEmployeeId, hashedPassword]
+    );
+
+    if (!insertResult.success) {
+      return res.status(500).json({ error: "Failed to create user" });
+    }
+
+    res.json({
+      success: true,
+      user: {
+        id: insertResult.data.insertId,
+        name: fullName,
+        email,
+        role,
+        employee_id: generatedEmployeeId,
+        is_active: false
+      },
+      credentials: {
+        employeeId: generatedEmployeeId,
+        tempPassword,
+        email,
+        accountType: "new"
+      }
+    });
+
+  } catch (error) {
+    console.error("Registration error:", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
+
 // Get role permissions
 function getRolePermissions(role) {
   const basePermissions = {
