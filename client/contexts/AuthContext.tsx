@@ -485,41 +485,33 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setIsLoading(true);
 
     try {
-      // Simulate API call delay
-      await new Promise((resolve) => setTimeout(resolve, 1000));
+      // Call backend authentication API
+      const response = await fetch("/api/auth/login", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          email,
+          password,
+          otp,
+          rememberMe,
+        }),
+      });
 
-      // Load all users from localStorage (includes demo + newly created accounts)
-      const storedUsers = localStorage.getItem("tsoam_system_users");
-      let usersToCheck = systemUsers;
+      const data = await response.json();
 
-      if (storedUsers) {
-        usersToCheck = JSON.parse(storedUsers);
-      } else {
-        // First time - save default active demo users to localStorage
-        localStorage.setItem("tsoam_system_users", JSON.stringify(systemUsers));
+      if (!response.ok) {
+        setIsLoading(false);
+        throw new Error(data.error || "Login failed");
       }
 
-      // Find user in all accounts (demo + newly created)
-      const foundUser = usersToCheck.find(
-        (u: any) => u.email === email && u.password === password,
-      );
+      // Backend returned successful login
+      const foundUser = data.user;
 
       if (!foundUser) {
         setIsLoading(false);
         return false;
-      }
-
-      // Check activation status
-      // Demo users (original systemUsers) are always active
-      // New accounts need admin activation
-      const isDemoUser = systemUsers.some((u) => u.email === foundUser.email);
-      const isNewAccount = foundUser.isNewAccount === true;
-
-      if (isNewAccount && foundUser.isActive === false) {
-        setIsLoading(false);
-        throw new Error(
-          "Your account is pending activation. Please contact an administrator to activate your account.",
-        );
       }
 
       /*
