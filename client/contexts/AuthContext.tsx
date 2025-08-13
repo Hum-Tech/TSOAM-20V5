@@ -491,12 +491,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setIsLoading(true);
 
     try {
-      // Call backend authentication API with proper error handling
-      const response = await fetch("/api/auth/login", {
+      // Call backend authentication API with safe fetch utility
+      const data = await safeFetch("/api/auth/login", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
         body: JSON.stringify({
           email,
           password,
@@ -505,24 +502,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         }),
       });
 
-      // Clone response to avoid "body stream already read" error
-      const responseClone = response.clone();
-      let data;
-
-      try {
-        data = await response.json();
-      } catch (jsonError) {
-        console.error("Failed to parse response JSON:", jsonError);
-        // Try with cloned response
-        try {
-          data = await responseClone.json();
-        } catch (cloneError) {
-          console.error("Failed to parse cloned response:", cloneError);
-          throw new Error("Invalid server response");
-        }
-      }
-
-      if (!response.ok || !data.success) {
+      if (!data.success) {
         console.error("Login failed:", data.error || "Invalid credentials");
         throw new Error(data.error || "Invalid credentials");
       }
