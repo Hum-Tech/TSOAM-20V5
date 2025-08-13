@@ -23,8 +23,8 @@ const pool = mysql.createPool(dbConfig);
 
 // Test database connection with MySQL priority
 async function testConnection() {
-  console.log("🔄 Attempting MySQL database connection...");
-  console.log("📍 DB Config:", {
+  console.log("🔄 Testing database connection...");
+  console.log("📍 Configuration:", {
     host: dbConfig.host,
     port: dbConfig.port,
     user: dbConfig.user,
@@ -32,29 +32,44 @@ async function testConnection() {
     USE_SQLITE: USE_SQLITE
   });
 
+  // If explicitly set to use SQLite, skip MySQL
   if (USE_SQLITE) {
-    console.log("⚠️  SQLite mode enabled in config - switching to MySQL...");
+    console.log("📋 SQLite mode explicitly enabled in configuration");
+    const sqliteResult = await sqlite.testConnection();
+    if (sqliteResult) {
+      console.log("✅ SQLite database ready");
+    }
+    return sqliteResult;
   }
 
   try {
-    // Force MySQL connection attempt
+    // Attempt MySQL connection
+    console.log("🔗 Attempting MySQL connection...");
     const connection = await pool.getConnection();
-    console.log("✅ MySQL database connected successfully to:", dbConfig.database);
-    console.log("📍 Host:", dbConfig.host, "Port:", dbConfig.port);
-    console.log("🔄 MySQL database synchronization ready");
+    console.log("✅ MySQL database connected successfully!");
+    console.log("📍 Database:", dbConfig.database, "on", dbConfig.host + ":" + dbConfig.port);
+    console.log("🔄 MySQL synchronization enabled");
     connection.release();
 
-    // Override USE_SQLITE since MySQL is working
+    // Mark as MySQL successful
     global.FORCE_MYSQL = true;
     return true;
   } catch (error) {
     console.error("❌ MySQL connection failed:", error.message);
-    console.error("🔧 Check MySQL server status and credentials");
-    console.error("📋 Falling back to SQLite for this session...");
 
+    if (error.code === 'ECONNREFUSED') {
+      console.log("🔧 MySQL server is not running on localhost:3306");
+      console.log("📋 Solutions:");
+      console.log("   1. Start MySQL server (mysqld, XAMPP, WAMP, etc.)");
+      console.log("   2. Or set USE_SQLITE=true in .env to use SQLite");
+    } else if (error.code === 'ER_ACCESS_DENIED_ERROR') {
+      console.log("🔧 Check MySQL credentials in .env file");
+    }
+
+    console.log("🔄 Falling back to SQLite...");
     const sqliteResult = await sqlite.testConnection();
     if (sqliteResult) {
-      console.log("✅ SQLite fallback ready - database synchronization enabled");
+      console.log("✅ SQLite fallback ready - system operational");
     }
     return sqliteResult;
   }
