@@ -913,8 +913,16 @@ export default function Login() {
                 type="submit"
                 className="w-full bg-red-800 hover:bg-red-900"
                 disabled={attemptingLogin || isLoading}
+                onClick={(e) => {
+                  // Prevent multiple clicks while processing
+                  if (attemptingLogin || isLoading) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    return;
+                  }
+                }}
               >
-                {attemptingLogin ? (
+                {attemptingLogin || isLoading ? (
                   <>
                     <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                     Signing in...
