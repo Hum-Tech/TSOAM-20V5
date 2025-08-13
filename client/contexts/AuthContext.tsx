@@ -745,47 +745,29 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         };
       }
 
-      // Generate unique employee ID
-      const nextId =
-        Math.max(...allUsers.map((u: any) => parseInt(u.id) || 0)) + 1;
-      const employeeId =
-        accountData.employeeId ||
-        `TSOAM-EMP-${String(nextId).padStart(3, "0")}`;
+      // Call backend user creation API
+      const response = await fetch("/api/auth/register", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(accountData),
+      });
 
-      // Generate temporary password if not provided
-      const tempPassword =
-        accountData.temporaryPassword ||
-        `temp${Math.floor(Math.random() * 10000)}`;
+      const data = await response.json();
 
-      // Create new user (marked as newly created, not demo)
-      const newUser = {
-        id: String(nextId),
-        name: accountData.fullName,
-        email: accountData.email,
-        password: tempPassword,
-        role: accountData.role,
-        department: accountData.department || "General",
-        employeeId,
-        isActive: false, // Admin must activate new accounts
-        canCreateAccounts: accountData.role === "Admin",
-        canDeleteAccounts: accountData.role === "Admin",
-        isNewAccount: true, // Flag to identify newly created accounts
-        createdAt: new Date().toISOString(),
-        phone: accountData.phone || "",
-        permissions: getRolePermissions(accountData.role), // Add proper permissions
-      };
-
-      // Add to all users
-      allUsers.push(newUser);
-
-      // Save updated users list to localStorage
-      localStorage.setItem("tsoam_system_users", JSON.stringify(allUsers));
+      if (!response.ok) {
+        return {
+          success: false,
+          error: data.error || "Failed to create account"
+        };
+      }
 
       return {
         success: true,
-        credentials: {
-          employeeId,
-          tempPassword,
+        credentials: data.credentials || {
+          employeeId: data.user?.employee_id,
+          tempPassword: data.tempPassword,
           email: accountData.email,
           accountType: "new",
         },
