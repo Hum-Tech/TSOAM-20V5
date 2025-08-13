@@ -6,7 +6,7 @@
  */
 
 const { query } = require("./server/config/database");
-const bcrypt = require("bcrypt");
+const bcrypt = require("bcryptjs");
 
 async function fixAdminUser() {
   console.log("🔧 Fixing admin user in database...");
@@ -20,10 +20,10 @@ async function fixAdminUser() {
 
     if (existingUserResult.success && existingUserResult.data.length > 0) {
       console.log("✅ Admin user already exists:", existingUserResult.data[0]);
-      
+
       // Update password to ensure it's correct
       const hashedPassword = await bcrypt.hash("admin123", 12);
-      
+
       const updateResult = await query(
         "UPDATE users SET password_hash = ?, is_active = ? WHERE email = ?",
         [hashedPassword, true, "admin@tsoam.org"]
@@ -36,16 +36,16 @@ async function fixAdminUser() {
       }
     } else {
       console.log("➕ Creating admin user...");
-      
+
       // Create admin user
       const hashedPassword = await bcrypt.hash("admin123", 12);
-      
+
       const insertResult = await query(
-        `INSERT INTO users (name, email, role, password_hash, department, employee_id, is_active, created_at) 
+        `INSERT INTO users (name, email, role, password_hash, department, employee_id, is_active, created_at)
          VALUES (?, ?, ?, ?, ?, ?, ?, datetime('now'))`,
         [
           "Humphrey Njoroge",
-          "admin@tsoam.org", 
+          "admin@tsoam.org",
           "admin",
           hashedPassword,
           "Administration",
@@ -71,7 +71,7 @@ async function fixAdminUser() {
     if (testUserResult.success && testUserResult.data.length > 0) {
       const user = testUserResult.data[0];
       const passwordMatch = await bcrypt.compare("admin123", user.password_hash);
-      
+
       if (passwordMatch) {
         console.log("✅ Admin login credentials verified successfully");
         console.log("📋 Admin user details:");
@@ -86,7 +86,7 @@ async function fixAdminUser() {
       console.error("❌ Admin user not found after creation");
     }
 
-    console.log("━━━━━━━━━━━━━━━━━━━━━━━���━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
+    console.log("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
     console.log("🔐 Admin Login Credentials:");
     console.log("   Email: admin@tsoam.org");
     console.log("   Password: admin123");
