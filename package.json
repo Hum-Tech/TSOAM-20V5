@@ -61,7 +61,8 @@
     "test:mysql": "node test-mysql.js",
     "db:init": "cd server && node init-complete-db.js",
     "db:setup": "npm run db:init",
-    "fix-admin": "node fix-admin-user.js"
+    "fix-admin": "node fix-admin-user.js",
+    "test-auth": "node test-auth.js"
   },
   "keywords": [
     "church",
@@ -88,7 +89,6 @@
     "concurrently": "^8.2.2"
   },
   "dependencies": {
-    "bcryptjs": "^3.0.2",
     "dotenv": "^16.3.1",
     "sqlite3": "^5.1.7"
   }
