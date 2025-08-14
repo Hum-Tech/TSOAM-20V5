@@ -47,7 +47,7 @@ async function createAllTables(connection) {
       created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
       updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
       last_login TIMESTAMP NULL,
-      
+
       INDEX idx_email (email),
       INDEX idx_role (role),
       INDEX idx_active (is_active),
@@ -65,7 +65,7 @@ async function createAllTables(connection) {
       used BOOLEAN DEFAULT FALSE,
       ip_address VARCHAR(45),
       user_agent TEXT,
-      
+
       INDEX idx_email (email),
       INDEX idx_reset_code (reset_code),
       INDEX idx_expires_at (expires_at),
@@ -105,7 +105,7 @@ async function createAllTables(connection) {
       emergency_contact_phone VARCHAR(20),
       created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
       updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-      
+
       INDEX idx_member_id (member_id),
       INDEX idx_tithe_number (tithe_number),
       INDEX idx_status (status)
@@ -142,7 +142,7 @@ async function createAllTables(connection) {
       status ENUM('Active', 'Transferred', 'Inactive') DEFAULT 'Active',
       created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
       updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-      
+
       INDEX idx_visitor_id (visitor_id),
       INDEX idx_status (status)
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci`,
@@ -186,7 +186,7 @@ async function createAllTables(connection) {
       last_review_date DATE,
       created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
       updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-      
+
       INDEX idx_employee_id (employee_id),
       INDEX idx_status (status),
       INDEX idx_department (department)
@@ -220,7 +220,7 @@ async function createAllTables(connection) {
       created_by VARCHAR(36),
       created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
       updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-      
+
       INDEX idx_type_date (type, date),
       INDEX idx_category (category),
       INDEX idx_status (status),
@@ -244,7 +244,7 @@ async function createAllTables(connection) {
       financial_year INT,
       quarter INT,
       created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-      
+
       INDEX idx_member_date (member_id, tithe_date),
       INDEX idx_category (category),
       INDEX idx_financial_year (financial_year)
@@ -282,7 +282,7 @@ async function createAllTables(connection) {
       created_by VARCHAR(36),
       created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
       updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-      
+
       INDEX idx_start_date (start_date),
       INDEX idx_event_type (event_type),
       INDEX idx_status (status)
@@ -312,7 +312,7 @@ async function createAllTables(connection) {
       created_by VARCHAR(36) NOT NULL,
       created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
       updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-      
+
       INDEX idx_date_time (date, time),
       INDEX idx_status (status),
       INDEX idx_organizer (organizer_id)
@@ -359,7 +359,7 @@ async function createAllTables(connection) {
       applicant_signature VARCHAR(255),
       created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
       updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-      
+
       INDEX idx_status (status),
       INDEX idx_assistance_type (assistance_type),
       INDEX idx_member (member_id)
@@ -399,7 +399,7 @@ async function createAllTables(connection) {
       notes TEXT,
       created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
       updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-      
+
       INDEX idx_item_code (item_code),
       INDEX idx_category (category),
       INDEX idx_status (status),
@@ -431,7 +431,7 @@ async function createAllTables(connection) {
       expires_at TIMESTAMP NULL,
       created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
       updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-      
+
       INDEX idx_sender_date (sender_id, created_at),
       INDEX idx_status (status),
       INDEX idx_message_type (message_type)
@@ -460,7 +460,7 @@ async function createAllTables(connection) {
       request_url VARCHAR(500),
       response_code INT,
       timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-      
+
       INDEX idx_user_action (user_id, action),
       INDEX idx_module_timestamp (module, timestamp),
       INDEX idx_severity (severity),
@@ -486,7 +486,7 @@ async function createAllTables(connection) {
       updated_by VARCHAR(36),
       created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
       updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-      
+
       INDEX idx_category (category),
       INDEX idx_is_public (is_public)
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci`,
@@ -503,9 +503,127 @@ async function createAllTables(connection) {
       is_active BOOLEAN DEFAULT TRUE,
       device_info JSON,
       location_info JSON,
-      
+
       INDEX idx_user_active (user_id, is_active),
       INDEX idx_expires (expires_at)
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci`,
+
+    // Leave Types table (required for HR module)
+    `CREATE TABLE IF NOT EXISTS leave_types (
+      id VARCHAR(50) PRIMARY KEY,
+      name VARCHAR(100) NOT NULL,
+      code VARCHAR(10) UNIQUE NOT NULL,
+      default_days INT NOT NULL,
+      max_days_per_year INT NOT NULL,
+      carry_over_allowed BOOLEAN DEFAULT FALSE,
+      max_carry_over_days INT DEFAULT 0,
+      requires_approval BOOLEAN DEFAULT TRUE,
+      requires_documentation BOOLEAN DEFAULT FALSE,
+      is_paid BOOLEAN DEFAULT TRUE,
+      description TEXT,
+      is_active BOOLEAN DEFAULT TRUE,
+      category ENUM('statutory', 'company', 'special') DEFAULT 'company',
+      accrual_rate DECIMAL(4,2),
+      min_tenure_months INT DEFAULT 0,
+      employment_types JSON,
+      gender_restrictions ENUM('male', 'female', 'none') DEFAULT 'none',
+      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+      updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci`,
+
+    // Leave Requests table
+    `CREATE TABLE IF NOT EXISTS leave_requests (
+      id VARCHAR(50) PRIMARY KEY DEFAULT (UUID()),
+      employee_id INT NOT NULL,
+      leave_type_id VARCHAR(50) NOT NULL,
+      start_date DATE NOT NULL,
+      end_date DATE NOT NULL,
+      resumption_date DATE NOT NULL,
+      total_days INT NOT NULL,
+      working_days INT NOT NULL,
+      reason TEXT NOT NULL,
+      status ENUM('draft', 'submitted', 'approved', 'rejected', 'cancelled', 'completed') DEFAULT 'draft',
+      priority ENUM('normal', 'urgent', 'emergency') DEFAULT 'normal',
+      applied_date DATE DEFAULT (CURRENT_DATE),
+      submitted_date DATE,
+      current_approval_level INT DEFAULT 1,
+      handover_notes TEXT,
+      covering_employee_id INT,
+      covering_approved BOOLEAN DEFAULT FALSE,
+      emergency_contact_name VARCHAR(255),
+      emergency_contact_phone VARCHAR(20),
+      emergency_contact_relationship VARCHAR(100),
+      hr_notes TEXT,
+      payroll_affected BOOLEAN DEFAULT FALSE,
+      exit_interview_required BOOLEAN DEFAULT FALSE,
+      created_by VARCHAR(36),
+      updated_by VARCHAR(36),
+      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+      updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+
+      INDEX idx_employee_status (employee_id, status),
+      INDEX idx_dates (start_date, end_date)
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci`,
+
+    // Document Uploads table
+    `CREATE TABLE IF NOT EXISTS document_uploads (
+      id INT AUTO_INCREMENT PRIMARY KEY,
+      document_id VARCHAR(50) UNIQUE NOT NULL DEFAULT (UUID()),
+      entity_type ENUM('member', 'employee', 'welfare', 'finance', 'inventory', 'event', 'appointment', 'leave') NOT NULL,
+      entity_id VARCHAR(50) NOT NULL,
+      document_category VARCHAR(100),
+      document_type VARCHAR(100),
+      file_name VARCHAR(255) NOT NULL,
+      original_name VARCHAR(255) NOT NULL,
+      file_path VARCHAR(500) NOT NULL,
+      file_size INT NOT NULL,
+      mime_type VARCHAR(100) NOT NULL,
+      file_hash VARCHAR(255),
+      is_confidential BOOLEAN DEFAULT FALSE,
+      access_level ENUM('Public', 'Internal', 'Restricted', 'Confidential') DEFAULT 'Internal',
+      version INT DEFAULT 1,
+      parent_document_id VARCHAR(50),
+      uploaded_by VARCHAR(36) NOT NULL,
+      verified_by VARCHAR(36),
+      verification_date TIMESTAMP NULL,
+      expiry_date DATE,
+      tags JSON,
+      notes TEXT,
+      download_count INT DEFAULT 0,
+      last_accessed TIMESTAMP NULL,
+      is_active BOOLEAN DEFAULT TRUE,
+      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+      updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+
+      INDEX idx_entity (entity_type, entity_id),
+      INDEX idx_document_type (document_type),
+      INDEX idx_uploaded_by (uploaded_by)
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci`,
+
+    // Notifications table
+    `CREATE TABLE IF NOT EXISTS notifications (
+      id INT AUTO_INCREMENT PRIMARY KEY,
+      notification_id VARCHAR(50) UNIQUE NOT NULL DEFAULT (UUID()),
+      user_id VARCHAR(36) NOT NULL,
+      title VARCHAR(255) NOT NULL,
+      message TEXT NOT NULL,
+      type ENUM('info', 'success', 'warning', 'error', 'reminder') DEFAULT 'info',
+      category VARCHAR(100),
+      priority ENUM('Low', 'Medium', 'High', 'Urgent') DEFAULT 'Medium',
+      status ENUM('Unread', 'Read', 'Dismissed', 'Archived') DEFAULT 'Unread',
+      action_required BOOLEAN DEFAULT FALSE,
+      action_url VARCHAR(500),
+      action_text VARCHAR(100),
+      related_entity_type VARCHAR(100),
+      related_entity_id VARCHAR(50),
+      scheduled_for TIMESTAMP NULL,
+      read_at TIMESTAMP NULL,
+      expires_at TIMESTAMP NULL,
+      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+
+      INDEX idx_user_status (user_id, status),
+      INDEX idx_type_priority (type, priority),
+      INDEX idx_scheduled (scheduled_for)
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci`
   ];
 
@@ -535,7 +653,7 @@ async function insertDefaultData(connection) {
 
   try {
     await connection.execute(
-      `INSERT IGNORE INTO users (id, name, email, password_hash, role, is_active, can_create_accounts, can_delete_accounts) 
+      `INSERT IGNORE INTO users (id, name, email, password_hash, role, is_active, can_create_accounts, can_delete_accounts)
        VALUES (?, 'System Administrator', 'admin@tsoam.org', ?, 'Admin', TRUE, TRUE, TRUE)`,
       [adminUserId, hashedPassword]
     );
@@ -545,13 +663,13 @@ async function insertDefaultData(connection) {
     const financePassword = await bcrypt.hash('finance123', 10);
 
     await connection.execute(
-      `INSERT IGNORE INTO users (id, name, email, password_hash, role, is_active, can_create_accounts) 
+      `INSERT IGNORE INTO users (id, name, email, password_hash, role, is_active, can_create_accounts)
        VALUES ('hr-001', 'HR Manager', 'hr@tsoam.org', ?, 'HR Officer', TRUE, TRUE)`,
       [hrPassword]
     );
 
     await connection.execute(
-      `INSERT IGNORE INTO users (id, name, email, password_hash, role, is_active) 
+      `INSERT IGNORE INTO users (id, name, email, password_hash, role, is_active)
        VALUES ('finance-001', 'Finance Manager', 'finance@tsoam.org', ?, 'Finance Officer', TRUE)`,
       [financePassword]
     );
@@ -574,7 +692,7 @@ async function insertDefaultData(connection) {
 
     for (const [key, value, type, category, description] of defaultSettings) {
       await connection.execute(
-        `INSERT IGNORE INTO system_settings (setting_key, setting_value, setting_type, category, description, is_public) 
+        `INSERT IGNORE INTO system_settings (setting_key, setting_value, setting_type, category, description, is_public)
          VALUES (?, ?, ?, ?, ?, TRUE)`,
         [key, value, type, category, description]
       );
@@ -598,7 +716,7 @@ async function initializeCompleteDatabase() {
 
   try {
     console.log("🔗 Connecting to MySQL server...");
-    
+
     // First connect without database to create it
     connection = await mysql.createConnection({
       host: dbConfig.host,
@@ -615,19 +733,19 @@ async function initializeCompleteDatabase() {
     await connection.execute(
       `CREATE DATABASE IF NOT EXISTS ${dbConfig.database} CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci`
     );
-    
+
     await connection.execute(`USE ${dbConfig.database}`);
     console.log(`✅ Database '${dbConfig.database}' ready`);
 
     // Create all tables
     const tablesCreated = await createAllTables(connection);
-    
+
     // Insert default data
     await insertDefaultData(connection);
 
     // Verify tables were created
     const [tables] = await connection.execute("SHOW TABLES");
-    console.log(`📊 Database verification: ${tables.length} tables created`);
+    console.log(`�� Database verification: ${tables.length} tables created`);
 
     // List all tables
     console.log("📋 Tables created:");
