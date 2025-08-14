@@ -150,11 +150,14 @@ router.post("/register", async (req, res) => {
     // Generate employee ID if not provided
     const generatedEmployeeId = employeeId || `TSOAM-EMP-${String(Date.now()).slice(-6)}`;
 
+    // Generate UUID for user
+    const userId = `user-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+
     // Insert new user
     const insertResult = await query(
-      `INSERT INTO users (name, email, role, department, phone, employee_id, password_hash, is_active, created_at)
-       VALUES (?, ?, ?, ?, ?, ?, ?, false, NOW())`,
-      [fullName, email, role, department || "General", phone || "", generatedEmployeeId, hashedPassword]
+      `INSERT INTO users (id, name, email, role, department, phone, employee_id, password_hash, is_active)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, false)`,
+      [userId, fullName, email, role, department || "General", phone || "", generatedEmployeeId, hashedPassword]
     );
 
     if (!insertResult.success) {
@@ -164,7 +167,7 @@ router.post("/register", async (req, res) => {
     res.json({
       success: true,
       user: {
-        id: insertResult.data.insertId,
+        id: userId,
         name: fullName,
         email,
         role,
