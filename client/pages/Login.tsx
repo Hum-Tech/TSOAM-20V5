@@ -417,7 +417,7 @@ export default function Login() {
           body: JSON.stringify({ email: forgotPasswordEmail }),
         });
 
-        const result = await response.json();
+        const result = await safeJsonParse(response);
 
         if (result.success) {
           // Move to step 2 (enter reset code)
