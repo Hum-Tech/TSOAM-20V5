@@ -95,6 +95,7 @@ import {
 import RoleBasedAccessService from "@/services/RoleBasedAccessService";
 import { safeFetch, safeJsonParse } from "@/utils/requestDebounce";
 import { authFetch } from "@/utils/responseHandler";
+import { debugAuthFetch } from "@/utils/responseDebug";
 
 /**
  * User interface defining the structure of authenticated users
