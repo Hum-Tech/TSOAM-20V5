@@ -5,7 +5,7 @@
  * Ensures MySQL database is properly configured and synchronized
  */
 
-const mysql = require("mysql2/promise");
+const mysql = require("./server/node_modules/mysql2/promise");
 const fs = require("fs");
 const path = require("path");
 require("dotenv").config();
@@ -60,7 +60,7 @@ async function setupMySQLProduction() {
     // Run the complete database initialization
     console.log("🔄 Running complete database initialization...");
     const { initializeCompleteDatabase } = require("./server/init-complete-db");
-    
+
     // Override the query function temporarily to use our connection
     const originalQuery = require("./server/config/database").query;
     require("./server/config/database").query = async (sql, params = []) => {
@@ -81,7 +81,7 @@ async function setupMySQLProduction() {
     // Step 4: Verify all tables exist
     console.log("🔧 Step 4: Verifying database schema...");
     const [finalTables] = await dbConnection.execute("SHOW TABLES");
-    
+
     const expectedTables = [
       'users', 'members', 'messages', 'message_replies', 'inventory',
       'financial_transactions', 'events', 'appointments', 'system_logs',
@@ -113,45 +113,45 @@ async function setupMySQLProduction() {
 
     // Step 6: Update environment configuration
     console.log("🔧 Step 6: Configuring environment for MySQL...");
-    
+
     // Update .env file to ensure MySQL is used
     const envPath = path.join(__dirname, '.env');
     let envContent = '';
-    
+
     if (fs.existsSync(envPath)) {
       envContent = fs.readFileSync(envPath, 'utf8');
     }
-    
+
     // Ensure USE_SQLITE is set to false
     if (envContent.includes('USE_SQLITE=true')) {
       envContent = envContent.replace('USE_SQLITE=true', 'USE_SQLITE=false');
     } else if (!envContent.includes('USE_SQLITE=false')) {
       envContent += '\nUSE_SQLITE=false\n';
     }
-    
+
     fs.writeFileSync(envPath, envContent);
 
     // Update server/.env file
     const serverEnvPath = path.join(__dirname, 'server/.env');
     let serverEnvContent = '';
-    
+
     if (fs.existsSync(serverEnvPath)) {
       serverEnvContent = fs.readFileSync(serverEnvPath, 'utf8');
     }
-    
+
     if (serverEnvContent.includes('USE_SQLITE=true')) {
       serverEnvContent = serverEnvContent.replace('USE_SQLITE=true', 'USE_SQLITE=false');
     } else if (!serverEnvContent.includes('USE_SQLITE=false')) {
       serverEnvContent += '\nUSE_SQLITE=false\n';
     }
-    
+
     fs.writeFileSync(serverEnvPath, serverEnvContent);
 
     console.log("✅ Environment configured for MySQL");
 
     console.log("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
     console.log("🎉 Production MySQL setup completed successfully!");
-    console.log("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
+    console.log("━━━━━━━━━━━━━━���━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
     console.log("✅ MySQL server is configured and running");
     console.log("✅ Database and all tables are ready");
     console.log("✅ Data synchronization enabled");
@@ -167,7 +167,7 @@ async function setupMySQLProduction() {
     console.error("❌ Production MySQL setup failed:", error.message);
     console.log("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
     console.log("🔧 Troubleshooting:");
-    
+
     if (error.code === 'ECONNREFUSED') {
       console.log("❌ MySQL server is not running");
       console.log("🔧 Start MySQL server:");
@@ -181,7 +181,7 @@ async function setupMySQLProduction() {
     } else {
       console.log("❌ Unexpected error:", error.message);
     }
-    
+
     console.log("━━━━━━━━━━���━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
     process.exit(1);
   }
