@@ -50,7 +50,7 @@ export class AuthService {
         body: JSON.stringify(credentials),
       });
 
-      const result = await response.json();
+      const result = await safeJsonParse(response);
 
       if (result.success && result.token) {
         // Store token and user data
@@ -216,7 +216,7 @@ export class AuthService {
         body: JSON.stringify(userData),
       });
 
-      const result = await response.json();
+      const result = await safeJsonParse(response);
       return result;
     } catch (error) {
       console.error('Registration error:', error);
@@ -245,7 +245,7 @@ export class AuthService {
         }),
       });
 
-      const result = await response.json();
+      const result = await safeJsonParse(response);
       return result;
     } catch (error) {
       console.error('Change password error:', error);
@@ -269,7 +269,7 @@ export class AuthService {
         body: JSON.stringify({ email }),
       });
 
-      const result = await response.json();
+      const result = await safeJsonParse(response);
       return result;
     } catch (error) {
       console.error('Password reset request error:', error);
@@ -301,7 +301,7 @@ export class AuthService {
       });
 
       if (response.ok) {
-        const result = await response.json();
+        const result = await safeJsonParse(response);
         return result.success;
       } else {
         this.clearLocalAuth();
