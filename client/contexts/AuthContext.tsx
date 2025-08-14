@@ -785,7 +785,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         body: JSON.stringify(accountData),
       });
 
-      const data = await response.json();
+      const data = await safeJsonParse(response);
 
       if (!response.ok) {
         return {
