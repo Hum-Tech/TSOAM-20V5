@@ -700,6 +700,40 @@ async function insertDefaultData(connection) {
 
     console.log("✅ Default system settings created");
 
+    // Insert default leave types (required for HR module)
+    const defaultLeaveTypes = [
+      ['annual', 'Annual Leave', 'AL', 21, 30, true, 5, true, false, true, 'Standard annual vacation leave', 'statutory', 1.75, 0, '["Full-time", "Part-time"]', 'none'],
+      ['sick', 'Sick Leave', 'SL', 30, 60, false, 0, true, true, true, 'Medical leave for illness or injury', 'statutory', 0, 0, '["Full-time", "Part-time", "Volunteer"]', 'none'],
+      ['maternity', 'Maternity Leave', 'ML', 90, 120, false, 0, true, true, true, 'Maternity leave for childbirth', 'statutory', 0, 12, '["Full-time", "Part-time"]', 'female'],
+      ['paternity', 'Paternity Leave', 'PL', 14, 14, false, 0, true, true, true, 'Paternity leave for new fathers', 'statutory', 0, 12, '["Full-time", "Part-time"]', 'male'],
+      ['emergency', 'Emergency Leave', 'EL', 5, 10, false, 0, true, true, false, 'Emergency or compassionate leave', 'company', 0, 3, '["Full-time", "Part-time"]', 'none'],
+      ['study', 'Study Leave', 'STL', 30, 60, false, 0, true, true, false, 'Leave for educational purposes', 'company', 0, 24, '["Full-time"]', 'none']
+    ];
+
+    for (const [id, name, code, defaultDays, maxDays, carryOver, maxCarryOver, requiresApproval, requiresDocs, isPaid, description, category, accrualRate, minTenure, employmentTypes, genderRestrictions] of defaultLeaveTypes) {
+      await connection.execute(
+        `INSERT IGNORE INTO leave_types (id, name, code, default_days, max_days_per_year, carry_over_allowed, max_carry_over_days, requires_approval, requires_documentation, is_paid, description, category, accrual_rate, min_tenure_months, employment_types, gender_restrictions)
+         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+        [id, name, code, defaultDays, maxDays, carryOver, maxCarryOver, requiresApproval, requiresDocs, isPaid, description, category, accrualRate, minTenure, employmentTypes, genderRestrictions]
+      );
+    }
+
+    console.log("✅ Default leave types created");
+
+    // Create sample member for testing
+    await connection.execute(
+      `INSERT IGNORE INTO members (member_id, tithe_number, name, email, phone, status, join_date, membership_date, gender)
+       VALUES ('MEM-001', 'TITHE-001', 'John Doe', 'john.doe@example.com', '+254700000001', 'Active', CURDATE(), CURDATE(), 'Male')`,
+    );
+
+    // Create sample employee for testing
+    await connection.execute(
+      `INSERT IGNORE INTO employees (employee_id, name, email, phone, position, department, employment_type, hire_date, status, basic_salary)
+       VALUES ('EMP-001', 'Jane Smith', 'jane.smith@tsoam.org', '+254700000002', 'HR Manager', 'Human Resources', 'Full-time', CURDATE(), 'Active', 50000.00)`,
+    );
+
+    console.log("✅ Sample data created for testing");
+
   } catch (error) {
     console.error(`❌ Error inserting default data: ${error.message}`);
   }
@@ -745,7 +779,7 @@ async function initializeCompleteDatabase() {
 
     // Verify tables were created
     const [tables] = await connection.execute("SHOW TABLES");
-    console.log(`�� Database verification: ${tables.length} tables created`);
+    console.log(`📊 Database verification: ${tables.length} tables created`);
 
     // List all tables
     console.log("📋 Tables created:");
