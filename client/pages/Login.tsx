@@ -478,7 +478,7 @@ export default function Login() {
           }),
         });
 
-        const result = await response.json();
+        const result = await safeJsonParse(response);
 
         if (result.success) {
           setResetStep(3);
