@@ -304,20 +304,8 @@ export default function Login() {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
 
-      // Clone response to avoid body stream issues
-      const responseClone = response.clone();
-      let result;
-
-      try {
-        result = await response.json();
-      } catch (jsonError) {
-        // If JSON parsing fails, try with the cloned response
-        console.warn(
-          "JSON parsing failed, trying with cloned response:",
-          jsonError,
-        );
-        result = await responseClone.json();
-      }
+      // Use safe JSON parsing to avoid body stream issues
+      const result = await safeJsonParse(response);
 
       if (result.success) {
         // Reset form and validation state
