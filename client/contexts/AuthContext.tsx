@@ -524,6 +524,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           }
         } catch (fallbackError) {
           console.warn("Fallback auth method also failed:", fallbackError);
+
+          // Final fallback: Use debug auth fetch for detailed error tracking
+          try {
+            console.log("Trying debug auth fetch as final fallback...");
+            authResult = await debugAuthFetch(email, password, otp, rememberMe);
+          } catch (debugError) {
+            console.error("Debug auth method also failed:", debugError);
+          }
         }
       }
 
