@@ -13,6 +13,7 @@
     "mysql:setup": "node database-init-complete.js",
     "mysql:production": "node database-init-complete.js",
     "mysql:check": "node check-mysql.js",
+    "verify": "node verify-system.js",
     "health-check": "curl -f http://localhost:3001/api/health || exit 1",
     "test": "echo \"No tests specified\" && exit 0"
   },
