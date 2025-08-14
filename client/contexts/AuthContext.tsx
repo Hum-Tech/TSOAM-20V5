@@ -93,7 +93,7 @@ import {
   ReactNode,
 } from "react";
 import RoleBasedAccessService from "@/services/RoleBasedAccessService";
-import { safeFetch } from "@/utils/requestDebounce";
+import { safeFetch, safeJsonParse } from "@/utils/requestDebounce";
 import { authFetch } from "@/utils/responseHandler";
 
 /**
