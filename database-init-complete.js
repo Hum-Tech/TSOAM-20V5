@@ -734,6 +734,37 @@ async function insertDefaultData(connection) {
 
     console.log("✅ Sample data created for testing");
 
+    // Create performance indexes (MySQL compatible)
+    console.log("📊 Creating performance indexes...");
+
+    const indexes = [
+      'CREATE INDEX idx_users_role_active ON users(role, is_active)',
+      'CREATE INDEX idx_transactions_date_type ON financial_transactions(date, type)',
+      'CREATE INDEX idx_members_active_status ON members(status)',
+      'CREATE INDEX idx_logs_timestamp_severity ON system_logs(timestamp, severity)',
+      'CREATE INDEX idx_appointments_date_status ON appointments(date, status)',
+      'CREATE INDEX idx_events_start_date_status ON events(start_date, status)',
+      'CREATE INDEX idx_inventory_category_status ON inventory_items(category, status)',
+      'CREATE INDEX idx_leave_requests_employee_status ON leave_requests(employee_id, status)',
+      'CREATE INDEX idx_messages_sender_date ON messages(sender_id, created_at)',
+      'CREATE INDEX idx_notifications_user_status ON notifications(user_id, status)'
+    ];
+
+    let indexesCreated = 0;
+    for (const indexSQL of indexes) {
+      try {
+        await connection.execute(indexSQL);
+        indexesCreated++;
+      } catch (error) {
+        // Index might already exist, that's okay
+        if (!error.message.includes('Duplicate key name')) {
+          console.warn(`Index creation warning: ${error.message}`);
+        }
+      }
+    }
+
+    console.log(`✅ Created ${indexesCreated} performance indexes`);
+
   } catch (error) {
     console.error(`❌ Error inserting default data: ${error.message}`);
   }
