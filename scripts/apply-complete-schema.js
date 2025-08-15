@@ -82,7 +82,9 @@ async function applyCompleteSchema() {
         // Skip problematic statements that cause prepared statement issues
         if (statement.includes('CREATE OR REPLACE VIEW') ||
             statement.includes('FLUSH PRIVILEGES') ||
-            statement.includes('SET SQL_MODE')) {
+            statement.includes('SET SQL_MODE') ||
+            statement.includes('SELECT \'✅') ||
+            statement.toUpperCase().startsWith('SELECT ')) {
           console.log(`   ⏭️  Skipped: ${statement.substring(0, 50)}...`);
           skipCount++;
           continue;
