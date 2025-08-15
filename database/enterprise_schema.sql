@@ -30,7 +30,7 @@ CREATE TABLE IF NOT EXISTS users (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     last_login TIMESTAMP NULL,
-    
+
     INDEX idx_email (email),
     INDEX idx_role (role),
     INDEX idx_active (is_active),
@@ -48,12 +48,12 @@ CREATE TABLE IF NOT EXISTS password_resets (
     used BOOLEAN DEFAULT FALSE,
     ip_address VARCHAR(45),
     user_agent TEXT,
-    
+
     INDEX idx_email (email),
     INDEX idx_reset_code (reset_code),
     INDEX idx_expires_at (expires_at),
     INDEX idx_user_id (user_id),
-    
+
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
 );
 
@@ -95,7 +95,7 @@ CREATE TABLE IF NOT EXISTS members (
     emergency_contact_phone VARCHAR(20),
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    
+
     INDEX idx_member_id (member_id),
     INDEX idx_tithe_number (tithe_number),
     INDEX idx_status (status)
@@ -132,7 +132,7 @@ CREATE TABLE IF NOT EXISTS new_members (
     status ENUM('Active', 'Transferred', 'Inactive') DEFAULT 'Active',
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    
+
     INDEX idx_visitor_id (visitor_id),
     INDEX idx_status (status)
 );
@@ -180,7 +180,7 @@ CREATE TABLE IF NOT EXISTS employees (
     last_review_date DATE,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    
+
     INDEX idx_employee_id (employee_id),
     INDEX idx_status (status),
     INDEX idx_department (department),
@@ -223,7 +223,7 @@ CREATE TABLE IF NOT EXISTS leave_balances (
     carried_over DECIMAL(5,2) DEFAULT 0,
     forfeited DECIMAL(5,2) DEFAULT 0,
     last_updated TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    
+
     UNIQUE KEY unique_employee_leave_year (employee_id, leave_type_id, year),
     FOREIGN KEY (employee_id) REFERENCES employees(id) ON DELETE CASCADE,
     FOREIGN KEY (leave_type_id) REFERENCES leave_types(id)
@@ -258,7 +258,7 @@ CREATE TABLE IF NOT EXISTS leave_requests (
     updated_by VARCHAR(36),
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    
+
     INDEX idx_employee_status (employee_id, status),
     INDEX idx_dates (start_date, end_date),
     FOREIGN KEY (employee_id) REFERENCES employees(id),
@@ -281,7 +281,7 @@ CREATE TABLE IF NOT EXISTS leave_approval_history (
     delegated_to_id VARCHAR(36),
     delegated_reason TEXT,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    
+
     INDEX idx_leave_request (leave_request_id),
     FOREIGN KEY (leave_request_id) REFERENCES leave_requests(id) ON DELETE CASCADE,
     FOREIGN KEY (approver_id) REFERENCES users(id),
@@ -308,7 +308,7 @@ CREATE TABLE IF NOT EXISTS performance_reviews (
     completion_date DATE,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    
+
     INDEX idx_employee_period (employee_id, review_period),
     FOREIGN KEY (employee_id) REFERENCES employees(id),
     FOREIGN KEY (reviewer_id) REFERENCES users(id)
@@ -322,7 +322,7 @@ CREATE TABLE IF NOT EXISTS performance_competencies (
     competency_description TEXT,
     rating DECIMAL(3,2) NOT NULL,
     comments TEXT,
-    
+
     FOREIGN KEY (review_id) REFERENCES performance_reviews(id) ON DELETE CASCADE
 );
 
@@ -354,7 +354,7 @@ CREATE TABLE IF NOT EXISTS appointments (
     created_by VARCHAR(36) NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    
+
     INDEX idx_date_time (date, time),
     INDEX idx_status (status),
     INDEX idx_organizer (organizer_id),
@@ -372,7 +372,7 @@ CREATE TABLE IF NOT EXISTS appointment_participants (
     role VARCHAR(100),
     status ENUM('pending', 'accepted', 'declined', 'tentative') DEFAULT 'pending',
     response_date TIMESTAMP NULL,
-    
+
     UNIQUE KEY unique_appointment_participant (appointment_id, participant_id),
     FOREIGN KEY (appointment_id) REFERENCES appointments(id) ON DELETE CASCADE
 );
@@ -388,7 +388,7 @@ CREATE TABLE IF NOT EXISTS appointment_resources (
     capacity INT,
     reserved_from DATETIME NOT NULL,
     reserved_until DATETIME NOT NULL,
-    
+
     FOREIGN KEY (appointment_id) REFERENCES appointments(id) ON DELETE CASCADE
 );
 
@@ -401,7 +401,7 @@ CREATE TABLE IF NOT EXISTS appointment_reminders (
     recipients JSON,
     status ENUM('pending', 'sent', 'failed') DEFAULT 'pending',
     sent_at TIMESTAMP NULL,
-    
+
     FOREIGN KEY (appointment_id) REFERENCES appointments(id) ON DELETE CASCADE
 );
 
@@ -437,7 +437,7 @@ CREATE TABLE IF NOT EXISTS financial_transactions (
     created_by VARCHAR(36),
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    
+
     INDEX idx_type_date (type, date),
     INDEX idx_category (category),
     INDEX idx_status (status),
@@ -464,7 +464,7 @@ CREATE TABLE IF NOT EXISTS tithe_records (
     financial_year INT,
     quarter INT,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    
+
     INDEX idx_member_date (member_id, tithe_date),
     INDEX idx_category (category),
     INDEX idx_financial_year (financial_year),
@@ -490,7 +490,7 @@ CREATE TABLE IF NOT EXISTS budgets (
     approved_by VARCHAR(36),
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    
+
     INDEX idx_financial_year (financial_year),
     INDEX idx_category (category),
     FOREIGN KEY (created_by) REFERENCES users(id),
@@ -542,7 +542,7 @@ CREATE TABLE IF NOT EXISTS welfare_requests (
     applicant_signature VARCHAR(255),
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    
+
     INDEX idx_status (status),
     INDEX idx_assistance_type (assistance_type),
     INDEX idx_member (member_id),
@@ -586,7 +586,7 @@ CREATE TABLE IF NOT EXISTS events (
     created_by VARCHAR(36),
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    
+
     INDEX idx_start_date (start_date),
     INDEX idx_event_type (event_type),
     INDEX idx_status (status),
@@ -609,7 +609,7 @@ CREATE TABLE IF NOT EXISTS event_registrations (
     payment_reference VARCHAR(100),
     special_requirements TEXT,
     confirmation_sent BOOLEAN DEFAULT FALSE,
-    
+
     UNIQUE KEY unique_event_registrant (event_id, registrant_email),
     INDEX idx_registration_status (registration_status),
     FOREIGN KEY (event_id) REFERENCES events(id) ON DELETE CASCADE,
@@ -655,7 +655,7 @@ CREATE TABLE IF NOT EXISTS inventory_items (
     notes TEXT,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    
+
     INDEX idx_item_code (item_code),
     INDEX idx_category (category),
     INDEX idx_status (status),
@@ -679,7 +679,7 @@ CREATE TABLE IF NOT EXISTS inventory_movements (
     movement_date DATE NOT NULL,
     notes TEXT,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    
+
     INDEX idx_item_date (item_id, movement_date),
     INDEX idx_movement_type (movement_type),
     FOREIGN KEY (item_id) REFERENCES inventory_items(id),
@@ -706,7 +706,7 @@ CREATE TABLE IF NOT EXISTS maintenance_records (
     notes TEXT,
     performed_by VARCHAR(36),
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    
+
     INDEX idx_item_date (item_id, date_performed),
     INDEX idx_maintenance_type (maintenance_type),
     FOREIGN KEY (item_id) REFERENCES inventory_items(id),
@@ -742,7 +742,7 @@ CREATE TABLE IF NOT EXISTS messages (
     expires_at TIMESTAMP NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    
+
     INDEX idx_sender_date (sender_id, created_at),
     INDEX idx_status (status),
     INDEX idx_message_type (message_type),
@@ -763,7 +763,7 @@ CREATE TABLE IF NOT EXISTS message_templates (
     created_by VARCHAR(36),
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    
+
     INDEX idx_template_type (template_type),
     INDEX idx_category (category),
     FOREIGN KEY (created_by) REFERENCES users(id)
@@ -782,7 +782,7 @@ CREATE TABLE IF NOT EXISTS message_recipients (
     read_time TIMESTAMP NULL,
     error_message TEXT,
     delivery_attempts INT DEFAULT 0,
-    
+
     INDEX idx_message_status (message_id, delivery_status),
     FOREIGN KEY (message_id) REFERENCES messages(id) ON DELETE CASCADE
 );
@@ -820,7 +820,7 @@ CREATE TABLE IF NOT EXISTS document_uploads (
     is_active BOOLEAN DEFAULT TRUE,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    
+
     INDEX idx_entity (entity_type, entity_id),
     INDEX idx_document_type (document_type),
     INDEX idx_uploaded_by (uploaded_by),
@@ -853,7 +853,7 @@ CREATE TABLE IF NOT EXISTS notifications (
     read_at TIMESTAMP NULL,
     expires_at TIMESTAMP NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    
+
     INDEX idx_user_status (user_id, status),
     INDEX idx_type_priority (type, priority),
     INDEX idx_scheduled (scheduled_for),
@@ -887,7 +887,7 @@ CREATE TABLE IF NOT EXISTS system_logs (
     request_url VARCHAR(500),
     response_code INT,
     timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    
+
     INDEX idx_user_action (user_id, action),
     INDEX idx_module_timestamp (module, timestamp),
     INDEX idx_severity (severity),
@@ -909,7 +909,7 @@ CREATE TABLE IF NOT EXISTS audit_trail (
     user_name VARCHAR(255),
     ip_address VARCHAR(45),
     timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    
+
     INDEX idx_table_record (table_name, record_id),
     INDEX idx_user_timestamp (user_id, timestamp),
     INDEX idx_operation (operation),
@@ -939,7 +939,7 @@ CREATE TABLE IF NOT EXISTS system_settings (
     updated_by VARCHAR(36),
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    
+
     INDEX idx_category (category),
     INDEX idx_is_public (is_public),
     FOREIGN KEY (updated_by) REFERENCES users(id)
@@ -957,7 +957,7 @@ CREATE TABLE IF NOT EXISTS user_sessions (
     is_active BOOLEAN DEFAULT TRUE,
     device_info JSON,
     location_info JSON,
-    
+
     INDEX idx_user_active (user_id, is_active),
     INDEX idx_expires (expires_at),
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
@@ -968,7 +968,7 @@ CREATE TABLE IF NOT EXISTS user_sessions (
 -- =====================================================
 
 -- Insert default admin user (password: admin123)
-INSERT IGNORE INTO users (id, name, email, password_hash, role, is_active, can_create_accounts, can_delete_accounts) 
+INSERT IGNORE INTO users (id, name, email, password_hash, role, is_active, can_create_accounts, can_delete_accounts)
 VALUES ('admin-001', 'System Administrator', 'admin@tsoam.org', '$2b$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'Admin', TRUE, TRUE, TRUE);
 
 -- Insert default leave types
@@ -998,20 +998,8 @@ INSERT IGNORE INTO system_settings (setting_key, setting_value, setting_type, ca
 -- PERFORMANCE OPTIMIZATION INDEXES
 -- =====================================================
 
--- Additional indexes for better performance (created conditionally)
--- These will only be created if they don't already exist
-
 -- Performance indexes for commonly queried combinations
-CREATE INDEX IF NOT EXISTS idx_users_role_active ON users(role, is_active);
-CREATE INDEX IF NOT EXISTS idx_transactions_date_type ON financial_transactions(date, type);
-CREATE INDEX IF NOT EXISTS idx_members_active_status ON members(status);
-CREATE INDEX IF NOT EXISTS idx_logs_timestamp_severity ON system_logs(timestamp, severity);
-CREATE INDEX IF NOT EXISTS idx_appointments_date_status ON appointments(date, status);
-CREATE INDEX IF NOT EXISTS idx_events_start_date_status ON events(start_date, status);
-CREATE INDEX IF NOT EXISTS idx_inventory_category_status ON inventory_items(category, status);
-CREATE INDEX IF NOT EXISTS idx_leave_requests_employee_status ON leave_requests(employee_id, status);
-CREATE INDEX IF NOT EXISTS idx_messages_sender_date ON messages(sender_id, created_at);
-CREATE INDEX IF NOT EXISTS idx_notifications_user_status ON notifications(user_id, status);
+-- Note: These indexes are created during database initialization
 
 COMMIT;
 
