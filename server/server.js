@@ -142,6 +142,11 @@ app.get("/api/health", async (req, res) => {
   });
 });
 
+// Fix login page
+app.get("/fix-login", (req, res) => {
+  res.sendFile(path.join(__dirname, "fix-login.html"));
+});
+
 // Serve React app for all non-API routes
 app.get("*", (req, res) => {
   res.sendFile(path.join(__dirname, "../client/dist/index.html"));
