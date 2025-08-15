@@ -54,6 +54,31 @@ async function createAllTables(connection) {
       INDEX idx_employee_id (employee_id)
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci`,
 
+    // User Requests table for account creation requests
+    `CREATE TABLE IF NOT EXISTS user_requests (
+      id INT AUTO_INCREMENT PRIMARY KEY,
+      request_id VARCHAR(50) UNIQUE NOT NULL,
+      name VARCHAR(255) NOT NULL,
+      email VARCHAR(255) NOT NULL,
+      phone VARCHAR(20),
+      role ENUM('Admin', 'HR Officer', 'Finance Officer', 'User') NOT NULL DEFAULT 'User',
+      department VARCHAR(100),
+      employee_id VARCHAR(50),
+      requested_by VARCHAR(255),
+      ip_address VARCHAR(45),
+      request_reason TEXT,
+      status ENUM('pending', 'approved', 'rejected') DEFAULT 'pending',
+      approved_by VARCHAR(36),
+      approved_at TIMESTAMP NULL,
+      rejection_reason TEXT,
+      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+      updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+
+      INDEX idx_status (status),
+      INDEX idx_email (email),
+      INDEX idx_requested_by (requested_by)
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci`,
+
     // Password Reset table
     `CREATE TABLE IF NOT EXISTS password_resets (
       id INT AUTO_INCREMENT PRIMARY KEY,
