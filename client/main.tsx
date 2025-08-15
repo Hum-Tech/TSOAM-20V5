@@ -1,6 +1,15 @@
 import React from "react";
 import "./global.css";
 
+// Immediate production check - restore native fetch before anything else
+if (import.meta.env.PROD || window.location.hostname.includes('fly.dev')) {
+  console.log('🏭 Production mode: Ensuring native fetch');
+  const nativeFetch = globalThis.fetch;
+  if (nativeFetch && typeof nativeFetch === 'function') {
+    window.fetch = nativeFetch;
+  }
+}
+
 // Handle third-party service errors gracefully
 window.addEventListener('error', (event) => {
   // Suppress FullStory and other third-party fetch errors
