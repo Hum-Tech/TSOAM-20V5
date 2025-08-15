@@ -73,8 +73,10 @@ try {
 // Initialize abort error handler
 setupAbortErrorHandler();
 
-// Disable conflicting authentication methods to prevent response consumption conflicts
-disableConflictingAuth();
+// Disable conflicting authentication methods to prevent response consumption conflicts (dev only)
+if (import.meta.env.DEV) {
+  disableConflictingAuth();
+}
 
 // Additional immediate AbortError suppression setup
 const originalConsoleError = console.error;
