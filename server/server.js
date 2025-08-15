@@ -21,6 +21,7 @@ const documentsRoutes = require("./routes/documents");
 const dashboardRoutes = require("./routes/dashboard");
 const systemLogsRoutes = require("./routes/system-logs");
 const messagesRoutes = require("./routes/messages");
+const setupRoutes = require("./routes/setup");
 
 const app = express();
 const PORT = process.env.PORT || 3001;
