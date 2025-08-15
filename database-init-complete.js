@@ -252,7 +252,7 @@ async function createAllTables(connection) {
 
     // Events table
     `CREATE TABLE IF NOT EXISTS events (
-      id VARCHAR(50) PRIMARY KEY DEFAULT (UUID()),
+      id VARCHAR(50) PRIMARY KEY,
       event_id VARCHAR(50) UNIQUE NOT NULL,
       title VARCHAR(255) NOT NULL,
       description TEXT,
