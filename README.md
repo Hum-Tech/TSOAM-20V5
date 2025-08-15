@@ -158,6 +158,33 @@ npm run health-check   # Server health verification
 
 ### Build Issues
 
+**Error: 'vite' is not recognized as an internal or external command**
+```bash
+# The client dependencies aren't installed
+# Solution:
+cd client
+npm install
+cd ..
+npm run build
+```
+
+**Error: Production build not found**
+```bash
+# Build the frontend first
+npm run build
+# Then start the server
+npm start
+```
+
+**Complete Setup Issues**
+```bash
+# Use the install-all script to install everything
+npm run install-all
+# Then build and start
+npm run build
+npm start
+```
+
 **Build fails with dependency errors:**
 ```bash
 cd client && npm install --force
