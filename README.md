@@ -25,7 +25,7 @@ A comprehensive church management system for The Seed of Abraham Ministry (TSOAM
 
 **Start MySQL server:**
 - **XAMPP**: Open XAMPP Control Panel → Start MySQL
-- **WAMP**: Open WAMP → Start MySQL service  
+- **WAMP**: Open WAMP → Start MySQL service
 - **MAMP**: Open MAMP → Start MySQL
 - **Windows Service**: services.msc → Start MySQL service
 - **Linux**: `sudo systemctl start mysql`
@@ -53,9 +53,21 @@ JWT_SECRET=your_jwt_secret_here
 
 ### 3. Installation & Setup
 
+**Option A: Automatic Setup (Windows)**
+```cmd
+# Run the setup script (installs everything)
+setup-windows.bat
+```
+
+**Option B: Manual Setup (All Platforms)**
 ```bash
-# Install dependencies
+# Install all dependencies (root + client + server)
+npm run install-all
+
+# OR install step by step:
 npm install
+cd client && npm install && cd ..
+cd server && npm install && cd ..
 
 # Check MySQL connection
 npm run mysql:check
@@ -74,7 +86,7 @@ npm start
 
 - **URL**: http://localhost:3001
 - **Admin Login**: admin@tsoam.org / admin123
-- **HR Login**: hr@tsoam.org / hr123  
+- **HR Login**: hr@tsoam.org / hr123
 - **Finance Login**: finance@tsoam.org / finance123
 
 ## Database Tables
@@ -136,7 +148,7 @@ npm run health-check   # Server health verification
 - MySQL server is not running
 - Start MySQL using your preferred method above
 
-**Error: ER_ACCESS_DENIED_ERROR**  
+**Error: ER_ACCESS_DENIED_ERROR**
 - Check username/password in .env file
 - Verify MySQL user has proper privileges
 
@@ -218,5 +230,5 @@ For technical support or questions about the TSOAM Church Management System, ple
 
 ---
 
-**The Seed of Abraham Ministry (TSOAM)**  
+**The Seed of Abraham Ministry (TSOAM)**
 *Church Management System v2.0*
