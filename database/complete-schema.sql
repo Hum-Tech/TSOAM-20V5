@@ -5,7 +5,7 @@
 -- =====================================================
 
 -- Create database if not exists
-CREATE DATABASE IF NOT EXISTS tsoam_church_db 
+CREATE DATABASE IF NOT EXISTS tsoam_church_db
 CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
 USE tsoam_church_db;
@@ -951,37 +951,20 @@ CREATE TABLE IF NOT EXISTS role_permissions (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- =====================================================
--- 11. DATABASE USERS AND PRIVILEGES
+-- 11. DATABASE USERS AND PRIVILEGES (Manual Setup Required)
 -- =====================================================
 
--- Create dedicated database users with appropriate privileges
--- Note: These commands should be run by a MySQL administrator
-
--- Drop users if they exist (for clean setup)
--- DROP USER IF EXISTS 'tsoam_admin'@'localhost';
--- DROP USER IF EXISTS 'tsoam_app'@'localhost';
--- DROP USER IF EXISTS 'tsoam_readonly'@'localhost';
-
--- Create application users
-CREATE USER IF NOT EXISTS 'tsoam_admin'@'localhost' IDENTIFIED BY 'TsoamAdmin2025!';
-CREATE USER IF NOT EXISTS 'tsoam_app'@'localhost' IDENTIFIED BY 'TsoamApp2025!';
-CREATE USER IF NOT EXISTS 'tsoam_readonly'@'localhost' IDENTIFIED BY 'TsoamRead2025!';
-
--- Grant privileges
-
--- Admin user (full access for maintenance and setup)
-GRANT ALL PRIVILEGES ON tsoam_church_db.* TO 'tsoam_admin'@'localhost';
-GRANT SELECT, INSERT, UPDATE, DELETE, CREATE, DROP, INDEX, ALTER ON tsoam_church_db.* TO 'tsoam_admin'@'localhost';
-
--- Application user (normal operations)
-GRANT SELECT, INSERT, UPDATE, DELETE ON tsoam_church_db.* TO 'tsoam_app'@'localhost';
-GRANT CREATE TEMPORARY TABLES ON tsoam_church_db.* TO 'tsoam_app'@'localhost';
-
--- Read-only user (for reporting and backups)
-GRANT SELECT ON tsoam_church_db.* TO 'tsoam_readonly'@'localhost';
-
--- Flush privileges to apply changes
-FLUSH PRIVILEGES;
+-- Note: Database user creation requires administrative privileges
+-- Run these commands manually as MySQL root user if needed:
+--
+-- CREATE USER 'tsoam_admin'@'localhost' IDENTIFIED BY 'TsoamAdmin2025!';
+-- CREATE USER 'tsoam_app'@'localhost' IDENTIFIED BY 'TsoamApp2025!';
+-- CREATE USER 'tsoam_readonly'@'localhost' IDENTIFIED BY 'TsoamRead2025!';
+--
+-- GRANT ALL PRIVILEGES ON tsoam_church_db.* TO 'tsoam_admin'@'localhost';
+-- GRANT SELECT, INSERT, UPDATE, DELETE ON tsoam_church_db.* TO 'tsoam_app'@'localhost';
+-- GRANT SELECT ON tsoam_church_db.* TO 'tsoam_readonly'@'localhost';
+-- FLUSH PRIVILEGES;
 
 -- =====================================================
 -- 12. INSERT DEFAULT DATA
@@ -1077,13 +1060,24 @@ INSERT IGNORE INTO users (id, name, email, password_hash, role, is_active, can_c
 -- 13. CREATE INDEXES FOR PERFORMANCE
 -- =====================================================
 
--- Additional performance indexes
-CREATE INDEX IF NOT EXISTS idx_members_join_date ON members(join_date);
-CREATE INDEX IF NOT EXISTS idx_members_status_name ON members(status, name);
-CREATE INDEX IF NOT EXISTS idx_financial_transactions_date_type ON financial_transactions(transaction_date, type);
-CREATE INDEX IF NOT EXISTS idx_events_date_status ON events(start_date, status);
-CREATE INDEX IF NOT EXISTS idx_messages_created_status ON messages(created_at, status);
-CREATE INDEX IF NOT EXISTS idx_system_logs_timestamp_module ON system_logs(timestamp, module);
+-- Additional performance indexes (using ALTER TABLE for compatibility)
+-- Note: These will be skipped if indexes already exist
+
+-- Members performance indexes
+ALTER TABLE members ADD INDEX idx_members_join_date (join_date);
+ALTER TABLE members ADD INDEX idx_members_status_name (status, name);
+
+-- Financial transactions performance indexes
+ALTER TABLE financial_transactions ADD INDEX idx_financial_transactions_date_type (transaction_date, type);
+
+-- Events performance indexes
+ALTER TABLE events ADD INDEX idx_events_date_status (start_date, status);
+
+-- Messages performance indexes
+ALTER TABLE messages ADD INDEX idx_messages_created_status (created_at, status);
+
+-- System logs performance indexes
+ALTER TABLE system_logs ADD INDEX idx_system_logs_timestamp_module (timestamp, module);
 
 -- =====================================================
 -- 14. CREATE VIEWS FOR COMMON QUERIES
@@ -1091,28 +1085,28 @@ CREATE INDEX IF NOT EXISTS idx_system_logs_timestamp_module ON system_logs(times
 
 -- Active members view
 CREATE OR REPLACE VIEW active_members AS
-SELECT 
-  id, member_id, tithe_number, name, email, phone, 
-  gender, marital_status, status, join_date, 
+SELECT
+  id, member_id, tithe_number, name, email, phone,
+  gender, marital_status, status, join_date,
   baptized, baptism_date, created_at
-FROM members 
+FROM members
 WHERE status = 'Active';
 
 -- Financial summary view
 CREATE OR REPLACE VIEW financial_summary AS
-SELECT 
+SELECT
   DATE_FORMAT(transaction_date, '%Y-%m') as month,
   type,
   category,
   SUM(amount) as total_amount,
   COUNT(*) as transaction_count
-FROM financial_transactions 
+FROM financial_transactions
 WHERE status = 'Completed'
 GROUP BY DATE_FORMAT(transaction_date, '%Y-%m'), type, category;
 
 -- Employee summary view
 CREATE OR REPLACE VIEW employee_summary AS
-SELECT 
+SELECT
   e.id, e.employee_id, e.name, e.department, e.position,
   e.employment_type, e.employment_status, e.hire_date,
   u.email, u.role, u.is_active as user_active
@@ -1128,5 +1122,5 @@ SELECT '✅ TSOAM Church Management Database Schema Created Successfully!' as St
        '🔐 Default Admin: admin@tsoam.org / admin123' as Login,
        '👥 Database Users: tsoam_admin, tsoam_app, tsoam_readonly' as Users,
        CONCAT('📊 Total Tables: ', COUNT(*)) as TableCount
-FROM information_schema.tables 
+FROM information_schema.tables
 WHERE table_schema = 'tsoam_church_db';
