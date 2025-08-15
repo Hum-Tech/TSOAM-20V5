@@ -29,20 +29,15 @@ export default defineConfig(({ mode }) => ({
   build: {
     outDir: "dist",
     emptyOutDir: true,
-    minify: "terser",
-    terserOptions: {
-      compress: {
-        drop_console: true,
-        drop_debugger: true,
-        dead_code: true,
-        pure_getters: true,
-        unsafe: true,
-        passes: 3,
+    minify: mode === 'production' ? "terser" : false,
+    ...(mode === 'production' && {
+      terserOptions: {
+        compress: {
+          drop_console: true,
+          drop_debugger: true,
+        },
       },
-      mangle: {
-        safari10: true,
-      },
-    },
+    }),
     rollupOptions: {
       external: [],
       output: {
@@ -70,12 +65,11 @@ export default defineConfig(({ mode }) => ({
     '__DISABLE_AUTH_DISABLER__': JSON.stringify(true),
     // Disable all development features
     '__DEV__': JSON.stringify(false),
-    'import.meta.hot': JSON.stringify(false),
     // Force production environment
     'import.meta.env.DEV': JSON.stringify(mode !== 'production'),
     'import.meta.env.PROD': JSON.stringify(mode === 'production'),
-    // Disable HMR in production
-    'import.meta.hot': mode === 'production' ? 'undefined' : 'import.meta.hot',
+    // Disable HMR in production (fix duplicate key)
+    'import.meta.hot': mode === 'production' ? 'undefined' : JSON.stringify(false),
   },
   // Production-specific configuration
   ...(mode === 'production' && {
