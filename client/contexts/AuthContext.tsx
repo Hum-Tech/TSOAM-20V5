@@ -751,17 +751,21 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       }
 
       // Call backend user creation API using safe fetch
-      const { success, data, error } = await safeAuthFetch(
-        accountData.email,
-        accountData.tempPassword || 'temp123',
-        undefined,
-        false
-      );
+      const response = await fetch("/api/auth/register", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(accountData),
+      });
 
-      if (!success) {
+      // Use safe response parsing
+      const data = await safeParseResponse(response);
+
+      if (!response.ok) {
         return {
           success: false,
-          error: error || "Failed to create account"
+          error: data.error || "Failed to create account"
         };
       }
 
