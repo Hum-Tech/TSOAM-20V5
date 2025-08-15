@@ -32,7 +32,7 @@ const Setup: React.FC = () => {
   const createAdminUser = async () => {
     setLoading(true);
     setMessage('');
-    
+
     try {
       const response = await fetch('/api/setup/admin-user', {
         method: 'POST',
@@ -40,9 +40,9 @@ const Setup: React.FC = () => {
           'Content-Type': 'application/json',
         },
       });
-      
+
       const data = await response.json();
-      
+
       if (data.success) {
         setMessage('✅ Admin user setup completed successfully!');
         await checkStatus(); // Refresh status
@@ -52,8 +52,35 @@ const Setup: React.FC = () => {
     } catch (error) {
       setMessage(`❌ Setup failed: ${error.message}`);
     } finally {
+    setLoading(false);
+  };
+
+  const fixMissingTables = async () => {
+    setLoading(true);
+    setMessage('');
+
+    try {
+      const response = await fetch('/api/setup/fix-tables', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+
+      const data = await response.json();
+
+      if (data.success) {
+        setMessage(`✅ Missing tables fixed successfully! Created: ${data.tables_created.join(', ')}`);
+        await checkStatus(); // Refresh status
+      } else {
+        setMessage(`❌ Fix failed: ${data.error}`);
+      }
+    } catch (error) {
+      setMessage(`❌ Fix failed: ${error.message}`);
+    } finally {
       setLoading(false);
     }
+  };
   };
 
   useEffect(() => {
@@ -94,7 +121,7 @@ const Setup: React.FC = () => {
                     {status.database_connected ? 'Connected' : 'Disconnected'}
                   </Badge>
                 </div>
-                
+
                 <div className="flex items-center justify-between">
                   <span>Admin User Exists</span>
                   <Badge variant={status.admin_user_exists ? "default" : "destructive"}>
@@ -106,7 +133,7 @@ const Setup: React.FC = () => {
                     {status.admin_user_exists ? 'Yes' : 'No'}
                   </Badge>
                 </div>
-                
+
                 <div className="flex items-center justify-between">
                   <span>Admin User Active</span>
                   <Badge variant={status.admin_user_active ? "default" : "secondary"}>
@@ -118,12 +145,12 @@ const Setup: React.FC = () => {
                     {status.admin_user_active ? 'Active' : 'Inactive'}
                   </Badge>
                 </div>
-                
+
                 <div className="flex items-center justify-between">
                   <span>Total Users</span>
                   <Badge variant="outline">{status.total_users}</Badge>
                 </div>
-                
+
                 <div className="flex items-center justify-between">
                   <span>Database Tables</span>
                   <Badge variant="outline">{status.total_tables}</Badge>
@@ -155,11 +182,11 @@ const Setup: React.FC = () => {
                   <div><strong>Password:</strong> admin123</div>
                 </div>
               </div>
-              
-              <Button 
-                onClick={createAdminUser} 
+
+              <Button
+                onClick={createAdminUser}
                 disabled={loading}
-                className="w-full"
+                className="w-full mb-2"
               >
                 {loading ? (
                   <RefreshCw className="h-4 w-4 mr-2 animate-spin" />
@@ -168,11 +195,25 @@ const Setup: React.FC = () => {
                 )}
                 {status?.admin_user_exists ? 'Fix Admin User' : 'Create Admin User'}
               </Button>
-              
+
+              <Button
+                onClick={fixMissingTables}
+                disabled={loading}
+                className="w-full"
+                variant="outline"
+              >
+                {loading ? (
+                  <RefreshCw className="h-4 w-4 mr-2 animate-spin" />
+                ) : (
+                  <CheckCircle className="h-4 w-4 mr-2" />
+                )}
+                Fix Missing Tables
+              </Button>
+
               {message && (
                 <div className={`p-3 rounded-lg text-sm ${
-                  message.includes('✅') 
-                    ? 'bg-green-50 text-green-700 border border-green-200' 
+                  message.includes('✅')
+                    ? 'bg-green-50 text-green-700 border border-green-200'
                     : 'bg-red-50 text-red-700 border border-red-200'
                 }`}>
                   {message}
