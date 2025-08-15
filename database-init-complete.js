@@ -229,7 +229,7 @@ async function createAllTables(connection) {
 
     // Tithe Records table
     `CREATE TABLE IF NOT EXISTS tithe_records (
-      id VARCHAR(50) PRIMARY KEY DEFAULT (UUID()),
+      id VARCHAR(50) PRIMARY KEY,
       tithe_number VARCHAR(50) UNIQUE NOT NULL,
       member_id INT NOT NULL,
       amount DECIMAL(12,2) NOT NULL,
