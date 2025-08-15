@@ -196,6 +196,7 @@ const AppContent = () => {
     <BrowserRouter>
       <Routes>
               <Route path="/login" element={<Login />} />
+              <Route path="/setup" element={<Setup />} />
               <Route
                 path="/"
                 element={
