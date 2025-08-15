@@ -66,6 +66,9 @@ try {
 // Initialize abort error handler
 setupAbortErrorHandler();
 
+// Disable conflicting authentication methods to prevent response consumption conflicts
+disableConflictingAuth();
+
 // Additional immediate AbortError suppression setup
 const originalConsoleError = console.error;
 console.error = (...args) => {
