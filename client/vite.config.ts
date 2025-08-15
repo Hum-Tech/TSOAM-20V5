@@ -34,6 +34,13 @@ export default defineConfig({
       compress: {
         drop_console: true,
         drop_debugger: true,
+        dead_code: true,
+        pure_getters: true,
+        unsafe: true,
+        passes: 3,
+      },
+      mangle: {
+        safari10: true,
       },
     },
     rollupOptions: {
@@ -61,5 +68,11 @@ export default defineConfig({
     'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV || 'production'),
     // Completely disable authDisabler in production builds
     '__DISABLE_AUTH_DISABLER__': JSON.stringify(true),
+    // Disable all development features
+    '__DEV__': JSON.stringify(false),
+    'import.meta.hot': JSON.stringify(false),
+    // Force production environment
+    'import.meta.env.DEV': JSON.stringify(false),
+    'import.meta.env.PROD': JSON.stringify(true),
   },
 });
