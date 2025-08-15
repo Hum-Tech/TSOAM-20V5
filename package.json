@@ -5,6 +5,7 @@
   "main": "server/index.js",
   "scripts": {
     "setup": "npm install && cd client && npm install && cd ../server && npm install",
+    "install-all": "npm install && cd client && npm install && cd ../server && npm install && cd ..",
     "build": "cd client && npm install && npm run build-only",
     "start": "node start-production.js",
     "start:direct": "node server/server.js",
