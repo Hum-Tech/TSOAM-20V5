@@ -194,7 +194,7 @@ async function createAllTables(connection) {
 
     // Financial Transactions table
     `CREATE TABLE IF NOT EXISTS financial_transactions (
-      id VARCHAR(50) PRIMARY KEY DEFAULT (UUID()),
+      id VARCHAR(50) PRIMARY KEY,
       transaction_id VARCHAR(50) UNIQUE NOT NULL,
       type ENUM('Income', 'Expense', 'Investment', 'Transfer') NOT NULL,
       category VARCHAR(100) NOT NULL,
