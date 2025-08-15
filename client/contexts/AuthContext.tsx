@@ -493,19 +493,24 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setIsLoading(true);
 
     try {
-      // Call backend authentication API with multiple fallback strategies
+      // Single robust authentication method to prevent response consumption conflicts
       console.log("Attempting authentication for:", email);
 
-      // Primary method: Use robust auth fetch
-      let authResult = await authFetch(email, password, otp, rememberMe);
+      let authResult;
 
-      if (!authResult.success) {
-        console.warn("Primary auth method failed:", authResult.error);
+      try {
+        // Use only one authentication method to prevent body consumption conflicts
+        authResult = await authFetch(email, password, otp, rememberMe);
+      } catch (primaryError) {
+        console.warn("Auth fetch failed, trying direct fetch approach:", primaryError);
 
-        // Fallback method: Try safeFetch
+        // Only try fallback if primary method completely fails (not just returns unsuccessful)
         try {
-          const fallbackData = await safeFetch("/api/auth/login", {
+          const response = await fetch("/api/auth/login", {
             method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
             body: JSON.stringify({
               email,
               password,
@@ -514,21 +519,24 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             }),
           });
 
-          if (fallbackData && fallbackData.success) {
-            authResult = {
-              success: true,
-              data: fallbackData,
-              status: 200
-            };
-          }
+          // Use our safe JSON parsing method
+          const data = await safeJsonParse(response);
+
+          authResult = {
+            success: response.ok && data.success,
+            data: data,
+            status: response.status
+          };
         } catch (fallbackError) {
-          console.warn("Fallback auth method also failed:", fallbackError);
+          console.error("All authentication methods failed:", fallbackError);
+          throw new Error("Authentication failed due to network or server error");
         }
       }
 
-      if (!authResult.success) {
-        console.error("All authentication methods failed:", authResult.error);
-        throw new Error(authResult.error || "Authentication failed");
+      if (!authResult || !authResult.success) {
+        const errorMessage = authResult?.data?.error || authResult?.error || "Authentication failed";
+        console.error("Authentication failed:", errorMessage);
+        throw new Error(errorMessage);
       }
 
       const data = authResult.data;
