@@ -1,65 +1,48 @@
 /**
  * Authentication Conflict Disabler
- * Prevents other authentication utilities from interfering
- * DEVELOPMENT ONLY - Completely disabled in production
+ * DEVELOPMENT ONLY - No-op in production builds
  */
 
-// Override all other authentication methods to prevent conflicts
-let originalFetch: typeof fetch;
-let isInitialized = false;
-
+// Production-safe implementation that does nothing
 export function disableConflictingAuth() {
-  // COMPLETELY DISABLE IN PRODUCTION
-  if (typeof window === 'undefined' ||
-      isInitialized ||
-      import.meta.env.PROD ||
-      window.location.hostname.includes('fly.dev') ||
-      window.location.hostname !== 'localhost') {
-    console.log("🏭 Production mode: AuthDisabler disabled");
-    return;
-  }
+  // Compile-time check - this entire function becomes empty in production
+  if (import.meta.env.DEV) {
+    // Only run in actual development environment (localhost)
+    if (typeof window !== 'undefined' &&
+        window.location.hostname === 'localhost' &&
+        window.location.port) {
 
-  console.log("🚫 DISABLING: Conflicting authentication methods (dev mode only)");
+      console.log("🚫 [DEV] Authentication conflict disabler active");
 
-  // Store original fetch
-  originalFetch = window.fetch;
+      // Simple auth request tracking for development only
+      const originalFetch = window.fetch;
+      let authInProgress = false;
 
-  // Track auth requests
-  const authRequests = new Set<string>();
+      window.fetch = function(input: RequestInfo | URL, init?: RequestInit): Promise<Response> {
+        const url = typeof input === 'string' ? input : input instanceof URL ? input.href : input.url;
 
-  // Override fetch for auth endpoints only
-  window.fetch = function(input: RequestInfo | URL, init?: RequestInit): Promise<Response> {
-    const url = typeof input === 'string' ? input : input instanceof URL ? input.href : input.url;
+        // Only track auth requests
+        if (url.includes('/api/auth/login')) {
+          if (authInProgress) {
+            console.warn("🚫 [DEV] Duplicate auth request blocked");
+            return Promise.reject(new Error("Authentication in progress"));
+          }
 
-    // Only intercept auth/login requests in development
-    if (url.includes('/api/auth/login')) {
-      const requestId = `${Date.now()}-${Math.random()}`;
+          authInProgress = true;
+          const promise = originalFetch(input, init);
 
-      // Check if we already have a pending auth request
-      if (authRequests.size > 0) {
-        console.warn("🚫 BLOCKED: Duplicate auth request prevented");
-        return Promise.reject(new Error("Authentication already in progress"));
-      }
+          promise.finally(() => {
+            authInProgress = false;
+          });
 
-      console.log("🔍 TRACKING: Auth request", requestId);
-      authRequests.add(requestId);
+          return promise;
+        }
 
-      // Call original fetch and clean up when done
-      const promise = originalFetch(input, init);
-
-      promise.finally(() => {
-        authRequests.delete(requestId);
-        console.log("🧹 CLEANUP: Auth request completed", requestId);
-      });
-
-      return promise;
+        return originalFetch(input, init);
+      };
     }
-
-    // For all other requests, use original fetch
-    return originalFetch(input, init);
-  };
-
-  isInitialized = true;
+  }
+  // In production, this function does absolutely nothing
 }
 
 export function restoreOriginalFetch() {
