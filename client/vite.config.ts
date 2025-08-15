@@ -3,7 +3,7 @@ import react from "@vitejs/plugin-react";
 import path from "path";
 
 // https://vitejs.dev/config/
-export default defineConfig({
+export default defineConfig(({ mode }) => ({
   plugins: [react()],
   resolve: {
     alias: {
@@ -72,7 +72,19 @@ export default defineConfig({
     '__DEV__': JSON.stringify(false),
     'import.meta.hot': JSON.stringify(false),
     // Force production environment
-    'import.meta.env.DEV': JSON.stringify(false),
-    'import.meta.env.PROD': JSON.stringify(true),
+    'import.meta.env.DEV': JSON.stringify(mode !== 'production'),
+    'import.meta.env.PROD': JSON.stringify(mode === 'production'),
+    // Disable HMR in production
+    'import.meta.hot': mode === 'production' ? 'undefined' : 'import.meta.hot',
   },
-});
+  // Production-specific configuration
+  ...(mode === 'production' && {
+    esbuild: {
+      drop: ['console', 'debugger'],
+      legalComments: 'none',
+    },
+    optimizeDeps: {
+      disabled: false,
+    },
+  }),
+}));
