@@ -1,6 +1,7 @@
 /**
  * Authentication Conflict Disabler
  * Prevents other authentication utilities from interfering
+ * DEVELOPMENT ONLY - Completely disabled in production
  */
 
 // Override all other authentication methods to prevent conflicts
@@ -8,8 +9,15 @@ let originalFetch: typeof fetch;
 let isInitialized = false;
 
 export function disableConflictingAuth() {
-  // Only enable in development environment
-  if (isInitialized || import.meta.env.PROD) return;
+  // COMPLETELY DISABLE IN PRODUCTION
+  if (typeof window === 'undefined' ||
+      isInitialized ||
+      import.meta.env.PROD ||
+      window.location.hostname.includes('fly.dev') ||
+      window.location.hostname !== 'localhost') {
+    console.log("🏭 Production mode: AuthDisabler disabled");
+    return;
+  }
 
   console.log("🚫 DISABLING: Conflicting authentication methods (dev mode only)");
 
@@ -23,16 +31,7 @@ export function disableConflictingAuth() {
   window.fetch = function(input: RequestInfo | URL, init?: RequestInit): Promise<Response> {
     const url = typeof input === 'string' ? input : input instanceof URL ? input.href : input.url;
 
-    // Skip interception for third-party services and Vite dev tools
-    if (url.includes('fullstory.com') ||
-        url.includes('edge.fullstory.com') ||
-        url.includes('@vite/client') ||
-        url.includes('__vite_ping') ||
-        !url.includes('/api/auth/login')) {
-      return originalFetch(input, init);
-    }
-
-    // Only intercept auth/login requests
+    // Only intercept auth/login requests in development
     if (url.includes('/api/auth/login')) {
       const requestId = `${Date.now()}-${Math.random()}`;
 

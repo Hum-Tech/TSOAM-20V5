@@ -75,8 +75,10 @@ try {
 setupAbortErrorHandler();
 
 // Disable conflicting authentication methods to prevent response consumption conflicts (dev only)
-if (import.meta.env.DEV) {
+if (import.meta.env.DEV && window.location.hostname === 'localhost') {
   disableConflictingAuth();
+} else {
+  console.log("🏭 Production environment: Skipping auth disabler");
 }
 
 // Additional immediate AbortError suppression setup
