@@ -59,5 +59,7 @@ export default defineConfig({
   define: {
     // Ensure production environment variables are properly set
     'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV || 'production'),
+    // Completely disable authDisabler in production builds
+    '__DISABLE_AUTH_DISABLER__': JSON.stringify(true),
   },
 });
