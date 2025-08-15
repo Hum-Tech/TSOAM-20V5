@@ -544,7 +544,7 @@ async function createAllTables(connection) {
       reason TEXT NOT NULL,
       status ENUM('draft', 'submitted', 'approved', 'rejected', 'cancelled', 'completed') DEFAULT 'draft',
       priority ENUM('normal', 'urgent', 'emergency') DEFAULT 'normal',
-      applied_date DATE DEFAULT (CURRENT_DATE),
+      applied_date DATE,
       submitted_date DATE,
       current_approval_level INT DEFAULT 1,
       handover_notes TEXT,
