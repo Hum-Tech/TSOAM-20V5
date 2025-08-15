@@ -38,8 +38,15 @@ import { ProtectedRoute } from "./components/auth/ProtectedRoute";
 import { offlineService } from "./services/OfflineService";
 import { ErrorBoundary } from "./components/ErrorBoundary";
 import { setupAbortErrorHandler } from "./utils/abortHandler";
-import { disableConflictingAuth } from "./utils/authDisabler";
 import "./utils/productionErrorHandler";
+
+// Only import authDisabler in development
+let disableConflictingAuth: (() => void) | undefined;
+if (import.meta.env.DEV) {
+  import("./utils/authDisabler").then(module => {
+    disableConflictingAuth = module.disableConflictingAuth;
+  });
+}
 import Login from "./pages/Login";
 import Dashboard from "./pages/DashboardNew";
 import MemberManagement from "./pages/MemberManagement";
@@ -74,20 +81,9 @@ try {
 // Initialize abort error handler
 setupAbortErrorHandler();
 
-// Disable conflicting authentication methods to prevent response consumption conflicts (dev only)
-// Multiple checks to ensure this NEVER runs in production
-if (import.meta.env.DEV &&
-    window.location.hostname === 'localhost' &&
-    !window.location.hostname.includes('fly.dev') &&
-    !window.location.hostname.includes('vercel.app') &&
-    !window.location.hostname.includes('netlify.app')) {
-  try {
-    disableConflictingAuth();
-  } catch (error) {
-    console.warn("AuthDisabler failed to initialize:", error);
-  }
-} else {
-  console.log("🏭 Production environment detected: Skipping auth disabler");
+// Initialize development-only features
+if (import.meta.env.DEV && disableConflictingAuth) {
+  disableConflictingAuth();
 }
 
 // Additional immediate AbortError suppression setup
