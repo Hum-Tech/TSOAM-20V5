@@ -29,6 +29,13 @@ export default defineConfig({
   build: {
     outDir: "dist",
     emptyOutDir: true,
+    minify: "terser",
+    terserOptions: {
+      compress: {
+        drop_console: true,
+        drop_debugger: true,
+      },
+    },
     rollupOptions: {
       external: [],
       output: {
@@ -48,5 +55,9 @@ export default defineConfig({
       },
     },
     chunkSizeWarningLimit: 1500,
+  },
+  define: {
+    // Ensure production environment variables are properly set
+    'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV || 'production'),
   },
 });
