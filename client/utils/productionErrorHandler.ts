@@ -7,35 +7,28 @@ export function setupProductionErrorHandling() {
   // Only run in production
   if (import.meta.env.DEV) return;
 
-  console.log('🛡️ Setting up production error handling...');
+  console.log('🛡️ Production error handling initialized');
 
-  // Completely override any existing fetch modifications in production
-  if (window.fetch && window.fetch.toString().includes('authDisabler')) {
-    console.log('🔧 Restoring original fetch from authDisabler interference');
-    // Reset to native fetch
-    delete (window as any).fetch;
-    window.fetch = fetch;
+  // Aggressively restore native fetch in production
+  const nativeFetch = globalThis.fetch || fetch;
+
+  // Force-restore native fetch, removing any dev overrides
+  Object.defineProperty(window, 'fetch', {
+    value: nativeFetch,
+    writable: false,
+    configurable: false,
+    enumerable: true
+  });
+
+  // Block any attempts to override fetch in production
+  const descriptor = Object.getOwnPropertyDescriptor(window, 'fetch');
+  if (descriptor && descriptor.set) {
+    Object.defineProperty(window, 'fetch', {
+      value: nativeFetch,
+      writable: false,
+      configurable: false
+    });
   }
-
-  // Store the clean fetch reference
-  const originalFetch = window.fetch;
-
-  // Create a production-safe fetch wrapper
-  window.fetch = function(input: RequestInfo | URL, init?: RequestInit): Promise<Response> {
-    const url = typeof input === 'string' ? input : input instanceof URL ? input.href : input.url;
-
-    // Block Vite dev server pings in production
-    if (url.includes('__vite_ping') ||
-        url.includes('@vite/client') ||
-        url.includes('/vite/') ||
-        url.match(/\/__vite_ping\?/)) {
-      console.warn('🚫 Blocked Vite dev request in production:', url);
-      return Promise.reject(new Error('Vite dev tools disabled in production'));
-    }
-
-    // Use original fetch for all requests
-    return originalFetch(input, init);
-  };
 
   // Handle WebSocket connection errors for Vite HMR
   const originalWebSocket = window.WebSocket;
