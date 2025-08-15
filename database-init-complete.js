@@ -568,7 +568,7 @@ async function createAllTables(connection) {
     // Document Uploads table
     `CREATE TABLE IF NOT EXISTS document_uploads (
       id INT AUTO_INCREMENT PRIMARY KEY,
-      document_id VARCHAR(50) UNIQUE NOT NULL DEFAULT (UUID()),
+      document_id VARCHAR(50) UNIQUE NOT NULL,
       entity_type ENUM('member', 'employee', 'welfare', 'finance', 'inventory', 'event', 'appointment', 'leave') NOT NULL,
       entity_id VARCHAR(50) NOT NULL,
       document_category VARCHAR(100),
@@ -825,7 +825,7 @@ async function initializeCompleteDatabase() {
     console.log("   Admin: admin@tsoam.org / admin123");
     console.log("   HR: hr@tsoam.org / hr123");
     console.log("   Finance: finance@tsoam.org / finance123");
-    console.log("━━━━━━━━━━━━━━━━━━━━━━━━━━━���━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
+    console.log("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
 
   } catch (error) {
     console.error("❌ Database initialization failed:", error.message);
