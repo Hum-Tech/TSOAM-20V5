@@ -38,7 +38,11 @@ import { ProtectedRoute } from "./components/auth/ProtectedRoute";
 import { offlineService } from "./services/OfflineService";
 import { ErrorBoundary } from "./components/ErrorBoundary";
 import { setupAbortErrorHandler } from "./utils/abortHandler";
-import { disableConflictingAuth } from "./utils/authDisabler";
+// Conditional import for authDisabler based on environment
+const authDisablerModule = import.meta.env.PROD
+  ? await import("./utils/authDisabler.prod")
+  : await import("./utils/authDisabler");
+const { disableConflictingAuth } = authDisablerModule;
 import "./utils/productionErrorHandler";
 import Login from "./pages/Login";
 import Dashboard from "./pages/DashboardNew";
