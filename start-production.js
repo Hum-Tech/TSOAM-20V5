@@ -22,11 +22,11 @@ const dbConfig = {
 async function startProduction() {
   console.log("🚀 TSOAM Church Management System - Production Startup");
   console.log("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
-  
+
   try {
     // Step 1: System validation
     console.log("🔧 Step 1: System validation...");
-    
+
     // Check if build exists
     const buildPath = path.join(__dirname, 'client/dist');
     if (!fs.existsSync(buildPath)) {
@@ -45,7 +45,7 @@ async function startProduction() {
 
     // Step 2: Database connectivity test
     console.log("🔧 Step 2: Database connectivity test...");
-    
+
     let databaseReady = false;
     try {
       const connection = await mysql.createConnection({
@@ -54,16 +54,20 @@ async function startProduction() {
         user: dbConfig.user,
         password: dbConfig.password,
       });
-      
+
       // Check if database exists
       const [databases] = await connection.execute("SHOW DATABASES");
       const dbExists = databases.some(db => Object.values(db)[0] === dbConfig.database);
-      
+
       if (dbExists) {
-        // Connect to specific database and check tables
-        await connection.execute(`USE ${dbConfig.database}`);
-        const [tables] = await connection.execute("SHOW TABLES");
-        
+        // Close current connection and reconnect to specific database
+        await connection.end();
+        const dbConnection = await mysql.createConnection({
+          ...dbConfig
+        });
+        const [tables] = await dbConnection.execute("SHOW TABLES");
+        await dbConnection.end();
+
         if (tables.length >= 10) {
           console.log(`✅ MySQL database ready (${tables.length} tables)`);
           databaseReady = true;
@@ -75,7 +79,7 @@ async function startProduction() {
         console.log("⚠️  MySQL database doesn't exist");
         console.log("🔄 Run 'npm run mysql:production' to setup");
       }
-      
+
       await connection.end();
     } catch (error) {
       console.log("⚠️  MySQL connection failed:", error.message);
@@ -84,10 +88,10 @@ async function startProduction() {
 
     // Step 3: Environment check
     console.log("🔧 Step 3: Environment configuration...");
-    
+
     const requiredEnvVars = ['DB_HOST', 'DB_PORT', 'DB_USER', 'DB_NAME'];
     const missingVars = requiredEnvVars.filter(envVar => !process.env[envVar]);
-    
+
     if (missingVars.length > 0) {
       console.log("⚠️  Missing environment variables:", missingVars);
       console.log("🔧 Using default values");
@@ -98,19 +102,19 @@ async function startProduction() {
     // Step 4: Port availability check
     console.log("🔧 Step 4: Port availability check...");
     const serverPort = process.env.PORT || 3001;
-    
+
     try {
       // Quick port check by trying to create a server
       const net = require('net');
       const server = net.createServer();
-      
+
       await new Promise((resolve, reject) => {
         server.listen(serverPort, '0.0.0.0', () => {
           server.close(() => resolve());
         });
         server.on('error', reject);
       });
-      
+
       console.log(`✅ Port ${serverPort} is available`);
     } catch (error) {
       console.error(`❌ Port ${serverPort} is already in use`);
