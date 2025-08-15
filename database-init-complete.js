@@ -533,7 +533,7 @@ async function createAllTables(connection) {
 
     // Leave Requests table
     `CREATE TABLE IF NOT EXISTS leave_requests (
-      id VARCHAR(50) PRIMARY KEY DEFAULT (UUID()),
+      id VARCHAR(50) PRIMARY KEY,
       employee_id INT NOT NULL,
       leave_type_id VARCHAR(50) NOT NULL,
       start_date DATE NOT NULL,
@@ -825,7 +825,7 @@ async function initializeCompleteDatabase() {
     console.log("   Admin: admin@tsoam.org / admin123");
     console.log("   HR: hr@tsoam.org / hr123");
     console.log("   Finance: finance@tsoam.org / finance123");
-    console.log("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
+    console.log("━━━━━━━━━━━━━━━━━━━━━━━━━━━���━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
 
   } catch (error) {
     console.error("❌ Database initialization failed:", error.message);
