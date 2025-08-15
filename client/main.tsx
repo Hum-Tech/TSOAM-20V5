@@ -5,7 +5,10 @@ import "./global.css";
 window.addEventListener('error', (event) => {
   // Suppress FullStory and other third-party fetch errors
   if (event.message?.includes('Failed to fetch') &&
-      (event.filename?.includes('fs.js') || event.filename?.includes('fullstory'))) {
+      (event.filename?.includes('fs.js') ||
+       event.filename?.includes('fullstory') ||
+       event.filename?.includes('authDisabler') ||
+       event.filename?.includes('@vite/client'))) {
     console.warn('Third-party service error suppressed:', event.message);
     event.preventDefault();
     return false;
@@ -15,7 +18,10 @@ window.addEventListener('error', (event) => {
 // Handle unhandled promise rejections from third-party services
 window.addEventListener('unhandledrejection', (event) => {
   if (event.reason?.message?.includes('Failed to fetch') ||
-      event.reason?.toString().includes('fullstory')) {
+      event.reason?.toString().includes('fullstory') ||
+      event.reason?.toString().includes('authDisabler') ||
+      event.reason?.toString().includes('__vite_ping') ||
+      event.reason?.toString().includes('@vite/client')) {
     console.warn('Third-party service promise rejection suppressed:', event.reason);
     event.preventDefault();
   }
