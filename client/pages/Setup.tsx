@@ -44,7 +44,7 @@ const Setup: React.FC = () => {
       const data = await response.json();
 
       if (data.success) {
-        setMessage('✅ Admin user setup completed successfully!');
+        setMessage('�� Admin user setup completed successfully!');
         await checkStatus(); // Refresh status
       } else {
         setMessage(`❌ Setup failed: ${data.error}`);
@@ -52,7 +52,8 @@ const Setup: React.FC = () => {
     } catch (error) {
       setMessage(`❌ Setup failed: ${error.message}`);
     } finally {
-    setLoading(false);
+      setLoading(false);
+    }
   };
 
   const fixMissingTables = async () => {
@@ -80,7 +81,6 @@ const Setup: React.FC = () => {
     } finally {
       setLoading(false);
     }
-  };
   };
 
   useEffect(() => {
