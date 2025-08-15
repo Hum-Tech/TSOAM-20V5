@@ -49,13 +49,8 @@ import { ErrorBoundary } from "./components/ErrorBoundary";
 import { setupAbortErrorHandler } from "./utils/abortHandler";
 import "./utils/productionErrorHandler";
 
-// Only import authDisabler in development
-let disableConflictingAuth: (() => void) | undefined;
-if (import.meta.env.DEV) {
-  import("./utils/authDisabler").then(module => {
-    disableConflictingAuth = module.disableConflictingAuth;
-  });
-}
+// Only import authDisabler in development - use static import with conditional execution
+import { disableConflictingAuth } from "./utils/authDisabler";
 import Login from "./pages/Login";
 import Dashboard from "./pages/DashboardNew";
 import MemberManagement from "./pages/MemberManagement";
