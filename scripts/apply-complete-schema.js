@@ -15,6 +15,7 @@ const dbConfig = {
   port: process.env.DB_PORT || 3306,
   user: process.env.DB_USER || 'root',
   password: process.env.DB_PASSWORD || '',
+  database: process.env.DB_NAME || 'tsoam_church_db',
   multipleStatements: true
 };
 
@@ -36,14 +37,28 @@ async function applyCompleteSchema() {
 
     // Connect to MySQL
     console.log('🔗 Connecting to MySQL server...');
-    connection = await mysql.createConnection(dbConfig);
+    connection = await mysql.createConnection({
+      ...dbConfig,
+      multipleStatements: true
+    });
     console.log('✅ Connected to MySQL server');
 
-    // Split the SQL file into individual statements
+    // First, ensure database exists and select it
+    await connection.execute(`CREATE DATABASE IF NOT EXISTS ${dbConfig.database || 'tsoam_church_db'} CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci`);
+    await connection.execute(`USE ${dbConfig.database || 'tsoam_church_db'}`);
+    console.log(`📍 Using database: ${dbConfig.database || 'tsoam_church_db'}`);
+
+    // Split the SQL file into individual statements, filtering out database creation and USE statements
     const statements = schemaSQL
       .split(';')
       .map(stmt => stmt.trim())
-      .filter(stmt => stmt.length > 0 && !stmt.startsWith('--') && !stmt.startsWith('#'));
+      .filter(stmt =>
+        stmt.length > 0 &&
+        !stmt.startsWith('--') &&
+        !stmt.startsWith('#') &&
+        !stmt.toUpperCase().startsWith('CREATE DATABASE') &&
+        !stmt.toUpperCase().startsWith('USE ')
+      );
 
     console.log(`📝 Found ${statements.length} SQL statements to execute`);
 
