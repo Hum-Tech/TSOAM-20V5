@@ -495,10 +495,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setIsLoading(true);
 
     try {
-      // Use single safe authentication method to prevent any response consumption conflicts
-      console.log("🔐 Attempting safe authentication for:", email);
+      // Use production-safe authentication method to prevent any response consumption conflicts
+      console.log("🔐 Attempting production-safe authentication for:", email);
 
-      const authResult = await safeAuthFetch(email, password, otp, rememberMe);
+      const authResult = await productionSafeAuth(email, password, otp, rememberMe);
 
       if (!authResult.success) {
         const errorMessage = authResult.error || "Authentication failed";
