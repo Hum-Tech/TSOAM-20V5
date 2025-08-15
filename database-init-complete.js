@@ -603,7 +603,7 @@ async function createAllTables(connection) {
     // Notifications table
     `CREATE TABLE IF NOT EXISTS notifications (
       id INT AUTO_INCREMENT PRIMARY KEY,
-      notification_id VARCHAR(50) UNIQUE NOT NULL DEFAULT (UUID()),
+      notification_id VARCHAR(50) UNIQUE NOT NULL,
       user_id VARCHAR(36) NOT NULL,
       title VARCHAR(255) NOT NULL,
       message TEXT NOT NULL,
@@ -825,7 +825,7 @@ async function initializeCompleteDatabase() {
     console.log("   Admin: admin@tsoam.org / admin123");
     console.log("   HR: hr@tsoam.org / hr123");
     console.log("   Finance: finance@tsoam.org / finance123");
-    console.log("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
+    console.log("━���━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
 
   } catch (error) {
     console.error("❌ Database initialization failed:", error.message);
