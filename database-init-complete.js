@@ -408,7 +408,7 @@ async function createAllTables(connection) {
 
     // Messages table
     `CREATE TABLE IF NOT EXISTS messages (
-      id VARCHAR(50) PRIMARY KEY DEFAULT (UUID()),
+      id VARCHAR(50) PRIMARY KEY,
       message_id VARCHAR(50) UNIQUE NOT NULL,
       sender_id VARCHAR(36) NOT NULL,
       sender_name VARCHAR(255) NOT NULL,
@@ -825,7 +825,7 @@ async function initializeCompleteDatabase() {
     console.log("   Admin: admin@tsoam.org / admin123");
     console.log("   HR: hr@tsoam.org / hr123");
     console.log("   Finance: finance@tsoam.org / finance123");
-    console.log("━━━━━━━━━━━━━━━━━━━━��━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
+    console.log("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
 
   } catch (error) {
     console.error("❌ Database initialization failed:", error.message);
