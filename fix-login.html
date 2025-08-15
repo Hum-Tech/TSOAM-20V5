@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TSOAM - Fix Admin Login</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 600px;
+            margin: 50px auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #8B1538;
+            text-align: center;
+        }
+        button {
+            background-color: #8B1538;
+            color: white;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            width: 100%;
+            margin: 10px 0;
+        }
+        button:hover {
+            background-color: #6d1028;
+        }
+        .status {
+            padding: 10px;
+            border-radius: 5px;
+            margin: 10px 0;
+        }
+        .success {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        .error {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        .info {
+            background-color: #d1ecf1;
+            color: #0c5460;
+            border: 1px solid #bee5eb;
+        }
+        .credentials {
+            background-color: #fff3cd;
+            color: #856404;
+            border: 1px solid #ffeaa7;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 20px 0;
+        }
+        .loading {
+            display: none;
+            text-align: center;
+            color: #666;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔧 TSOAM Admin User Setup</h1>
+        
+        <div class="credentials">
+            <h3>📋 Default Login Credentials</h3>
+            <p><strong>Email:</strong> admin@tsoam.org</p>
+            <p><strong>Password:</strong> admin123</p>
+        </div>
+
+        <div id="status"></div>
+        
+        <button onclick="checkStatus()">🔍 Check System Status</button>
+        <button onclick="createAdminUser()">👤 Create/Fix Admin User</button>
+        <button onclick="testLogin()">🔐 Test Login</button>
+        
+        <div class="loading" id="loading">⏳ Processing...</div>
+        
+        <div style="margin-top: 30px; text-align: center;">
+            <a href="/login" style="color: #8B1538; text-decoration: none; font-weight: bold;">
+                ➡️ Go to Login Page
+            </a>
+        </div>
+    </div>
+
+    <script>
+        function showStatus(message, type = 'info') {
+            const statusDiv = document.getElementById('status');
+            statusDiv.innerHTML = `<div class="${type}">${message}</div>`;
+        }
+
+        function showLoading(show = true) {
+            document.getElementById('loading').style.display = show ? 'block' : 'none';
+        }
+
+        async function checkStatus() {
+            showLoading(true);
+            try {
+                const response = await fetch('/api/setup/status');
+                const data = await response.json();
+                
+                if (data.success) {
+                    const status = data.status;
+                    let message = `
+                        <h3>📊 System Status</h3>
+                        <p>✅ Database Connected: ${status.database_connected ? 'Yes' : 'No'}</p>
+                        <p>👤 Admin User Exists: ${status.admin_user_exists ? 'Yes' : 'No'}</p>
+                        <p>🔓 Admin User Active: ${status.admin_user_active ? 'Yes' : 'No'}</p>
+                        <p>👥 Total Users: ${status.total_users}</p>
+                        <p>🗄️ Total Tables: ${status.total_tables}</p>
+                    `;
+                    showStatus(message, 'info');
+                } else {
+                    showStatus(`❌ Status check failed: ${data.error}`, 'error');
+                }
+            } catch (error) {
+                showStatus(`❌ Error: ${error.message}`, 'error');
+            }
+            showLoading(false);
+        }
+
+        async function createAdminUser() {
+            showLoading(true);
+            try {
+                const response = await fetch('/api/setup/admin-user', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    showStatus(`✅ Success: ${data.message}<br>You can now try logging in!`, 'success');
+                } else {
+                    showStatus(`❌ Failed: ${data.error}`, 'error');
+                }
+            } catch (error) {
+                showStatus(`❌ Error: ${error.message}`, 'error');
+            }
+            showLoading(false);
+        }
+
+        async function testLogin() {
+            showLoading(true);
+            try {
+                const response = await fetch('/api/auth/login', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        email: 'admin@tsoam.org',
+                        password: 'admin123'
+                    })
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    showStatus(`✅ Login Test Successful!<br>User: ${data.user.name}<br>Role: ${data.user.role}`, 'success');
+                } else {
+                    showStatus(`❌ Login Test Failed: ${data.error}`, 'error');
+                }
+            } catch (error) {
+                showStatus(`❌ Login Test Error: ${error.message}`, 'error');
+            }
+            showLoading(false);
+        }
+
+        // Auto-check status on page load
+        window.onload = function() {
+            checkStatus();
+        };
+    </script>
+</body>
+</html>
