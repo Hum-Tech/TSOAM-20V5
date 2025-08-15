@@ -6,18 +6,23 @@
 
 The error `'vite' is not recognized as an internal or external command` means the client dependencies aren't installed.
 
-### ✅ **Immediate Fix:**
+### ✅ **Immediate Fix for Your Current Issue:**
 
 ```cmd
-# Step 1: Install client dependencies
-cd client
+# Quick Fix: Run the dependency fix script
+fix-dependencies.bat
+
+# OR Manual Fix:
+# Step 1: Install server dependencies (missing express)
+cd server
+npm install
+cd ..
+
+# Step 2: Install root dependencies (missing concurrently)
 npm install
 
-# Step 2: Go back to root and build
-cd ..
+# Step 3: Build and start
 npm run build
-
-# Step 3: Start the system
 npm start
 ```
 
@@ -83,7 +88,7 @@ npm start
 npm install
 cd client
 npm install
-cd ../server  
+cd ../server
 npm install
 cd ..
 ```
