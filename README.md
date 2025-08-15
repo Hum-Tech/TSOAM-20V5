@@ -138,6 +138,10 @@ npm run start:direct  # Start server directly
 
 # Utilities
 npm run health-check   # Server health verification
+
+# Database Verification
+npm run db:verify      # Complete MySQL compatibility check
+npm run db:test-ops    # Test all database operations
 ```
 
 ## Troubleshooting
