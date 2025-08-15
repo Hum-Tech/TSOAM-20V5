@@ -47,6 +47,7 @@ import EventsEnhanced from "./pages/EventsEnhanced";
 import Settings from "./pages/Settings";
 import SystemLogs from "./pages/SystemLogs";
 import Users from "./pages/Users";
+import Setup from "./pages/Setup";
 import WelfareEnhanced from "./pages/WelfareEnhanced";
 import Inventory from "./pages/Inventory";
 import Profile from "./pages/Profile";
