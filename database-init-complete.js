@@ -723,13 +723,29 @@ async function insertDefaultData(connection) {
     // Create sample member for testing
     await connection.execute(
       `INSERT IGNORE INTO members (member_id, tithe_number, name, email, phone, status, join_date, membership_date, gender)
-       VALUES ('MEM-001', 'TITHE-001', 'John Doe', 'john.doe@example.com', '+254700000001', 'Active', CURDATE(), CURDATE(), 'Male')`,
+       VALUES ('MEM-001', 'TITHE-001', 'John Doe', 'john.doe@example.com', '+254700000001', 'Active', CURRENT_DATE, CURRENT_DATE, 'Male')`,
     );
 
     // Create sample employee for testing
     await connection.execute(
       `INSERT IGNORE INTO employees (employee_id, name, email, phone, position, department, employment_type, hire_date, status, basic_salary)
-       VALUES ('EMP-001', 'Jane Smith', 'jane.smith@tsoam.org', '+254700000002', 'HR Manager', 'Human Resources', 'Full-time', CURDATE(), 'Active', 50000.00)`,
+       VALUES ('EMP-001', 'Jane Smith', 'jane.smith@tsoam.org', '+254700000002', 'HR Manager', 'Human Resources', 'Full-time', CURRENT_DATE, 'Active', 50000.00)`,
+    );
+
+    // Create sample financial transaction for testing
+    const transactionId = `TXN-${Date.now()}`;
+    await connection.execute(
+      `INSERT IGNORE INTO financial_transactions (id, transaction_id, type, category, description, amount, date, status)
+       VALUES (?, ?, 'Income', 'Tithe', 'Sample tithe payment', 1000.00, CURRENT_DATE, 'Completed')`,
+      [transactionId, transactionId]
+    );
+
+    // Create sample tithe record for testing
+    const titheId = `TITHE-${Date.now()}`;
+    await connection.execute(
+      `INSERT IGNORE INTO tithe_records (id, tithe_number, member_id, amount, payment_method, tithe_date, category)
+       VALUES (?, 'TITHE-001', 1, 500.00, 'Cash', CURRENT_DATE, 'Tithe')`,
+      [titheId]
     );
 
     console.log("✅ Sample data created for testing");
