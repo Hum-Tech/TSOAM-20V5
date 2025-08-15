@@ -3,7 +3,7 @@ import react from "@vitejs/plugin-react";
 import path from "path";
 
 // https://vitejs.dev/config/
-export default defineConfig(({ mode }) => ({
+export default defineConfig({
   plugins: [react()],
   resolve: {
     alias: {
@@ -29,15 +29,13 @@ export default defineConfig(({ mode }) => ({
   build: {
     outDir: "dist",
     emptyOutDir: true,
-    minify: mode === 'production' ? "terser" : false,
-    ...(mode === 'production' && {
-      terserOptions: {
-        compress: {
-          drop_console: true,
-          drop_debugger: true,
-        },
+    minify: "terser",
+    terserOptions: {
+      compress: {
+        drop_console: true,
+        drop_debugger: true,
       },
-    }),
+    },
     rollupOptions: {
       external: [],
       output: {
@@ -58,27 +56,4 @@ export default defineConfig(({ mode }) => ({
     },
     chunkSizeWarningLimit: 1500,
   },
-  define: {
-    // Ensure production environment variables are properly set
-    'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV || 'production'),
-    // Completely disable authDisabler in production builds
-    '__DISABLE_AUTH_DISABLER__': JSON.stringify(true),
-    // Disable all development features
-    '__DEV__': JSON.stringify(false),
-    // Force production environment
-    'import.meta.env.DEV': JSON.stringify(mode !== 'production'),
-    'import.meta.env.PROD': JSON.stringify(mode === 'production'),
-    // Disable HMR in production (fix duplicate key)
-    'import.meta.hot': mode === 'production' ? 'undefined' : JSON.stringify(false),
-  },
-  // Production-specific configuration
-  ...(mode === 'production' && {
-    esbuild: {
-      drop: ['console', 'debugger'],
-      legalComments: 'none',
-    },
-    optimizeDeps: {
-      disabled: false,
-    },
-  }),
-}));
+});
