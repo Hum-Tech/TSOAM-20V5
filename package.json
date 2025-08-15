@@ -14,6 +14,7 @@
     "mysql:setup": "node scripts/database-init-complete.js",
     "mysql:production": "node scripts/database-init-complete.js",
     "mysql:check": "node scripts/check-mysql.js",
+    "schema:apply": "node scripts/apply-complete-schema.js",
     "db:test": "node test-database-sync.js",
     "db:test-ops": "node test-database-operations.js",
     "db:verify": "node verify-mysql-compatibility.js",
