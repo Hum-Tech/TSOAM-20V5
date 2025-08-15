@@ -102,6 +102,7 @@ app.use("/api/documents", documentsRoutes);
 app.use("/api/dashboard", dashboardRoutes);
 app.use("/api/system-logs", systemLogsRoutes);
 app.use("/api/messages", messagesRoutes);
+app.use("/api/setup", setupRoutes);
 app.use("/api/users", authRoutes);
 
 // File upload endpoint
