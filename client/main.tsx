@@ -32,6 +32,7 @@ import { ProtectedRoute } from "./components/auth/ProtectedRoute";
 import { offlineService } from "./services/OfflineService";
 import { ErrorBoundary } from "./components/ErrorBoundary";
 import { setupAbortErrorHandler } from "./utils/abortHandler";
+import { disableConflictingAuth } from "./utils/authDisabler";
 import Login from "./pages/Login";
 import Dashboard from "./pages/DashboardNew";
 import MemberManagement from "./pages/MemberManagement";
