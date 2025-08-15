@@ -494,49 +494,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setIsLoading(true);
 
     try {
-      // Single robust authentication method to prevent response consumption conflicts
-      console.log("Attempting authentication for:", email);
+      // Use single safe authentication method to prevent any response consumption conflicts
+      console.log("🔐 Attempting safe authentication for:", email);
 
-      let authResult;
+      const authResult = await safeAuthFetch(email, password, otp, rememberMe);
 
-      try {
-        // Use only one authentication method to prevent body consumption conflicts
-        authResult = await authFetch(email, password, otp, rememberMe);
-      } catch (primaryError) {
-        console.warn("Auth fetch failed, trying direct fetch approach:", primaryError);
-
-        // Only try fallback if primary method completely fails (not just returns unsuccessful)
-        try {
-          const response = await fetch("/api/auth/login", {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-              email,
-              password,
-              otp,
-              rememberMe,
-            }),
-          });
-
-          // Use our safe JSON parsing method
-          const data = await safeJsonParse(response);
-
-          authResult = {
-            success: response.ok && data.success,
-            data: data,
-            status: response.status
-          };
-        } catch (fallbackError) {
-          console.error("All authentication methods failed:", fallbackError);
-          throw new Error("Authentication failed due to network or server error");
-        }
-      }
-
-      if (!authResult || !authResult.success) {
-        const errorMessage = authResult?.data?.error || authResult?.error || "Authentication failed";
-        console.error("Authentication failed:", errorMessage);
+      if (!authResult.success) {
+        const errorMessage = authResult.error || "Authentication failed";
+        console.error("🔐 Authentication failed:", errorMessage);
         throw new Error(errorMessage);
       }
 
