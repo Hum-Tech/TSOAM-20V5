@@ -496,14 +496,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setIsLoading(true);
 
     try {
-      // Use production-safe authentication method to prevent any response consumption conflicts
-      console.log("🔐 Attempting production-safe authentication for:", email);
+      // Use completely isolated authentication to prevent ANY response consumption conflicts
+      console.log("🔐 Attempting ISOLATED authentication for:", email);
 
-      const authResult = await productionSafeAuth(email, password, otp, rememberMe);
+      const authResult = await isolatedAuthentication(email, password, otp, rememberMe);
 
       if (!authResult.success) {
         const errorMessage = authResult.error || "Authentication failed";
-        console.error("🔐 Authentication failed:", errorMessage);
+        console.error("🔐 ISOLATED Authentication failed:", errorMessage);
         throw new Error(errorMessage);
       }
 
