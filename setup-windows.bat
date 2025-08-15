@@ -5,33 +5,24 @@ echo.
 echo 📦 Step 1: Installing all dependencies...
 echo.
 
-echo Installing root dependencies...
-call npm install
+echo Installing all dependencies...
+call npm run install-all
 if %ERRORLEVEL% neq 0 (
-    echo ❌ Failed to install root dependencies
-    pause
-    exit /b %ERRORLEVEL%
+    echo ❌ Failed to install dependencies
+    echo.
+    echo Trying manual installation...
+    call npm install
+    cd client
+    call npm install
+    cd ..\server
+    call npm install
+    cd ..
+    if %ERRORLEVEL% neq 0 (
+        echo ❌ Manual installation also failed
+        pause
+        exit /b %ERRORLEVEL%
+    )
 )
-
-echo Installing client dependencies...
-cd client
-call npm install
-if %ERRORLEVEL% neq 0 (
-    echo ❌ Failed to install client dependencies
-    pause
-    exit /b %ERRORLEVEL%
-)
-cd ..
-
-echo Installing server dependencies...
-cd server
-call npm install
-if %ERRORLEVEL% neq 0 (
-    echo ❌ Failed to install server dependencies
-    pause
-    exit /b %ERRORLEVEL%
-)
-cd ..
 
 echo.
 echo ✅ All dependencies installed successfully!
