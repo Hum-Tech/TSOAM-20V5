@@ -3,6 +3,9 @@ primary_region = "ord"
 
 [build]
   builder = "paketobuildpacks"
+  buildpacks = [
+    { id = "heroku/nodejs" }
+  ]
 
 [env]
   NODE_ENV = "production"
@@ -36,6 +39,5 @@ primary_region = "ord"
   NODE_ENV = "production"
   USE_SQLITE = "false"
 
-[experimental]
-  auto_rollback = true
-  cmd = ["/bin/bash", "-c", "npm run build && npm start"]
+[processes]
+  app = "npm run build && npm start"
