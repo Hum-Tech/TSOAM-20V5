@@ -79,7 +79,9 @@ router.post("/login", async (req, res) => {
       return res.status(401).json({ error: "Invalid credentials" });
     }
 
-    // Check OTP for admin users (simplified - in production use proper OTP)
+    // OTP check disabled - only email and password required
+    // Uncomment below if OTP verification is needed in the future
+    /*
     if (
       (user.role === "Admin" || user.role === "HR Officer") &&
       otp !== "123456"
@@ -89,6 +91,7 @@ router.post("/login", async (req, res) => {
         requireOTP: true,
       });
     }
+    */
 
     // Generate JWT token
     const token = jwt.sign(
