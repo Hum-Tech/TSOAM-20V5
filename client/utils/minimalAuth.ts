@@ -13,6 +13,7 @@ export async function nativeLogin(
   user?: any;
   token?: string;
   error?: string;
+  requireOTP?: boolean;
 }> {
   try {
     console.log('🔐 NATIVE: Starting login for', email);
@@ -33,29 +34,34 @@ export async function nativeLogin(
 
     console.log('🔐 NATIVE: Response status:', response.status);
 
-    // Try to parse as JSON directly first
-    let data;
-    try {
-      console.log('🔐 NATIVE: Parsing response as JSON directly...');
-      data = await response.json();
-      console.log('🔐 NATIVE: JSON parsing successful');
-    } catch (jsonError) {
-      console.error('🔐 NATIVE: Direct JSON parse failed:', jsonError);
+    // Clone the response immediately to prevent body consumption issues
+    const clonedResponse = response.clone();
 
-      // Fallback: try to read as text (may fail if body was already consumed)
+    let data;
+
+    // Try to parse as JSON using cloned response
+    try {
+      console.log('🔐 NATIVE: Parsing response as JSON...');
+      data = await clonedResponse.json();
+      console.log('🔐 NATIVE: JSON parsing successful, data:', data);
+    } catch (jsonError) {
+      console.error('🔐 NATIVE: JSON parse failed:', jsonError);
+
+      // Last resort: try to read as text
       try {
         console.log('🔐 NATIVE: Attempting text fallback...');
         const responseText = await response.text();
         if (!responseText) {
           throw new Error('Empty response');
         }
+        console.log('🔐 NATIVE: Response text:', responseText.substring(0, 100));
         data = JSON.parse(responseText);
         console.log('🔐 NATIVE: Text fallback successful');
       } catch (fallbackError) {
         console.error('🔐 NATIVE: Text fallback also failed:', fallbackError);
         return {
           success: false,
-          error: 'Invalid response format',
+          error: 'Failed to read server response',
         };
       }
     }
