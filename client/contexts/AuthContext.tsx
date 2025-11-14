@@ -492,18 +492,18 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setIsLoading(true);
 
     try {
-      // Use completely isolated authentication to prevent ANY response consumption conflicts
-      console.log("🔐 Attempting ISOLATED authentication for:", email);
+      // Use native login (completely isolated from all utilities)
+      console.log("🔐 Attempting native authentication for:", email);
 
-      const authResult = await isolatedAuthentication(email, password, otp, rememberMe);
+      const authResult = await nativeLogin(email, password, otp, rememberMe);
 
       if (!authResult.success) {
         const errorMessage = authResult.error || "Authentication failed";
-        console.error("🔐 ISOLATED Authentication failed:", errorMessage);
+        console.error("🔐 Native authentication failed:", errorMessage);
         throw new Error(errorMessage);
       }
 
-      const data = authResult.data;
+      const data = authResult;
 
       // Backend returned successful login
       const foundUser = data.user;
