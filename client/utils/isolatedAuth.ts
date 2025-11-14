@@ -126,18 +126,8 @@ async function performIsolatedAuth(
     };
   }
   
-  // Check if response body was already consumed (should never happen in isolated context)
-  if (response.bodyUsed) {
-    console.error("🔐 ISOLATED: Response body already consumed - this should not happen!");
-    return {
-      success: false,
-      error: 'Internal error: Response already processed',
-      status: response.status
-    };
-  }
-  
   let responseText: string;
-  
+
   try {
     console.log("🔐 ISOLATED: Reading response as text...");
     responseText = await response.text();
