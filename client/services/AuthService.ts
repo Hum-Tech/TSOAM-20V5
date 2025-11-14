@@ -50,9 +50,22 @@ export class AuthService {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify(credentials),
+        cache: 'no-cache',
+        credentials: 'same-origin',
       });
 
-      const result = await safeJsonParse(response);
+      let result: any;
+
+      try {
+        const responseText = await response.text();
+        result = responseText ? JSON.parse(responseText) : {};
+      } catch (parseError) {
+        console.error('Failed to parse response:', parseError);
+        return {
+          success: false,
+          error: 'Invalid response from server',
+        };
+      }
 
       if (result.success && result.token) {
         // Store token and user data
