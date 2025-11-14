@@ -47,7 +47,8 @@ import { ProtectedRoute } from "./components/auth/ProtectedRoute";
 import { offlineService } from "./services/OfflineService";
 import { ErrorBoundary } from "./components/ErrorBoundary";
 import { setupAbortErrorHandler } from "./utils/abortHandler";
-import "./utils/productionErrorHandler";
+// Disabled: productionErrorHandler was wrapping fetch and causing response conflicts
+// import "./utils/productionErrorHandler";
 
 // Only import authDisabler in development - use static import with conditional execution
 import { disableConflictingAuth } from "./utils/authDisabler";
