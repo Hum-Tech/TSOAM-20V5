@@ -93,11 +93,7 @@ import {
   ReactNode,
 } from "react";
 import RoleBasedAccessService from "@/services/RoleBasedAccessService";
-import { safeFetch, safeJsonParse } from "@/utils/requestDebounce";
-import { authFetch } from "@/utils/responseHandler";
-import { safeAuthFetch, safeParseResponse } from "@/utils/safeFetch";
-import { productionSafeAuth } from "@/utils/debugAuth";
-import { isolatedAuthentication } from "@/utils/isolatedAuth";
+import { nativeLogin } from "@/utils/minimalAuth";
 
 /**
  * User interface defining the structure of authenticated users
