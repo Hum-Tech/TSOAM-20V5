@@ -503,10 +503,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         throw new Error(errorMessage);
       }
 
-      const data = authResult;
-
       // Backend returned successful login
-      const foundUser = data.user;
+      const foundUser = authResult.user;
 
       /*
       // TODO: Future OTP Integration with Twilio/Infobip
