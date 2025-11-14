@@ -497,6 +497,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
       const authResult = await nativeLogin(email, password, otp, rememberMe);
 
+      // Check if OTP is required
+      if (authResult.requireOTP) {
+        console.log("🔐 OTP required for user:", email);
+        setRequireOTP(true);
+        setIsLoading(false);
+        return false;
+      }
+
       if (!authResult.success) {
         const errorMessage = authResult.error || "Authentication failed";
         console.error("🔐 Native authentication failed:", errorMessage);
