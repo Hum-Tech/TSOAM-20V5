@@ -33,37 +33,31 @@ export async function nativeLogin(
 
     console.log('🔐 NATIVE: Response status:', response.status);
 
-    // Clone response in case body was already read by something else
-    const clonedResponse = response.clone ? response.clone() : response;
-
-    // Read response text once
-    let responseText: string;
-    try {
-      responseText = await clonedResponse.text();
-    } catch (textError) {
-      // If clone doesn't work, try the original
-      console.warn('🔐 NATIVE: Clone failed, trying original:', textError);
-      responseText = await response.text();
-    }
-    console.log('🔐 NATIVE: Response text length:', responseText.length);
-
-    if (!responseText) {
-      console.error('🔐 NATIVE: Empty response');
-      return {
-        success: false,
-        error: 'Empty response from server',
-      };
-    }
-
+    // Try to parse as JSON directly first
     let data;
     try {
-      data = JSON.parse(responseText);
-    } catch (e) {
-      console.error('🔐 NATIVE: JSON parse failed:', e);
-      return {
-        success: false,
-        error: 'Invalid response format',
-      };
+      console.log('🔐 NATIVE: Parsing response as JSON directly...');
+      data = await response.json();
+      console.log('🔐 NATIVE: JSON parsing successful');
+    } catch (jsonError) {
+      console.error('🔐 NATIVE: Direct JSON parse failed:', jsonError);
+
+      // Fallback: try to read as text (may fail if body was already consumed)
+      try {
+        console.log('🔐 NATIVE: Attempting text fallback...');
+        const responseText = await response.text();
+        if (!responseText) {
+          throw new Error('Empty response');
+        }
+        data = JSON.parse(responseText);
+        console.log('🔐 NATIVE: Text fallback successful');
+      } catch (fallbackError) {
+        console.error('🔐 NATIVE: Text fallback also failed:', fallbackError);
+        return {
+          success: false,
+          error: 'Invalid response format',
+        };
+      }
     }
 
     if (!response.ok) {
