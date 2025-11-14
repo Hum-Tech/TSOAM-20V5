@@ -33,8 +33,18 @@ export async function nativeLogin(
 
     console.log('🔐 NATIVE: Response status:', response.status);
 
+    // Clone response in case body was already read by something else
+    const clonedResponse = response.clone ? response.clone() : response;
+
     // Read response text once
-    const responseText = await response.text();
+    let responseText: string;
+    try {
+      responseText = await clonedResponse.text();
+    } catch (textError) {
+      // If clone doesn't work, try the original
+      console.warn('🔐 NATIVE: Clone failed, trying original:', textError);
+      responseText = await response.text();
+    }
     console.log('🔐 NATIVE: Response text length:', responseText.length);
 
     if (!responseText) {
