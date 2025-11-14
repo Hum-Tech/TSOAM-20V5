@@ -71,14 +71,25 @@ export async function nativeLogin(
       return {
         success: false,
         error: data.error || `Server error: ${response.status}`,
+        requireOTP: data.requireOTP || false,
       };
     }
 
-    if (!data.success) {
+    if (!data.success && !data.requireOTP) {
       console.error('🔐 NATIVE: Login failed:', data.error);
       return {
         success: false,
         error: data.error || 'Login failed',
+      };
+    }
+
+    // Check if OTP is required
+    if (data.requireOTP) {
+      console.log('🔐 NATIVE: OTP required for this user');
+      return {
+        success: false,
+        error: data.error || 'OTP required',
+        requireOTP: true,
       };
     }
 
