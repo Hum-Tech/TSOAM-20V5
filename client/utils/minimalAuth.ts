@@ -64,33 +64,32 @@ export async function nativeLogin(
             return;
           }
 
+          // Check for success flag in response
+          if (data.success === false) {
+            console.error('🔐 NATIVE: Login failed:', data.error);
+            resolve({
+              success: false,
+              error: data.error || 'Login failed',
+            });
+            return;
+          }
+
           // Handle HTTP errors
           if (xhr.status < 200 || xhr.status >= 300) {
             console.error('🔐 NATIVE: Server error:', xhr.status, data);
             resolve({
               success: false,
               error: data.error || `Server error: ${xhr.status}`,
-              requireOTP: data.requireOTP || false,
             });
             return;
           }
 
-          // Check if OTP is required
-          if (data.requireOTP) {
-            console.log('🔐 NATIVE: OTP required for this user');
+          // Check required fields in response
+          if (!data.token || !data.user) {
+            console.error('🔐 NATIVE: Missing token or user in response');
             resolve({
               success: false,
-              error: data.error || 'OTP required',
-              requireOTP: true,
-            });
-            return;
-          }
-
-          if (!data.success) {
-            console.error('🔐 NATIVE: Login failed:', data.error);
-            resolve({
-              success: false,
-              error: data.error || 'Login failed',
+              error: 'Invalid response from server - missing token or user',
             });
             return;
           }
