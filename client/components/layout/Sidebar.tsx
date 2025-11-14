@@ -86,7 +86,7 @@ const allMenuItems = [
   { path: "/users", label: "Users", icon: Shield, permission: "users" },
 ];
 
-export function Sidebar() {
+export function Sidebar({ onClose }: SidebarProps) {
   const location = useLocation();
 
   // Add error handling for auth context
@@ -99,7 +99,7 @@ export function Sidebar() {
     console.error('Auth context error in Sidebar:', error);
     return (
       <div className="w-64 bg-sidebar border-r border-sidebar-border flex flex-col h-full">
-        <div className="p-4 text-center text-red-500">
+        <div className="p-3 md:p-4 text-center text-red-500 text-sm">
           Authentication Error - Please refresh the page
         </div>
       </div>
