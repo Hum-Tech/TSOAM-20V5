@@ -1,6 +1,5 @@
 /**
- * Minimal Native Authentication
- * Uses only native browser fetch - no wrappers, no utilities, no interference
+ * Minimal Native Authentication - Using XHR to avoid fetch interception
  */
 
 export async function nativeLogin(
@@ -15,95 +14,143 @@ export async function nativeLogin(
   error?: string;
   requireOTP?: boolean;
 }> {
-  try {
-    console.log('🔐 NATIVE: Starting login for', email);
+  return new Promise((resolve) => {
+    try {
+      console.log('🔐 NATIVE: Starting login for', email);
 
-    // Use native fetch directly - no wrappers
-    const response = await fetch('/api/auth/login', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
+      const xhr = new XMLHttpRequest();
+      let timeoutId: NodeJS.Timeout | null = null;
+
+      // Setup timeout
+      const setupTimeout = () => {
+        timeoutId = setTimeout(() => {
+          xhr.abort();
+          console.error('🔐 NATIVE: Request timeout');
+          resolve({
+            success: false,
+            error: 'Request timeout - please try again',
+          });
+        }, 15000); // 15 second timeout
+      };
+
+      xhr.onreadystatechange = () => {
+        if (xhr.readyState !== 4) return; // Not done yet
+
+        if (timeoutId) clearTimeout(timeoutId);
+
+        try {
+          console.log('🔐 NATIVE: Response status:', xhr.status);
+          console.log('🔐 NATIVE: Response text length:', xhr.responseText.length);
+
+          if (!xhr.responseText) {
+            console.error('🔐 NATIVE: Empty response');
+            resolve({
+              success: false,
+              error: 'Empty response from server',
+            });
+            return;
+          }
+
+          let data;
+          try {
+            data = JSON.parse(xhr.responseText);
+            console.log('🔐 NATIVE: JSON parsed successfully');
+          } catch (parseError) {
+            console.error('🔐 NATIVE: JSON parse failed:', parseError);
+            resolve({
+              success: false,
+              error: 'Invalid response format from server',
+            });
+            return;
+          }
+
+          // Handle HTTP errors
+          if (xhr.status < 200 || xhr.status >= 300) {
+            console.error('🔐 NATIVE: Server error:', xhr.status, data);
+            resolve({
+              success: false,
+              error: data.error || `Server error: ${xhr.status}`,
+              requireOTP: data.requireOTP || false,
+            });
+            return;
+          }
+
+          // Check if OTP is required
+          if (data.requireOTP) {
+            console.log('🔐 NATIVE: OTP required for this user');
+            resolve({
+              success: false,
+              error: data.error || 'OTP required',
+              requireOTP: true,
+            });
+            return;
+          }
+
+          if (!data.success) {
+            console.error('🔐 NATIVE: Login failed:', data.error);
+            resolve({
+              success: false,
+              error: data.error || 'Login failed',
+            });
+            return;
+          }
+
+          console.log('🔐 NATIVE: Login successful');
+          resolve({
+            success: true,
+            user: data.user,
+            token: data.token,
+          });
+        } catch (error) {
+          console.error('🔐 NATIVE: Error processing response:', error);
+          resolve({
+            success: false,
+            error: `Error processing response: ${error instanceof Error ? error.message : 'Unknown error'}`,
+          });
+        }
+      };
+
+      xhr.onerror = () => {
+        if (timeoutId) clearTimeout(timeoutId);
+        console.error('🔐 NATIVE: XHR error');
+        resolve({
+          success: false,
+          error: 'Network error occurred',
+        });
+      };
+
+      xhr.onabort = () => {
+        if (timeoutId) clearTimeout(timeoutId);
+        console.error('🔐 NATIVE: XHR aborted');
+        resolve({
+          success: false,
+          error: 'Request was cancelled',
+        });
+      };
+
+      // Prepare request
+      xhr.open('POST', '/api/auth/login', true);
+      xhr.setRequestHeader('Content-Type', 'application/json');
+
+      // Start timeout
+      setupTimeout();
+
+      // Send request
+      const body = JSON.stringify({
         email,
         password,
         ...(otp && { otp }),
         ...(rememberMe !== undefined && { rememberMe }),
-      }),
-    });
+      });
 
-    console.log('🔐 NATIVE: Response status:', response.status);
-
-    // Clone the response immediately to prevent body consumption issues
-    const clonedResponse = response.clone();
-
-    let data;
-
-    // Try to parse as JSON using cloned response
-    try {
-      console.log('🔐 NATIVE: Parsing response as JSON...');
-      data = await clonedResponse.json();
-      console.log('🔐 NATIVE: JSON parsing successful, data:', data);
-    } catch (jsonError) {
-      console.error('🔐 NATIVE: JSON parse failed:', jsonError);
-
-      // Last resort: try to read as text
-      try {
-        console.log('🔐 NATIVE: Attempting text fallback...');
-        const responseText = await response.text();
-        if (!responseText) {
-          throw new Error('Empty response');
-        }
-        console.log('🔐 NATIVE: Response text:', responseText.substring(0, 100));
-        data = JSON.parse(responseText);
-        console.log('🔐 NATIVE: Text fallback successful');
-      } catch (fallbackError) {
-        console.error('🔐 NATIVE: Text fallback also failed:', fallbackError);
-        return {
-          success: false,
-          error: 'Failed to read server response',
-        };
-      }
-    }
-
-    if (!response.ok) {
-      console.error('🔐 NATIVE: Server error:', response.status, data);
-      return {
+      console.log('🔐 NATIVE: Sending request...');
+      xhr.send(body);
+    } catch (error) {
+      console.error('🔐 NATIVE: Setup error:', error);
+      resolve({
         success: false,
-        error: data.error || `Server error: ${response.status}`,
-        requireOTP: data.requireOTP || false,
-      };
+        error: `Setup error: ${error instanceof Error ? error.message : 'Unknown error'}`,
+      });
     }
-
-    if (!data.success && !data.requireOTP) {
-      console.error('🔐 NATIVE: Login failed:', data.error);
-      return {
-        success: false,
-        error: data.error || 'Login failed',
-      };
-    }
-
-    // Check if OTP is required
-    if (data.requireOTP) {
-      console.log('🔐 NATIVE: OTP required for this user');
-      return {
-        success: false,
-        error: data.error || 'OTP required',
-        requireOTP: true,
-      };
-    }
-
-    console.log('🔐 NATIVE: Login successful');
-    return {
-      success: true,
-      user: data.user,
-      token: data.token,
-    };
-  } catch (error) {
-    console.error('🔐 NATIVE: Fetch error:', error);
-    return {
-      success: false,
-      error: `Network error: ${error instanceof Error ? error.message : 'Unknown error'}`,
-    };
-  }
+  });
 }
