@@ -1,0 +1,41 @@
+app = "tsoam-church-management"
+primary_region = "ord"
+
+[build]
+  builder = "paketobuildpacks"
+
+[env]
+  NODE_ENV = "production"
+  PORT = "3001"
+
+[http_service]
+  internal_port = 3001
+  force_https = false
+  auto_stop_machines = true
+  auto_start_machines = true
+  min_machines_running = 1
+
+[[services]]
+  internal_port = 3001
+  processes = ["app"]
+  protocol = "tcp"
+  
+  [services.concurrency]
+    hard_limit = 1000
+    soft_limit = 800
+
+  [[services.ports]]
+    handlers = ["http"]
+    port = 80
+
+  [[services.ports]]
+    handlers = ["tls", "http"]
+    port = 443
+
+[env.production]
+  NODE_ENV = "production"
+  USE_SQLITE = "false"
+
+[experimental]
+  auto_rollback = true
+  cmd = ["/bin/bash", "-c", "npm run build && npm start"]
