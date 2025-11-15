@@ -96,6 +96,7 @@ app.use((req, res, next) => {
 
 // API Routes
 app.use("/api/auth", authRoutes);
+app.use("/api/account-requests", accountRequestsRoutes);
 app.use("/api/members", membersRoutes);
 app.use("/api/hr", hrRoutes);
 app.use("/api/finance", financeRoutes);
