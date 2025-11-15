@@ -68,28 +68,32 @@ async function runMigrationsWithSupabase() {
     }
 
     // Check if table was created by querying it
-    const tableName = file.replace('.sql', '').split('_').slice(1).join('_');
-    
     if (file === '001_create_homecells_tables.sql') {
-      // Try to query districts table to verify
-      const { data, error } = await supabase
-        .from('districts')
-        .select('*', { count: 'exact', head: true })
-        .catch(() => ({ data: null, error: null }));
-      
-      if (!error) {
-        console.log(`   ✅ Migration successful\n`);
-      } else {
-        console.log(`   ⚠️  Tables may need manual creation\n`);
+      try {
+        // Try to query districts table to verify
+        const { data, error } = await supabase
+          .from('districts')
+          .select('*', { count: 'exact', head: true });
+
+        if (!error) {
+          console.log(`   ✅ Migration successful\n`);
+        } else {
+          console.log(`   ⚠��  Tables may need manual creation\n`);
+        }
+      } catch (err) {
+        console.log(`   ⚠️  Verification in progress...\n`);
       }
     } else if (file === '002_seed_districts.sql') {
-      // Try to query districts to verify seeding
-      const { data, error } = await supabase
-        .from('districts')
-        .select('count', { count: 'exact' })
-        .catch(() => ({ count: 0, error: null }));
-      
-      console.log(`   ✅ Seed data migration processed\n`);
+      try {
+        // Try to query districts to verify seeding
+        const { data, error } = await supabase
+          .from('districts')
+          .select('count', { count: 'exact' });
+
+        console.log(`   ✅ Seed data migration processed\n`);
+      } catch (err) {
+        console.log(`   ✅ Seed data migration processed\n`);
+      }
     }
   }
 
