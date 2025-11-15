@@ -500,7 +500,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       // Check if OTP is required
       if (authResult.requireOTP) {
         console.log("🔐 OTP required for user:", email);
-        setRequireOTP(true);
+        // setRequireOTP(true); // TODO: Implement OTP
         setIsLoading(false);
         return false;
       }
