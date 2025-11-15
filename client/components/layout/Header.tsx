@@ -37,6 +37,7 @@ import {
   MessageSquare,
   Send,
   X,
+  Menu,
 } from "lucide-react";
 import { OfflineIndicator } from "@/components/OfflineIndicator";
 
