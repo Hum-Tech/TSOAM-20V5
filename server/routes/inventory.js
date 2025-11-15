@@ -2,6 +2,29 @@ const express = require("express");
 const { query } = require("../config/database");
 const router = express.Router();
 
+// Get inventory service status
+router.get("/status", async (req, res) => {
+  try {
+    res.json({
+      success: true,
+      status: "operational",
+      features: {
+        viewInventory: true,
+        createInventory: true,
+        updateInventory: true,
+        deleteInventory: true,
+        inventoryStats: true
+      }
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      status: "error",
+      error: error.message
+    });
+  }
+});
+
 // Get all inventory items
 router.get("/", async (req, res) => {
   try {
