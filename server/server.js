@@ -25,6 +25,7 @@ const messagesRoutes = require("./routes/messages");
 const homecellsRoutes = require("./routes/homecells");
 const setupRoutes = require("./routes/setup");
 const migrateHomecellsRoutes = require("./routes/migrate-homecells");
+const databaseSetupRoutes = require("./routes/database-setup");
 
 const app = express();
 const PORT = process.env.PORT || 3001;
@@ -238,7 +239,7 @@ async function startServer() {
 
     app.listen(PORT, "0.0.0.0", () => {
       console.log("🚀 TSOAM Church Management System Server Started");
-      console.log("━━━━━��━��━━━━━���━━━━━━━━━��━━━━��━━━━━━━━━━━━━━━━━━━━━━━");
+      console.log("━━━━━��━━━━━━━���━━━━━━━━━��━━━━��━━━━━━━━━━━━━━━━━━━━━━━");
       console.log(`🌐 Server running on: http://localhost:${PORT}`);
       console.log(`🔗 LAN Access: http://[YOUR-IP]:${PORT}`);
       console.log(`📁 Upload directory: ${uploadsDir}`);
