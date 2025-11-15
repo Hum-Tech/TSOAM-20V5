@@ -1,7 +1,13 @@
 const express = require('express');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
-const { supabase, supabaseAdmin } = require('../config/supabase-client');
+
+let supabase, supabaseAdmin;
+try {
+  ({ supabase, supabaseAdmin } = require('../config/supabase-client'));
+} catch (error) {
+  console.error('Failed to load Supabase client:', error.message);
+}
 
 const router = express.Router();
 
