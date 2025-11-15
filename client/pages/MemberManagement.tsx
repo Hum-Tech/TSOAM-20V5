@@ -1316,11 +1316,9 @@ export default function MemberManagement() {
           </TabsContent>
 
           <TabsContent value="homecells">
-            <HomeCellsHierarchyView
+            <HomeCellsView
               districts={districts}
               isLoading={homeCellsLoading}
-              onViewMembers={viewHomeCellMembers}
-              onExport={handleExportHomeCell}
             />
           </TabsContent>
         </Tabs>

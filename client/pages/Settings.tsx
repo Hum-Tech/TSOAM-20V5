@@ -1484,7 +1484,7 @@ export default function Settings() {
           </TabsContent>
 
           <TabsContent value="homecells">
-            <HomeCellsHierarchyManagement
+            <HomeCellsManagement
               districts={districts}
               isLoading={homeCellsLoading}
               onAddDistrict={() => {
