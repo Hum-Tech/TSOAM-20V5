@@ -90,7 +90,7 @@ export function PayrollApprovalCenter({ className }: PayrollApprovalCenterProps)
   const processBatchApproval = () => {
     if (!selectedBatch || !user) return;
 
-    const financeOfficer = user.name || "Finance Officer";
+    const financeOfficer = user?.name || "Finance Officer";
 
     if (approvalAction === "approve") {
       const success = FinanceApprovalService.approveBatch(
@@ -140,7 +140,7 @@ export function PayrollApprovalCenter({ className }: PayrollApprovalCenterProps)
   const processIndividualApprovals = () => {
     if (!selectedBatch || !user) return;
 
-    const financeOfficer = user.name || "Finance Officer";
+    const financeOfficer = user?.name || "Finance Officer";
     const approvedEmployees = selectedEmployees;
     const rejectedEmployees = selectedBatch.employees
       .filter(emp => !selectedEmployees.includes(emp.employeeId) && rejectionReasons[emp.employeeId])
