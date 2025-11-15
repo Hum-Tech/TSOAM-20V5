@@ -1,9 +1,11 @@
 const mysql = require("mysql2/promise");
 const sqlite = require("./sqlite-adapter");
+const { supabaseAdmin, isSupabaseConfigured } = require("./supabase-client");
 require("dotenv").config();
 
-// Determine which database to use - prioritize MySQL first
+// Determine which database to use - prioritize Supabase first, then MySQL
 const USE_SQLITE = process.env.USE_SQLITE === "true";
+const FORCE_SUPABASE = isSupabaseConfigured;
 
 // Database configuration for localhost deployment
 const dbConfig = {
@@ -18,18 +20,42 @@ const dbConfig = {
   multipleStatements: true,
 };
 
-// Create connection pool for better performance (MySQL)
-const pool = mysql.createPool(dbConfig);
+// Create connection pool for better performance (MySQL) - only if not using Supabase
+let pool = null;
+if (!FORCE_SUPABASE) {
+  pool = mysql.createPool(dbConfig);
+}
 
-// Test database connection with MySQL priority
+// Test database connection with Supabase priority
 async function testConnection() {
   console.log("🔄 Testing database connection...");
+
+  // If Supabase is configured, prioritize it
+  if (FORCE_SUPABASE && supabaseAdmin) {
+    console.log("✅ Using Supabase as primary database");
+    try {
+      const { data, error } = await supabaseAdmin
+        .from('users')
+        .select('id')
+        .limit(1);
+
+      if (!error || error.code === 'PGRST116') {
+        console.log("✅ Supabase connection verified");
+        global.SUPABASE_ENABLED = true;
+        return true;
+      }
+    } catch (err) {
+      console.error("⚠️ Supabase connection test failed:", err.message);
+    }
+  }
+
   console.log("📍 Configuration:", {
     host: dbConfig.host,
     port: dbConfig.port,
     user: dbConfig.user,
     database: dbConfig.database,
-    USE_SQLITE: USE_SQLITE
+    USE_SQLITE: USE_SQLITE,
+    SUPABASE_ENABLED: FORCE_SUPABASE
   });
 
   // If explicitly set to use SQLite, skip MySQL
@@ -43,17 +69,19 @@ async function testConnection() {
   }
 
   try {
-    // Attempt MySQL connection
-    console.log("🔗 Attempting MySQL connection...");
-    const connection = await pool.getConnection();
-    console.log("✅ MySQL database connected successfully!");
-    console.log("📍 Database:", dbConfig.database, "on", dbConfig.host + ":" + dbConfig.port);
-    console.log("🔄 MySQL synchronization enabled");
-    connection.release();
+    // Only attempt MySQL if Supabase is not configured
+    if (!FORCE_SUPABASE) {
+      console.log("🔗 Attempting MySQL connection...");
+      const connection = await pool.getConnection();
+      console.log("✅ MySQL database connected successfully!");
+      console.log("📍 Database:", dbConfig.database, "on", dbConfig.host + ":" + dbConfig.port);
+      console.log("🔄 MySQL synchronization enabled");
+      connection.release();
 
-    // Mark as MySQL successful
-    global.FORCE_MYSQL = true;
-    return true;
+      // Mark as MySQL successful
+      global.FORCE_MYSQL = true;
+      return true;
+    }
   } catch (error) {
     console.error("❌ MySQL connection failed:", error.message);
 
