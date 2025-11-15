@@ -1,182 +1,377 @@
-export interface HomeCell {
+// Types
+export interface District {
   id: number;
+  district_id: string;
   name: string;
-  leader: string;
-  leaderPhone: string;
-  meetingDay: string;
-  meetingTime: string;
-  location: string;
   description?: string;
-  isActive: boolean;
-  createdAt: string;
-  updatedAt: string;
+  leader_id?: string;
+  leader?: any;
+  is_active: boolean;
+  created_at: string;
+  updated_at: string;
 }
 
-// Default home cells as specified by the user
-const DEFAULT_HOME_CELLS: Omit<HomeCell, 'id' | 'createdAt' | 'updatedAt'>[] = [
-  {
-    name: "Israel",
-    leader: "",
-    leaderPhone: "",
-    meetingDay: "",
-    meetingTime: "",
-    location: "",
-    description: "Israel Home Cell",
-    isActive: true,
-  },
-  {
-    name: "Judah",
-    leader: "",
-    leaderPhone: "",
-    meetingDay: "",
-    meetingTime: "",
-    location: "",
-    description: "Judah Home Cell",
-    isActive: true,
-  },
-  {
-    name: "Zion",
-    leader: "",
-    leaderPhone: "",
-    meetingDay: "",
-    meetingTime: "",
-    location: "",
-    description: "Zion Home Cell",
-    isActive: true,
-  },
-  {
-    name: "Bethel",
-    leader: "",
-    leaderPhone: "",
-    meetingDay: "",
-    meetingTime: "",
-    location: "",
-    description: "Bethel Home Cell",
-    isActive: true,
-  },
-  {
-    name: "Jerusalem",
-    leader: "",
-    leaderPhone: "",
-    meetingDay: "",
-    meetingTime: "",
-    location: "",
-    description: "Jerusalem Home Cell",
-    isActive: true,
-  },
-  {
-    name: "Horeb",
-    leader: "",
-    leaderPhone: "",
-    meetingDay: "",
-    meetingTime: "",
-    location: "",
-    description: "Horeb Home Cell",
-    isActive: true,
-  },
-];
+export interface Zone {
+  id: number;
+  zone_id: string;
+  district_id: number;
+  name: string;
+  description?: string;
+  leader_id?: string;
+  leader?: any;
+  is_active: boolean;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface HomeCell {
+  id: number;
+  homecell_id: string;
+  zone_id: number;
+  district_id: number;
+  name: string;
+  description?: string;
+  leader_id?: string;
+  leader?: any;
+  meeting_day?: string;
+  meeting_time?: string;
+  meeting_location?: string;
+  member_count?: number;
+  is_active: boolean;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface HomeCellHierarchy {
+  districts: Array<District & {
+    zones: Array<Zone & {
+      homecells: HomeCell[]
+    }>
+  }>;
+}
+
+export interface HomeCellMember {
+  id: number;
+  member_id: string;
+  name: string;
+  email: string;
+  phone: string;
+  membership_number?: string;
+  status: string;
+  homecell_id?: number;
+}
+
+// API Base URL
+const API_BASE = '/api/homecells';
 
 export class HomeCellService {
-  private storageKey = 'homeCells';
+  // ==================== DISTRICTS ====================
 
-  constructor() {
-    this.initializeDefaultHomeCells();
-  }
-
-  private initializeDefaultHomeCells(): void {
-    const existing = this.getAllHomeCells();
-    if (existing.length === 0) {
-      const defaultCells = DEFAULT_HOME_CELLS.map((cell, index) => ({
-        ...cell,
-        id: index + 1,
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString(),
-      }));
-      
-      localStorage.setItem(this.storageKey, JSON.stringify(defaultCells));
-    }
-  }
-
-  getAllHomeCells(): HomeCell[] {
+  async getAllDistricts(): Promise<District[]> {
     try {
-      const stored = localStorage.getItem(this.storageKey);
-      return stored ? JSON.parse(stored) : [];
+      const response = await fetch(`${API_BASE}/districts`);
+      if (!response.ok) throw new Error('Failed to fetch districts');
+      const data = await response.json();
+      return data.data || [];
     } catch (error) {
-      console.error('Error loading home cells:', error);
+      console.error('Error fetching districts:', error);
       return [];
     }
   }
 
-  getActiveHomeCells(): HomeCell[] {
-    return this.getAllHomeCells().filter(cell => cell.isActive);
+  async getDistrict(id: number): Promise<District & { zones: Zone[] } | null> {
+    try {
+      const response = await fetch(`${API_BASE}/districts/${id}`);
+      if (!response.ok) throw new Error('Failed to fetch district');
+      const data = await response.json();
+      return data.data || null;
+    } catch (error) {
+      console.error('Error fetching district:', error);
+      return null;
+    }
   }
 
-  getHomeCellById(id: number): HomeCell | null {
-    const cells = this.getAllHomeCells();
-    return cells.find(cell => cell.id === id) || null;
+  async createDistrict(district: Partial<District>): Promise<District | null> {
+    try {
+      const response = await fetch(`${API_BASE}/districts`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(district)
+      });
+      if (!response.ok) throw new Error('Failed to create district');
+      const data = await response.json();
+      return data.data || null;
+    } catch (error) {
+      console.error('Error creating district:', error);
+      return null;
+    }
   }
 
-  createHomeCell(cellData: Omit<HomeCell, 'id' | 'createdAt' | 'updatedAt'>): HomeCell {
-    const cells = this.getAllHomeCells();
-    const newId = Math.max(0, ...cells.map(c => c.id)) + 1;
-    
-    const newCell: HomeCell = {
-      ...cellData,
-      id: newId,
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
-    };
-
-    const updatedCells = [...cells, newCell];
-    localStorage.setItem(this.storageKey, JSON.stringify(updatedCells));
-    
-    return newCell;
+  async updateDistrict(id: number, updates: Partial<District>): Promise<District | null> {
+    try {
+      const response = await fetch(`${API_BASE}/districts/${id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(updates)
+      });
+      if (!response.ok) throw new Error('Failed to update district');
+      const data = await response.json();
+      return data.data || null;
+    } catch (error) {
+      console.error('Error updating district:', error);
+      return null;
+    }
   }
 
-  updateHomeCell(id: number, updates: Partial<Omit<HomeCell, 'id' | 'createdAt'>>): HomeCell | null {
-    const cells = this.getAllHomeCells();
-    const index = cells.findIndex(cell => cell.id === id);
-    
-    if (index === -1) return null;
-
-    const updatedCell = {
-      ...cells[index],
-      ...updates,
-      updatedAt: new Date().toISOString(),
-    };
-
-    cells[index] = updatedCell;
-    localStorage.setItem(this.storageKey, JSON.stringify(cells));
-    
-    return updatedCell;
+  async deleteDistrict(id: number): Promise<boolean> {
+    try {
+      const response = await fetch(`${API_BASE}/districts/${id}`, {
+        method: 'DELETE'
+      });
+      if (!response.ok) throw new Error('Failed to delete district');
+      return true;
+    } catch (error) {
+      console.error('Error deleting district:', error);
+      return false;
+    }
   }
 
-  deleteHomeCell(id: number): boolean {
-    const cells = this.getAllHomeCells();
-    const filteredCells = cells.filter(cell => cell.id !== id);
-    
-    if (filteredCells.length === cells.length) return false;
+  // ==================== ZONES ====================
 
-    localStorage.setItem(this.storageKey, JSON.stringify(filteredCells));
-    return true;
+  async getZonesByDistrict(districtId: number): Promise<Zone[]> {
+    try {
+      const response = await fetch(`${API_BASE}/districts/${districtId}/zones`);
+      if (!response.ok) throw new Error('Failed to fetch zones');
+      const data = await response.json();
+      return data.data || [];
+    } catch (error) {
+      console.error('Error fetching zones:', error);
+      return [];
+    }
   }
 
-  deactivateHomeCell(id: number): boolean {
-    return this.updateHomeCell(id, { isActive: false }) !== null;
+  async getZone(id: number): Promise<Zone & { homecells: HomeCell[] } | null> {
+    try {
+      const response = await fetch(`${API_BASE}/zones/${id}`);
+      if (!response.ok) throw new Error('Failed to fetch zone');
+      const data = await response.json();
+      return data.data || null;
+    } catch (error) {
+      console.error('Error fetching zone:', error);
+      return null;
+    }
   }
 
-  activateHomeCell(id: number): boolean {
-    return this.updateHomeCell(id, { isActive: true }) !== null;
+  async createZone(zone: Partial<Zone>): Promise<Zone | null> {
+    try {
+      const response = await fetch(`${API_BASE}/zones`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(zone)
+      });
+      if (!response.ok) throw new Error('Failed to create zone');
+      const data = await response.json();
+      return data.data || null;
+    } catch (error) {
+      console.error('Error creating zone:', error);
+      return null;
+    }
   }
 
-  // Get home cell statistics
-  getHomeCellStats() {
-    const cells = this.getAllHomeCells();
-    return {
-      total: cells.length,
-      active: cells.filter(c => c.isActive).length,
-      inactive: cells.filter(c => !c.isActive).length,
-    };
+  async updateZone(id: number, updates: Partial<Zone>): Promise<Zone | null> {
+    try {
+      const response = await fetch(`${API_BASE}/zones/${id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(updates)
+      });
+      if (!response.ok) throw new Error('Failed to update zone');
+      const data = await response.json();
+      return data.data || null;
+    } catch (error) {
+      console.error('Error updating zone:', error);
+      return null;
+    }
+  }
+
+  async deleteZone(id: number): Promise<boolean> {
+    try {
+      const response = await fetch(`${API_BASE}/zones/${id}`, {
+        method: 'DELETE'
+      });
+      if (!response.ok) throw new Error('Failed to delete zone');
+      return true;
+    } catch (error) {
+      console.error('Error deleting zone:', error);
+      return false;
+    }
+  }
+
+  // ==================== HOMECELLS ====================
+
+  async getAllHomeCells(filters?: {
+    districtId?: number;
+    zoneId?: number;
+    leaderId?: string;
+    search?: string;
+  }): Promise<HomeCell[]> {
+    try {
+      const params = new URLSearchParams();
+      if (filters?.districtId) params.append('districtId', filters.districtId.toString());
+      if (filters?.zoneId) params.append('zoneId', filters.zoneId.toString());
+      if (filters?.leaderId) params.append('leaderId', filters.leaderId);
+      if (filters?.search) params.append('search', filters.search);
+
+      const response = await fetch(`${API_BASE}/homecells?${params}`);
+      if (!response.ok) throw new Error('Failed to fetch homecells');
+      const data = await response.json();
+      return data.data || [];
+    } catch (error) {
+      console.error('Error fetching homecells:', error);
+      return [];
+    }
+  }
+
+  async getHomeCellsByZone(zoneId: number): Promise<HomeCell[]> {
+    try {
+      const response = await fetch(`${API_BASE}/zones/${zoneId}/homecells`);
+      if (!response.ok) throw new Error('Failed to fetch homecells');
+      const data = await response.json();
+      return data.data || [];
+    } catch (error) {
+      console.error('Error fetching homecells:', error);
+      return [];
+    }
+  }
+
+  async getHomeCell(id: number): Promise<HomeCell & { members: HomeCellMember[] } | null> {
+    try {
+      const response = await fetch(`${API_BASE}/homecells/${id}`);
+      if (!response.ok) throw new Error('Failed to fetch homecell');
+      const data = await response.json();
+      return data.data || null;
+    } catch (error) {
+      console.error('Error fetching homecell:', error);
+      return null;
+    }
+  }
+
+  async createHomeCell(homecell: Partial<HomeCell>): Promise<HomeCell | null> {
+    try {
+      const response = await fetch(`${API_BASE}/homecells`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(homecell)
+      });
+      if (!response.ok) throw new Error('Failed to create homecell');
+      const data = await response.json();
+      return data.data || null;
+    } catch (error) {
+      console.error('Error creating homecell:', error);
+      return null;
+    }
+  }
+
+  async updateHomeCell(id: number, updates: Partial<HomeCell>): Promise<HomeCell | null> {
+    try {
+      const response = await fetch(`${API_BASE}/homecells/${id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(updates)
+      });
+      if (!response.ok) throw new Error('Failed to update homecell');
+      const data = await response.json();
+      return data.data || null;
+    } catch (error) {
+      console.error('Error updating homecell:', error);
+      return null;
+    }
+  }
+
+  async deleteHomeCell(id: number): Promise<boolean> {
+    try {
+      const response = await fetch(`${API_BASE}/homecells/${id}`, {
+        method: 'DELETE'
+      });
+      if (!response.ok) throw new Error('Failed to delete homecell');
+      return true;
+    } catch (error) {
+      console.error('Error deleting homecell:', error);
+      return false;
+    }
+  }
+
+  // ==================== MEMBERS ====================
+
+  async assignMemberToHomeCell(homecellId: number, memberId: number, notes?: string): Promise<boolean> {
+    try {
+      const response = await fetch(`${API_BASE}/homecells/${homecellId}/members/${memberId}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ notes })
+      });
+      if (!response.ok) throw new Error('Failed to assign member');
+      return true;
+    } catch (error) {
+      console.error('Error assigning member:', error);
+      return false;
+    }
+  }
+
+  async getHomeCellMembers(homecellId: number): Promise<HomeCellMember[]> {
+    try {
+      const response = await fetch(`${API_BASE}/homecells/${homecellId}/members`);
+      if (!response.ok) throw new Error('Failed to fetch members');
+      const data = await response.json();
+      return data.data || [];
+    } catch (error) {
+      console.error('Error fetching members:', error);
+      return [];
+    }
+  }
+
+  async getHomeCellStats(homecellId: number): Promise<any> {
+    try {
+      const response = await fetch(`${API_BASE}/homecells/${homecellId}/stats`);
+      if (!response.ok) throw new Error('Failed to fetch stats');
+      const data = await response.json();
+      return data.data || {};
+    } catch (error) {
+      console.error('Error fetching stats:', error);
+      return {};
+    }
+  }
+
+  // ==================== HIERARCHY ====================
+
+  async getFullHierarchy(): Promise<District[]> {
+    try {
+      const response = await fetch(`${API_BASE}/hierarchy/full`);
+      if (!response.ok) throw new Error('Failed to fetch hierarchy');
+      const data = await response.json();
+      return data.data || [];
+    } catch (error) {
+      console.error('Error fetching hierarchy:', error);
+      return [];
+    }
+  }
+
+  // ==================== AUTO-ASSIGN ====================
+
+  async autoAssignMembers(zoneId: number): Promise<{ assignedCount: number; message: string } | null> {
+    try {
+      const response = await fetch(`${API_BASE}/auto-assign-members`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ zoneId })
+      });
+      if (!response.ok) throw new Error('Failed to auto-assign members');
+      const data = await response.json();
+      return data;
+    } catch (error) {
+      console.error('Error auto-assigning members:', error);
+      return null;
+    }
   }
 }
 
