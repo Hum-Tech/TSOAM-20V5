@@ -195,6 +195,34 @@ router.put("/me", authMiddleware, async (req, res) => {
 });
 
 /**
+ * GET /api/auth/status
+ * Check authentication service status
+ */
+router.get("/status", async (req, res) => {
+  try {
+    const { isSupabaseConfigured } = require("../config/supabase-client");
+
+    res.json({
+      success: true,
+      status: "operational",
+      database: isSupabaseConfigured ? "supabase" : "sqlite",
+      features: {
+        login: true,
+        registration: true,
+        tokenVerification: true,
+        userManagement: true
+      }
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      status: "error",
+      error: error.message
+    });
+  }
+});
+
+/**
  * GET /api/auth/users
  * Get all users (admin only)
  */
