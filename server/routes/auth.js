@@ -58,7 +58,7 @@ router.post("/bootstrap", async (req, res) => {
       .insert([{
         email: 'admin@tsoam.org',
         password_hash: passwordHash,
-        full_name: 'Church Administrator',
+        full_name: 'Humphrey Njoroge',
         phone: '',
         role: 'admin',
         is_active: true
