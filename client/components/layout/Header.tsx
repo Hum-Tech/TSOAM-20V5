@@ -852,10 +852,12 @@ export function Header({ onMenuClick, sidebarOpen }: HeaderProps) {
               >
                 <Avatar className="h-8 md:h-10 w-8 md:w-10">
                   <AvatarFallback className="bg-red-800 text-white text-xs md:text-sm">
-                    {user.name
-                      .split(" ")
-                      .map((n) => n[0])
-                      .join("")}
+                    {user?.name
+                      ? user.name
+                          .split(" ")
+                          .map((n) => n[0])
+                          .join("")
+                      : "U"}
                   </AvatarFallback>
                 </Avatar>
               </Button>
