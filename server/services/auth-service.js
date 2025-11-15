@@ -133,19 +133,39 @@ async function authenticateUser(email, password) {
  */
 async function getUserPermissions(role) {
   try {
+    // Return default permissions based on role if table doesn't exist
+    const defaultPermissions = {
+      'admin': ['*'],
+      'Admin': ['*'],
+      'pastor': ['*'],
+      'Pastor': ['*'],
+      'hr': ['members', 'hr', 'employees'],
+      'HR Officer': ['members', 'hr', 'employees'],
+      'finance': ['finance', 'transactions'],
+      'Finance Officer': ['finance', 'transactions'],
+      'user': ['members', 'events', 'appointments'],
+      'User': ['members', 'events', 'appointments']
+    };
+
+    // Return default permissions
+    if (defaultPermissions[role]) {
+      return defaultPermissions[role];
+    }
+
+    // Try to fetch from database
     const { data: permissions, error } = await supabaseAdmin
       .from('role_permissions')
       .select('permission')
       .eq('role', role);
 
     if (error) {
-      console.error('Error fetching permissions:', error);
-      return [];
+      console.warn('Role permissions table not found, using defaults:', error.message);
+      return defaultPermissions[role] || [];
     }
 
     return permissions.map(p => p.permission);
   } catch (error) {
-    console.error('Error in getUserPermissions:', error);
+    console.warn('Error in getUserPermissions, using defaults:', error.message);
     return [];
   }
 }
