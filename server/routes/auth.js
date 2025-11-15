@@ -264,6 +264,109 @@ router.put("/me", authMiddleware, async (req, res) => {
 });
 
 /**
+ * POST /api/auth/users/create-request
+ * Request a new account (public endpoint, no auth required)
+ */
+router.post("/users/create-request", async (req, res) => {
+  try {
+    const { name, email, phone, role, department, employee_id, requested_by, ip_address, request_reason } = req.body;
+
+    // Validate required fields
+    if (!email || !name) {
+      return res.status(400).json({
+        success: false,
+        error: 'Email and name are required'
+      });
+    }
+
+    // Validate email format
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      return res.status(400).json({
+        success: false,
+        error: 'Invalid email format'
+      });
+    }
+
+    // Check if email already exists in users table
+    const { data: existingUser } = await supabaseAdmin
+      .from('users')
+      .select('id')
+      .eq('email', email)
+      .limit(1);
+
+    if (existingUser && existingUser.length > 0) {
+      return res.status(400).json({
+        success: false,
+        error: 'Email already registered'
+      });
+    }
+
+    // Check if request already exists
+    const { data: existingRequest } = await supabaseAdmin
+      .from('account_requests')
+      .select('id, status')
+      .eq('email', email)
+      .limit(1);
+
+    if (existingRequest && existingRequest.length > 0) {
+      const request = existingRequest[0];
+      if (request.status === 'pending') {
+        return res.status(400).json({
+          success: false,
+          error: 'Account request already pending for this email'
+        });
+      }
+    }
+
+    // Create account request
+    const { v4: uuidv4 } = require('uuid');
+    const requestId = `REQ-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+
+    const { data: newRequest, error: createError } = await supabaseAdmin
+      .from('account_requests')
+      .insert([{
+        request_id: requestId,
+        name: name,
+        email: email,
+        phone: phone || null,
+        role: role || 'user',
+        department: department || null,
+        employee_id: employee_id || null,
+        requested_by: requested_by || 'Self',
+        ip_address: ip_address || null,
+        request_reason: request_reason || 'New user account creation request',
+        status: 'pending',
+        created_at: new Date().toISOString()
+      }])
+      .select()
+      .single();
+
+    if (createError) {
+      console.error('Error creating account request:', createError);
+      return res.status(500).json({
+        success: false,
+        error: 'Failed to create account request'
+      });
+    }
+
+    res.json({
+      success: true,
+      message: 'Account request created successfully',
+      requestId: newRequest.request_id,
+      request: newRequest
+    });
+
+  } catch (error) {
+    console.error("Account creation request error:", error);
+    res.status(500).json({
+      success: false,
+      error: "Internal server error"
+    });
+  }
+});
+
+/**
  * GET /api/auth/status
  * Check authentication service status
  */
