@@ -356,8 +356,8 @@ export default function MemberManagement() {
   }, []);
 
   // Load home cells and refresh when settings change
-  const loadHomeCells = () => {
-    const availableHomeCells = homeCellService.getAllHomeCells();
+  const loadHomeCells = async () => {
+    const availableHomeCells = await homeCellService.getAllHomeCells();
     setHomeCells(availableHomeCells);
   };
 
