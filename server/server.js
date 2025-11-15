@@ -170,36 +170,49 @@ app.use((error, req, res, next) => {
 // Start server
 async function startServer() {
   try {
-    // Test database connection with fallback
-    const dbConnected = await testConnection();
-    if (!dbConnected) {
-      console.log("⚠️  Database connection failed");
-      console.log("📋 Please check database configuration in .env file");
-      console.log("🔄 Server will continue with limited functionality");
-    } else {
-      console.log("✅ Database connection established");
-      console.log("🔄 Database synchronization ready");
-    }
+    // Check if Supabase is configured
+    const useSupabase = process.env.SUPABASE_URL && process.env.SUPABASE_ANON_KEY;
 
-    // Initialize database
-    if (dbConnected) {
-      await initializeDatabase();
+    if (useSupabase) {
+      console.log("🔄 Setting up Supabase database...");
+      const supabaseReady = await initializeSupabaseDatabase();
 
-      // Setup database tables and default data
-      try {
-        const setupDatabase = require("./database/setup");
-        await setupDatabase();
-        console.log("✅ Database setup completed");
-      } catch (error) {
-        console.log("📋 Database setup skipped:", error.message);
+      if (supabaseReady) {
+        console.log("✅ Supabase database initialized");
+      } else {
+        console.log("⚠️  Supabase setup encountered issues");
       }
+    } else {
+      console.log("📋 Supabase not configured, using local database");
 
-      // Always initialize sample data including admin user
-      try {
-        const { initializeData } = require("./scripts/init-database-data");
-        await initializeData();
-      } catch (error) {
-        console.log("📋 Sample data initialization:", error.message);
+      // Test local database connection
+      const localDbConnected = await testLocalConnection();
+      if (!localDbConnected) {
+        console.log("⚠️  Local database connection failed");
+        console.log("📋 Please check database configuration in .env file");
+        console.log("🔄 Server will continue with limited functionality");
+      } else {
+        console.log("✅ Local database connection established");
+
+        // Initialize local database
+        await initializeLocalDatabase();
+
+        // Setup database tables and default data
+        try {
+          const setupDatabase = require("./database/setup");
+          await setupDatabase();
+          console.log("✅ Database setup completed");
+        } catch (error) {
+          console.log("📋 Database setup skipped:", error.message);
+        }
+
+        // Always initialize sample data including admin user
+        try {
+          const { initializeData } = require("./scripts/init-database-data");
+          await initializeData();
+        } catch (error) {
+          console.log("📋 Sample data initialization:", error.message);
+        }
       }
     }
 
