@@ -20,14 +20,14 @@ async function testConnection() {
   try {
     const { data, error } = await supabase
       .from('users')
-      .select('count(*)', { count: 'exact' })
-      .limit(0);
-    
-    if (error && error.code !== 'PGRST116') {
+      .select('id')
+      .limit(1);
+
+    if (error) {
       console.error('Supabase connection error:', error);
       return false;
     }
-    
+
     console.log('✅ Supabase connection successful');
     return true;
   } catch (error) {
