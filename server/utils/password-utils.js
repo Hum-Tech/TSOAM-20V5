@@ -26,16 +26,35 @@ function hashPassword(password) {
  */
 function verifyPassword(password, hashedPassword) {
   try {
-    const [salt, hash] = hashedPassword.split(':');
-    
-    if (!salt || !hash) {
+    // Handle undefined or null hashedPassword
+    if (!hashedPassword) {
+      console.error('Password hash is null or undefined');
       return false;
     }
-    
+
+    // Handle case where hashedPassword is not a string
+    if (typeof hashedPassword !== 'string') {
+      console.error('Password hash is not a string:', typeof hashedPassword);
+      return false;
+    }
+
+    const parts = hashedPassword.split(':');
+    if (parts.length !== 2) {
+      console.error('Invalid password hash format - expected salt:hash');
+      return false;
+    }
+
+    const [salt, hash] = parts;
+
+    if (!salt || !hash) {
+      console.error('Salt or hash is empty');
+      return false;
+    }
+
     const hashVerify = crypto
       .pbkdf2Sync(password, salt, 100000, 64, 'sha512')
       .toString('hex');
-    
+
     return hash === hashVerify;
   } catch (error) {
     console.error('Error verifying password:', error);
