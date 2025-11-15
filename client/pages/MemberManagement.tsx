@@ -289,6 +289,8 @@ export default function MemberManagement() {
   const [filterEmployment, setFilterEmployment] = useState("All");
   const [filterHomeCell, setFilterHomeCell] = useState("All");
   const [homeCells, setHomeCells] = useState<HomeCell[]>([]);
+  const [districts, setDistricts] = useState<any[]>([]);
+  const [homeCellsLoading, setHomeCellsLoading] = useState(false);
   const [activeTab, setActiveTab] = useState("members");
   const [showTransferHomeCellDialog, setShowTransferHomeCellDialog] = useState(false);
   const [memberToTransfer, setMemberToTransfer] = useState<Member | null>(null);
