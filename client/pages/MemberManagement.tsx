@@ -1280,118 +1280,18 @@ export default function MemberManagement() {
           </TabsContent>
 
           <TabsContent value="homecells">
-            <Card>
-              <CardHeader>
-                <CardTitle>Home Cells Management</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-6">
-                  {/* Home Cells Summary */}
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                    {homeCells.map((cell) => {
-                      const cellMembers = filteredMembers.filter(m => m.homeCell === cell.name);
-                      return (
-                        <Card key={cell.id} className="border-l-4 border-l-primary">
-                          <CardContent className="p-4">
-                            <div className="flex items-center justify-between mb-2">
-                              <h3 className="font-semibold text-lg">{cell.name}</h3>
-                              <Badge variant="outline">
-                                {cellMembers.length} members
-                              </Badge>
-                            </div>
-                            <div className="text-sm text-muted-foreground">
-                              <div>Active: {cellMembers.filter(m => m.membershipStatus === 'Active').length}</div>
-                              <div>Inactive: {cellMembers.filter(m => m.membershipStatus === 'Inactive').length}</div>
-                            </div>
-                            <div className="mt-3 flex flex-wrap gap-2">
-                              <Button
-                                size="sm"
-                                variant="outline"
-                                onClick={() => viewHomeCellDetails(cell)}
-                              >
-                                <Eye className="h-4 w-4 mr-1" />
-                                View Details
-                              </Button>
-                              <Button
-                                size="sm"
-                                variant="outline"
-                                onClick={() => viewHomeCellMembers(cell.name)}
-                              >
-                                View Members
-                              </Button>
-                              <Button
-                                size="sm"
-                                variant="outline"
-                                onClick={() => handleExportHomeCell(cell.name, "excel")}
-                              >
-                                <Download className="h-4 w-4 mr-1" />
-                                Excel
-                              </Button>
-                              <Button
-                                size="sm"
-                                variant="outline"
-                                onClick={() => handleExportHomeCell(cell.name, "pdf")}
-                              >
-                                <FileText className="h-4 w-4 mr-1" />
-                                PDF
-                              </Button>
-                            </div>
-                          </CardContent>
-                        </Card>
-                      );
-                    })}
-                  </div>
-
-                  {/* Members without Home Cell */}
-                  {(() => {
-                    const unassignedMembers = filteredMembers.filter(m => !m.homeCell || m.homeCell === "");
-                    if (unassignedMembers.length > 0) {
-                      return (
-                        <Card className="border-l-4 border-l-orange-500">
-                          <CardContent className="p-4">
-                            <div className="flex items-center justify-between mb-2">
-                              <h3 className="font-semibold text-lg text-orange-700">
-                                Unassigned Members
-                              </h3>
-                              <Badge variant="outline" className="bg-orange-50 text-orange-700">
-                                {unassignedMembers.length} members
-                              </Badge>
-                            </div>
-                            <p className="text-sm text-muted-foreground mb-3">
-                              These members haven't been assigned to a home cell yet.
-                            </p>
-                            <div className="space-y-2">
-                              {unassignedMembers.slice(0, 8).map((member) => (
-                                <div key={member.id} className="flex items-center justify-between text-sm p-2 bg-gray-50 rounded">
-                                  <div className="flex-1">
-                                    <span className="font-medium">{member.fullName}</span>
-                                    <Badge variant="secondary" className="ml-2 text-xs">{member.memberId}</Badge>
-                                  </div>
-                                  <Button
-                                    size="sm"
-                                    variant="outline"
-                                    onClick={() => openAssignmentDialog(member)}
-                                    className="text-xs"
-                                  >
-                                    Assign
-                                  </Button>
-                                </div>
-                              ))}
-                              {unassignedMembers.length > 8 && (
-                                <div className="text-sm text-muted-foreground text-center p-2">
-                                  ... and {unassignedMembers.length - 8} more unassigned members
-                                </div>
-                              )}
-                            </div>
-                          </CardContent>
-                        </Card>
-                      );
-                    }
-                    return null;
-                  })()}
-                </div>
-              </CardContent>
-            </Card>
+            <MemberManagementHomeCells
+              homeCells={homeCells}
+              members={filteredMembers}
+              onViewMembers={viewHomeCellMembers}
+              onExport={handleExportHomeCell}
+              onAssignMember={openAssignmentDialog}
+              onTransferMember={(member) => {
+                setMemberToTransfer(member);
+                setNewHomeCellForTransfer(member.homeCell || "");
+                setShowTransferHomeCellDialog(true);
+              }}
+            />
           </TabsContent>
         </Tabs>
 
