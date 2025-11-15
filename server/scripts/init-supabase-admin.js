@@ -48,7 +48,7 @@ async function initializeSupabaseAdmin() {
     const passwordHash = hashPassword('admin123');
 
     // Try with different role variations
-    const roles = ['Admin', 'admin', 'ADMIN'];
+    const roles = ['admin', 'Admin', 'ADMIN'];
     let newUser = null;
     let createError = null;
 
@@ -59,8 +59,10 @@ async function initializeSupabaseAdmin() {
           id: uuidv4(),
           email: 'admin@tsoam.org',
           password_hash: passwordHash,
-          name: 'Church Administrator',
-          role: role
+          full_name: 'Humphrey Njoroge',
+          phone: '',
+          role: role,
+          is_active: true
         }])
         .select()
         .single();
@@ -80,7 +82,9 @@ async function initializeSupabaseAdmin() {
 
     console.log('✅ Admin user created successfully');
     console.log('   Email: admin@tsoam.org');
+    console.log('   Name: Humphrey Njoroge');
     console.log('   Password: admin123');
+    console.log('   Role: ' + newUser.role);
     return true;
 
   } catch (error) {
