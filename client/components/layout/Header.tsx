@@ -349,11 +349,11 @@ export function Header({ onMenuClick, sidebarOpen }: HeaderProps) {
         // Also store locally for immediate UI update
         const replyNotification = {
           id: result.replyId,
-          title: `Reply from ${user.name}`,
+          title: `Reply from ${user?.name || "User"}`,
           message: replyContent.length > 100 ? replyContent.substring(0, 100) + "..." : replyContent,
           fullMessage: replyContent,
-          sender: user.name,
-          senderId: user.id,
+          sender: user?.name || "User",
+          senderId: user?.id,
           recipient: replyingToNotification.sender,
           recipientId: replyingToNotification.senderId,
           type: "internal",
@@ -377,7 +377,7 @@ export function Header({ onMenuClick, sidebarOpen }: HeaderProps) {
           detail: {
             count: 1,
             type: "Reply",
-            sender: user.name,
+            sender: user?.name || "User",
             recipient: replyingToNotification.sender,
             recipientId: replyingToNotification.senderId
           }
