@@ -1316,17 +1316,11 @@ export default function MemberManagement() {
           </TabsContent>
 
           <TabsContent value="homecells">
-            <MemberManagementHomeCells
-              homeCells={homeCells}
-              members={filteredMembers}
+            <HomeCellsHierarchyView
+              districts={districts}
+              isLoading={homeCellsLoading}
               onViewMembers={viewHomeCellMembers}
               onExport={handleExportHomeCell}
-              onAssignMember={openAssignmentDialog}
-              onTransferMember={(member) => {
-                setMemberToTransfer(member);
-                setNewHomeCellForTransfer(member.homeCell || "");
-                setShowTransferHomeCellDialog(true);
-              }}
             />
           </TabsContent>
         </Tabs>
