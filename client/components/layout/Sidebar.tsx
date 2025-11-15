@@ -204,9 +204,9 @@ export function Sidebar({ onClose }: SidebarProps) {
           <div className="space-y-2 md:space-y-3">
             <div className="text-xs md:text-sm">
               <div className="font-medium text-sidebar-foreground truncate">
-                {user.name}
+                {user?.name || "User"}
               </div>
-              <div className="text-sidebar-foreground/70 text-xs truncate">{user.role}</div>
+              <div className="text-sidebar-foreground/70 text-xs truncate">{user?.role || "User"}</div>
             </div>
             <Button
               onClick={logout}
