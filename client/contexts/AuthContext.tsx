@@ -103,6 +103,8 @@ interface User {
   id: string;
   name: string;
   email: string;
+  phone?: string;
+  fullName?: string;
   role: "admin" | "pastor" | "hr" | "finance" | "user";
   department?: string;
   employeeId?: string;
