@@ -88,7 +88,7 @@ async function authenticateUser(email, password) {
       {
         userId: user.id,
         email: user.email,
-        fullName: user.full_name,
+        fullName: user.name,
         role: user.role,
         permissions: permissions
       },
@@ -102,7 +102,8 @@ async function authenticateUser(email, password) {
       user: {
         id: user.id,
         email: user.email,
-        fullName: user.full_name,
+        fullName: user.name,
+        name: user.name,
         phone: user.phone,
         role: user.role,
         permissions: permissions,
