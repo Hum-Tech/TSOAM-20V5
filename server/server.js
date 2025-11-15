@@ -6,13 +6,10 @@ const multer = require("multer");
 const fs = require("fs");
 require("dotenv").config();
 
-// Use Supabase if configured, otherwise fall back to local database
-const useSupabase = process.env.SUPABASE_URL && process.env.SUPABASE_ANON_KEY;
-const { testConnection: testSupabaseConnection } = require("./config/supabase-client");
-const { testConnection: testLocalConnection, initializeDatabase } = require("./config/database");
+const { testConnection, initializeDatabase } = require("./config/database");
 
 // Import route modules
-const authRoutes = useSupabase ? require("./routes/auth-supabase") : require("./routes/auth");
+const authRoutes = require("./routes/auth");
 const membersRoutes = require("./routes/members");
 const hrRoutes = require("./routes/hr");
 const financeRoutes = require("./routes/finance");
@@ -233,7 +230,7 @@ async function startServer() {
       console.log(
         `🗄️  Database: ${dbConnected ? "Connected" : "Disconnected"}`,
       );
-      console.log("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
+      console.log("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━���━━━━━━━━━━━━━━━━━━━");
       console.log("🔧 To access from other computers on LAN:");
       console.log("   1. Find your computer's IP address");
       console.log(`   2. Open http://[YOUR-IP]:${PORT} on other devices`);
