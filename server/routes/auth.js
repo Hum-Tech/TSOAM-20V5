@@ -30,6 +30,70 @@ function authMiddleware(req, res, next) {
 }
 
 /**
+ * POST /api/auth/bootstrap
+ * Initialize the admin user (only works if no users exist)
+ * This is a one-time setup endpoint
+ */
+router.post("/bootstrap", async (req, res) => {
+  try {
+    // Check if any users exist
+    const { data: existingUsers } = await supabaseAdmin
+      .from('users')
+      .select('id')
+      .limit(1);
+
+    if (existingUsers && existingUsers.length > 0) {
+      return res.status(400).json({
+        success: false,
+        error: 'System already initialized. Users exist in database.'
+      });
+    }
+
+    // Create admin user
+    const { hashPassword } = require('../utils/password-utils');
+    const passwordHash = hashPassword('admin123');
+
+    const { data: newUser, error: createError } = await supabaseAdmin
+      .from('users')
+      .insert([{
+        email: 'admin@tsoam.org',
+        password_hash: passwordHash,
+        full_name: 'Church Administrator',
+        phone: '',
+        role: 'admin',
+        is_active: true
+      }])
+      .select()
+      .single();
+
+    if (createError) {
+      console.error('Error creating admin:', createError);
+      return res.status(500).json({
+        success: false,
+        error: 'Failed to create admin user'
+      });
+    }
+
+    res.json({
+      success: true,
+      message: 'System initialized with admin user',
+      user: {
+        email: newUser.email,
+        fullName: newUser.full_name,
+        role: newUser.role
+      }
+    });
+
+  } catch (error) {
+    console.error('Bootstrap error:', error);
+    res.status(500).json({
+      success: false,
+      error: 'Internal server error'
+    });
+  }
+});
+
+/**
  * POST /api/auth/login
  * Login with email and password
  */
