@@ -75,19 +75,6 @@ export default function Settings() {
     settingsService.getEmailSettings(),
   );
 
-  // Home Cells state
-  const [homeCells, setHomeCells] = useState<HomeCell[]>([]);
-  const [showAddHomeCellDialog, setShowAddHomeCellDialog] = useState(false);
-  const [newHomeCellForm, setNewHomeCellForm] = useState({
-    name: "",
-    leader: "",
-    leaderPhone: "",
-    meetingDay: "",
-    meetingTime: "",
-    location: "",
-    description: "",
-  });
-
   const [isSaving, setIsSaving] = useState(false);
 
   // Load settings on component mount
@@ -104,12 +91,6 @@ export default function Settings() {
     });
 
     return unsubscribe;
-  }, []);
-
-  // Load home cells
-  useEffect(() => {
-    const cells = homeCellService.getAllHomeCells();
-    setHomeCells(cells);
   }, []);
 
   /**
