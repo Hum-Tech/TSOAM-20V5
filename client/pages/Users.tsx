@@ -103,9 +103,9 @@ export default function Users() {
   // Filter users based on search and filters
   const filteredUsers = users.filter((user) => {
     const matchesSearch =
-      user.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      user.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      user.employeeId.toLowerCase().includes(searchTerm.toLowerCase());
+      (user.name || "").toLowerCase().includes(searchTerm.toLowerCase()) ||
+      (user.email || "").toLowerCase().includes(searchTerm.toLowerCase()) ||
+      (user.employeeId || "").toLowerCase().includes(searchTerm.toLowerCase());
 
     const matchesRole = roleFilter === "all" || user.role === roleFilter;
 
@@ -133,7 +133,7 @@ export default function Users() {
         `✅ USER ACTIVATED SUCCESSFULLY!\n\n` +
           `👤 User: ${userToActivate.name}\n` +
           `📧 Email: ${userToActivate.email}\n` +
-          `🔑 Role: ${userToActivate.role}\n\n` +
+          `���� Role: ${userToActivate.role}\n\n` +
           `The user can now login to the system.`,
       );
     } else {

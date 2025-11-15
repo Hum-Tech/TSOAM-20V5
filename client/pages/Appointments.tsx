@@ -1418,7 +1418,7 @@ export default function Appointments() {
                                 {appointment.participants.slice(0, 3).map((participant, index) => (
                                   <Avatar key={participant.id} className="h-6 w-6">
                                     <AvatarFallback className="text-xs">
-                                      {participant.name.split(' ').map(n => n[0]).join('')}
+                                      {participant?.name ? participant.name.split(' ').map(n => n[0]).join('') : '?'}
                                     </AvatarFallback>
                                   </Avatar>
                                 ))}
