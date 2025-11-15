@@ -103,8 +103,11 @@ export default function AdminSetup() {
     }
   };
 
+  const isSetupComplete = setupStatus?.success;
+  const needsTableCreation = setupStatus && !isSetupComplete && setupStatus.migrationSQLs;
+
   return (
-    <div className="max-w-4xl mx-auto p-6 space-y-6">
+    <div className="max-w-5xl mx-auto p-6 space-y-6">
       <div>
         <h1 className="text-4xl font-bold mb-2 flex items-center gap-3">
           <Database className="w-8 h-8" />
@@ -113,34 +116,30 @@ export default function AdminSetup() {
         <p className="text-slate-600">Initialize the HomeCells database with tables and seed data</p>
       </div>
 
-      {setupComplete && (
+      {isSetupComplete && (
         <Alert className="border-green-200 bg-green-50">
           <CheckCircle2 className="h-4 w-4 text-green-600" />
           <AlertDescription className="text-green-800">
-            ✅ Database setup completed successfully! Go to Settings → Home Cells to view the districts.
+            ✅ Database setup completed successfully! Go to Settings → Home Cells to view the {setupStatus?.districtCount} districts.
           </AlertDescription>
         </Alert>
       )}
 
       <Card className="p-8 space-y-6">
         <div>
-          <h2 className="text-2xl font-bold mb-4">Quick Setup</h2>
-          <p className="text-slate-600 mb-6">
-            Click the button below to automatically create all necessary database tables and seed the 9 districts.
-          </p>
-
+          <h2 className="text-2xl font-bold mb-4">Setup Status</h2>
           <Button
             size="lg"
             onClick={handleSetupDatabase}
-            disabled={isLoading || setupComplete}
+            disabled={isLoading || isSetupComplete}
             className="gap-2 bg-blue-600 hover:bg-blue-700"
           >
             {isLoading ? (
               <>
                 <Loader2 className="w-5 h-5 animate-spin" />
-                Setting up database...
+                Checking database...
               </>
-            ) : setupComplete ? (
+            ) : isSetupComplete ? (
               <>
                 <CheckCircle2 className="w-5 h-5" />
                 Setup Complete
@@ -148,17 +147,17 @@ export default function AdminSetup() {
             ) : (
               <>
                 <Database className="w-5 h-5" />
-                Create Database Tables
+                Check Database Status
               </>
             )}
           </Button>
         </div>
 
-        {tableStatus && (
+        {setupStatus?.tableStatus && (
           <div className="border-t pt-6">
             <h3 className="font-bold mb-4">Table Status</h3>
             <div className="grid grid-cols-2 gap-4">
-              {Object.entries(tableStatus).map(([table, status]: [string, any]) => (
+              {Object.entries(setupStatus.tableStatus).map(([table, status]: [string, any]) => (
                 <div key={table} className="flex items-center gap-3 p-3 bg-slate-50 rounded-lg">
                   {status.exists ? (
                     <CheckCircle2 className="w-5 h-5 text-green-600 flex-shrink-0" />
@@ -168,7 +167,7 @@ export default function AdminSetup() {
                   <div>
                     <div className="font-semibold capitalize text-sm">{table.replace(/_/g, ' ')}</div>
                     <div className="text-xs text-slate-500">
-                      {status.exists ? 'Ready' : 'Not found'}
+                      {status.exists ? '✓ Ready' : '✗ Not found'}
                     </div>
                   </div>
                 </div>
@@ -177,6 +176,65 @@ export default function AdminSetup() {
           </div>
         )}
       </Card>
+
+      {needsTableCreation && (
+        <Card className="p-8 space-y-6 border-amber-200 bg-amber-50">
+          <div>
+            <h2 className="text-2xl font-bold mb-2 flex items-center gap-2">
+              <AlertCircle className="w-6 h-6 text-amber-600" />
+              Manual Table Creation Required
+            </h2>
+            <p className="text-slate-700 mb-6">
+              The database tables need to be created manually through the Supabase SQL Editor. This is a one-time setup.
+            </p>
+          </div>
+
+          <div className="space-y-4">
+            <div className="font-semibold text-slate-900">Step 1: Copy the SQL</div>
+            {Object.entries(setupStatus.migrationSQLs || {}).map(([fileName, sql]) => (
+              <div key={fileName} className="space-y-2">
+                <div className="font-medium text-sm text-slate-700">{fileName}</div>
+                <div className="bg-slate-900 text-slate-100 p-4 rounded-lg font-mono text-xs overflow-x-auto max-h-48 overflow-y-auto">
+                  <pre>{sql}</pre>
+                </div>
+                <Button
+                  onClick={() => copyToClipboard(sql, fileName)}
+                  variant={copiedSQL === fileName ? 'default' : 'outline'}
+                  className="gap-2 w-full"
+                >
+                  <Copy className="w-4 h-4" />
+                  {copiedSQL === fileName ? 'Copied!' : `Copy ${fileName}`}
+                </Button>
+              </div>
+            ))}
+          </div>
+
+          <div className="border-t pt-6">
+            <div className="font-semibold text-slate-900 mb-4">Step 2: Paste in Supabase</div>
+            <ol className="space-y-2 text-sm text-slate-700 list-decimal ml-5">
+              <li>Click the button below to open Supabase</li>
+              <li>Click "SQL Editor" in the left sidebar</li>
+              <li>Click "New query"</li>
+              <li>Paste the SQL from "{Object.keys(setupStatus.migrationSQLs || {})[0]}"</li>
+              <li>Click "Run"</li>
+              <li>Repeat for the second SQL file</li>
+              <li>Come back here and click "Check Database Status"</li>
+            </ol>
+
+            <Button
+              onClick={() => window.open(
+                `https://app.supabase.com/project/${setupStatus.projectId}/sql`,
+                '_blank'
+              )}
+              className="gap-2 mt-6 bg-blue-600 hover:bg-blue-700"
+              size="lg"
+            >
+              <ExternalLink className="w-5 h-5" />
+              Open Supabase SQL Editor
+            </Button>
+          </div>
+        </Card>
+      )}
 
       <Card className="p-8 space-y-6 bg-amber-50 border-amber-200">
         <div>
