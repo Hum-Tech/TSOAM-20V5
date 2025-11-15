@@ -29,6 +29,7 @@
     "supabase:migrate": "node server/scripts/supabase-complete-migration.js",
     "supabase:rls": "node server/scripts/setup-rls-policies.js",
     "homecells:setup": "node server/scripts/setup-homecells-structure.js",
+    "homecells:migrate": "node server/scripts/run-homecells-migrations.js",
     "verify": "node verify-system.js",
     "health-check": "curl -f http://localhost:3002/api/health || exit 1",
     "install-deps": "node scripts/install-dependencies.js",
