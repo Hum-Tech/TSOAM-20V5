@@ -3,6 +3,29 @@ const { query } = require("../config/database");
 const { authMiddleware } = require("../middleware/auth");
 const router = express.Router();
 
+// Get appointments service status
+router.get("/status", async (req, res) => {
+  try {
+    res.json({
+      success: true,
+      status: "operational",
+      features: {
+        viewAppointments: true,
+        createAppointments: true,
+        updateAppointments: true,
+        appointmentScheduling: true,
+        reminderNotifications: true
+      }
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      status: "error",
+      error: error.message
+    });
+  }
+});
+
 // Get all appointments
 router.get("/", authMiddleware, async (req, res) => {
   try {
