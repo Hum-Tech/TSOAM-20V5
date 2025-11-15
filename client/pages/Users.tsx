@@ -77,14 +77,6 @@ export default function Users() {
   // Load users on component mount and deduplicate
   useEffect(() => {
     loadUsers();
-    // Deduplicate users array to prevent duplicate keys
-    setUsers((prev) => {
-      const uniqueUsers = prev.filter(
-        (user, index, self) =>
-          index === self.findIndex((u) => u.id === user.id),
-      );
-      return uniqueUsers;
-    });
   }, []);
 
   const loadUsers = async () => {
