@@ -50,6 +50,7 @@ async function initializeSupabaseAdmin() {
     const { data: newUser, error: createError } = await supabaseAdmin
       .from('users')
       .insert([{
+        id: uuidv4(),
         email: 'admin@tsoam.org',
         password_hash: passwordHash,
         full_name: 'Church Administrator'
