@@ -1,7 +1,6 @@
 const express = require('express');
 const fs = require('fs');
 const path = require('path');
-const fetch = require('node-fetch');
 const { supabaseAdmin } = require('../config/supabase-client');
 
 const router = express.Router();
