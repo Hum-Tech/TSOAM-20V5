@@ -416,7 +416,7 @@ export default function Login() {
           body: JSON.stringify({ email: forgotPasswordEmail }),
         });
 
-        const result = await safeJsonParse(response);
+        const result = await response.json();
 
         if (result.success) {
           // Move to step 2 (enter reset code)
@@ -477,7 +477,7 @@ export default function Login() {
           }),
         });
 
-        const result = await safeJsonParse(response);
+        const result = await response.json();
 
         if (result.success) {
           setResetStep(3);
@@ -509,7 +509,7 @@ export default function Login() {
           }),
         });
 
-        const result = await safeJsonParse(response);
+        const result = await response.json();
 
         if (result.success) {
           // Reset all states
