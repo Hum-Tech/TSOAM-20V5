@@ -1484,7 +1484,55 @@ export default function Settings() {
           </TabsContent>
 
           <TabsContent value="homecells">
-            <HomeCellsManagement />
+            <HomeCellsHierarchyManagement
+              districts={districts}
+              isLoading={homeCellsLoading}
+              onAddDistrict={() => {
+                toast({
+                  title: "Feature coming soon",
+                  description: "Add district functionality will be available soon",
+                });
+              }}
+              onEditDistrict={(id) => {
+                toast({
+                  title: "Feature coming soon",
+                  description: "Edit district functionality will be available soon",
+                });
+              }}
+              onDeleteDistrict={(id) => {
+                // Handle delete
+              }}
+              onAddZone={(districtId) => {
+                toast({
+                  title: "Feature coming soon",
+                  description: "Add zone functionality will be available soon",
+                });
+              }}
+              onEditZone={(id) => {
+                toast({
+                  title: "Feature coming soon",
+                  description: "Edit zone functionality will be available soon",
+                });
+              }}
+              onDeleteZone={(id) => {
+                // Handle delete
+              }}
+              onAddHomeCell={(zoneId) => {
+                toast({
+                  title: "Feature coming soon",
+                  description: "Add home cell functionality will be available soon",
+                });
+              }}
+              onEditHomeCell={(id) => {
+                toast({
+                  title: "Feature coming soon",
+                  description: "Edit home cell functionality will be available soon",
+                });
+              }}
+              onDeleteHomeCell={(id) => {
+                // Handle delete
+              }}
+            />
           </TabsContent>
         </Tabs>
       </div>
