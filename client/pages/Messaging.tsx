@@ -441,12 +441,12 @@ export default function Messaging() {
   // Filter contacts based on current filters
   const filteredContacts = contacts.filter((contact) => {
     const matchesSearch =
-      contact.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      (contact.name || "").toLowerCase().includes(searchTerm.toLowerCase()) ||
       contact.phone?.includes(searchTerm) ||
-      contact.email?.toLowerCase().includes(searchTerm.toLowerCase());
+      (contact.email || "").toLowerCase().includes(searchTerm.toLowerCase());
 
     const matchesType =
-      contactFilter === "all" || contact.type.toLowerCase() === contactFilter;
+      contactFilter === "all" || (contact.type || "").toLowerCase() === contactFilter;
     const matchesGroup =
       serviceGroupFilter === "all" ||
       contact.serviceGroup === serviceGroupFilter ||
@@ -681,7 +681,7 @@ export default function Messaging() {
             allSent = false;
           }
         } catch (error) {
-          successMessage += `• ${memberCount} member(s) via ${messageType} ⚠️ (Offline)`;
+          successMessage += `• ${memberCount} member(s) via ${messageType} ⚠��� (Offline)`;
           allSent = false;
         }
       }
