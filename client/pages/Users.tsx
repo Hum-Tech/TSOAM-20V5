@@ -166,7 +166,7 @@ export default function Users() {
   });
 
   // Handle user activation
-  const handleActivateUser = (userId: string) => {
+  const handleActivateUser = async (userId: string) => {
     const userToActivate = users.find((u) => u.id === userId);
 
     if (!userToActivate) {
@@ -174,21 +174,65 @@ export default function Users() {
       return;
     }
 
-    if (activateUser(userId)) {
-      loadUsers(); // Refresh the list
-      alert(
-        `✅ USER ACTIVATED SUCCESSFULLY!\n\n` +
-          `👤 User: ${userToActivate.name}\n` +
-          `📧 Email: ${userToActivate.email}\n` +
-          `���� Role: ${userToActivate.role}\n\n` +
-          `The user can now login to the system.`,
-      );
+    // Check if this is a pending new account (from database)
+    if (userToActivate.isNewAccount) {
+      try {
+        // Call API endpoint to approve pending account request
+        const response = await fetch("/api/users/approve", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            requestId: userId,
+            tempPassword: "DefaultPass123!",
+          }),
+        });
+
+        if (response.ok) {
+          const data = await response.json();
+          loadUsers(); // Refresh the list
+          alert(
+            `✅ USER ACTIVATED SUCCESSFULLY!\n\n` +
+              `👤 User: ${userToActivate.name}\n` +
+              `📧 Email: ${userToActivate.email}\n` +
+              `🔐 Role: ${userToActivate.role}\n\n` +
+              `The user can now login to the system.`,
+          );
+        } else {
+          const error = await response.json();
+          alert(
+            `❌ ACTIVATION FAILED!\n\n` +
+              `Error: ${error.error || "Unknown error"}\n` +
+              `Please try again or contact system administrator.`,
+          );
+        }
+      } catch (error) {
+        console.error("Error activating user:", error);
+        alert(
+          `❌ ACTIVATION FAILED!\n\n` +
+            `Network error: ${error instanceof Error ? error.message : "Unknown error"}\n` +
+            `Please try again or contact system administrator.`,
+        );
+      }
     } else {
-      alert(
-        `❌ ACTIVATION FAILED!\n\n` +
-          `Could not activate user: ${userToActivate.name}\n` +
-          `Please try again or contact system administrator.`,
-      );
+      // Use localStorage-based activation for existing users
+      if (activateUser(userId)) {
+        loadUsers(); // Refresh the list
+        alert(
+          `✅ USER ACTIVATED SUCCESSFULLY!\n\n` +
+            `👤 User: ${userToActivate.name}\n` +
+            `📧 Email: ${userToActivate.email}\n` +
+            `🔐 Role: ${userToActivate.role}\n\n` +
+            `The user can now login to the system.`,
+        );
+      } else {
+        alert(
+          `❌ ACTIVATION FAILED!\n\n` +
+            `Could not activate user: ${userToActivate.name}\n` +
+            `Please try again or contact system administrator.`,
+        );
+      }
     }
   };
 
