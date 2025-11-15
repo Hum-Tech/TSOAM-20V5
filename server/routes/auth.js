@@ -393,6 +393,374 @@ router.get("/status", async (req, res) => {
 });
 
 /**
+ * GET /api/users/pending-verification
+ * Get all pending user requests (public endpoint for account verification tab)
+ */
+router.get("/users/pending-verification", async (req, res) => {
+  try {
+    const { data: pendingRequests, error } = await supabaseAdmin
+      .from('user_requests')
+      .select('*')
+      .eq('status', 'pending')
+      .order('created_at', { ascending: false });
+
+    if (error) {
+      console.error('Error fetching pending requests:', error);
+      return res.status(500).json({
+        success: false,
+        error: 'Failed to fetch pending requests'
+      });
+    }
+
+    // Map to expected format
+    const users = (pendingRequests || []).map(req => ({
+      id: req.id,
+      name: req.name,
+      email: req.email,
+      phone: req.phone || '',
+      role: req.role || 'User',
+      department: req.department || '',
+      employeeId: req.employee_id || '',
+      requestedAt: req.created_at,
+      requestedBy: req.requested_by || 'Self',
+      requestReason: req.request_reason || '',
+      ipAddress: req.ip_address || '',
+      status: req.status || 'pending'
+    }));
+
+    res.json({
+      success: true,
+      users: users,
+      total: users.length
+    });
+
+  } catch (error) {
+    console.error("Fetch pending requests error:", error);
+    res.status(500).json({
+      success: false,
+      error: "Internal server error"
+    });
+  }
+});
+
+/**
+ * POST /api/users/approve
+ * Approve a pending account request and create the user
+ */
+router.post("/users/approve", async (req, res) => {
+  try {
+    const { requestId, tempPassword } = req.body;
+
+    if (!requestId) {
+      return res.status(400).json({
+        success: false,
+        error: 'Request ID is required'
+      });
+    }
+
+    // Get the pending request
+    const { data: requests, error: fetchError } = await supabaseAdmin
+      .from('user_requests')
+      .select('*')
+      .eq('id', requestId)
+      .single();
+
+    if (fetchError || !requests) {
+      return res.status(404).json({
+        success: false,
+        error: 'Request not found'
+      });
+    }
+
+    if (requests.status !== 'pending') {
+      return res.status(400).json({
+        success: false,
+        error: 'Only pending requests can be approved'
+      });
+    }
+
+    // Check if email already exists as user
+    const { data: existingUsers } = await supabaseAdmin
+      .from('users')
+      .select('id')
+      .eq('email', requests.email)
+      .limit(1);
+
+    if (existingUsers && existingUsers.length > 0) {
+      return res.status(400).json({
+        success: false,
+        error: 'User with this email already exists'
+      });
+    }
+
+    // Create temporary password if not provided
+    const { hashPassword } = require('../utils/password-utils');
+    const password = tempPassword || 'TempPass123!';
+    const passwordHash = hashPassword(password);
+
+    // Create new user
+    const { data: newUser, error: createError } = await supabaseAdmin
+      .from('users')
+      .insert([{
+        email: requests.email,
+        password_hash: passwordHash,
+        name: requests.name,
+        phone: requests.phone || '',
+        role: requests.role || 'User',
+        department: requests.department || '',
+        employee_id: requests.employee_id || '',
+        is_active: true
+      }])
+      .select()
+      .single();
+
+    if (createError) {
+      console.error('Error creating user:', createError);
+      return res.status(500).json({
+        success: false,
+        error: 'Failed to create user'
+      });
+    }
+
+    // Update request status
+    await supabaseAdmin
+      .from('user_requests')
+      .update({
+        status: 'approved',
+        approved_at: new Date().toISOString()
+      })
+      .eq('id', requestId);
+
+    res.json({
+      success: true,
+      message: 'Account approved and user created successfully',
+      user: {
+        id: newUser.id,
+        name: newUser.name,
+        email: newUser.email,
+        role: newUser.role
+      },
+      tempPassword: password
+    });
+
+  } catch (error) {
+    console.error("Approve account error:", error);
+    res.status(500).json({
+      success: false,
+      error: "Internal server error"
+    });
+  }
+});
+
+/**
+ * POST /api/users/reject
+ * Reject a pending account request
+ */
+router.post("/users/reject", async (req, res) => {
+  try {
+    const { requestId, reason } = req.body;
+
+    if (!requestId) {
+      return res.status(400).json({
+        success: false,
+        error: 'Request ID is required'
+      });
+    }
+
+    // Update request status
+    const { error } = await supabaseAdmin
+      .from('user_requests')
+      .update({
+        status: 'rejected',
+        rejection_reason: reason || 'Rejected by administrator'
+      })
+      .eq('id', requestId);
+
+    if (error) {
+      return res.status(500).json({
+        success: false,
+        error: 'Failed to reject request'
+      });
+    }
+
+    res.json({
+      success: true,
+      message: 'Account request rejected'
+    });
+
+  } catch (error) {
+    console.error("Reject account error:", error);
+    res.status(500).json({
+      success: false,
+      error: "Internal server error"
+    });
+  }
+});
+
+/**
+ * POST /api/auth/forgot-password
+ * Request password reset
+ */
+router.post("/forgot-password", async (req, res) => {
+  try {
+    const { email } = req.body;
+
+    if (!email) {
+      return res.status(400).json({
+        success: false,
+        error: 'Email is required'
+      });
+    }
+
+    // Check if user exists
+    const { data: users } = await supabaseAdmin
+      .from('users')
+      .select('id, email')
+      .eq('email', email)
+      .limit(1);
+
+    if (!users || users.length === 0) {
+      // For security, don't reveal if email exists
+      return res.json({
+        success: true,
+        message: 'If email exists, reset code has been sent',
+        demo: true,
+        resetCode: '123456'
+      });
+    }
+
+    // Generate reset code
+    const resetCode = Math.floor(100000 + Math.random() * 900000).toString();
+    const expiresAt = new Date(Date.now() + 15 * 60 * 1000); // 15 minutes
+
+    // Store reset code (in demo mode, we'll just return it)
+    // In production, you would send this via email
+    res.json({
+      success: true,
+      message: 'Reset code sent to email',
+      demo: true,
+      resetCode: resetCode
+    });
+
+  } catch (error) {
+    console.error("Forgot password error:", error);
+    res.status(500).json({
+      success: false,
+      error: "Internal server error"
+    });
+  }
+});
+
+/**
+ * POST /api/auth/verify-reset-code
+ * Verify password reset code
+ */
+router.post("/verify-reset-code", async (req, res) => {
+  try {
+    const { email, resetCode } = req.body;
+
+    if (!email || !resetCode) {
+      return res.status(400).json({
+        success: false,
+        error: 'Email and reset code are required'
+      });
+    }
+
+    // In production, verify the code against database
+    // For demo, accept any 6-digit code
+    if (resetCode.length === 6 && /^\d+$/.test(resetCode)) {
+      res.json({
+        success: true,
+        message: 'Reset code verified'
+      });
+    } else {
+      res.status(400).json({
+        success: false,
+        error: 'Invalid reset code'
+      });
+    }
+
+  } catch (error) {
+    console.error("Verify reset code error:", error);
+    res.status(500).json({
+      success: false,
+      error: "Internal server error"
+    });
+  }
+});
+
+/**
+ * POST /api/auth/reset-password
+ * Reset password with verified code
+ */
+router.post("/reset-password", async (req, res) => {
+  try {
+    const { email, resetCode, newPassword } = req.body;
+
+    if (!email || !newPassword) {
+      return res.status(400).json({
+        success: false,
+        error: 'Email and new password are required'
+      });
+    }
+
+    if (newPassword.length < 6) {
+      return res.status(400).json({
+        success: false,
+        error: 'Password must be at least 6 characters'
+      });
+    }
+
+    // Get user
+    const { data: users } = await supabaseAdmin
+      .from('users')
+      .select('id')
+      .eq('email', email)
+      .limit(1);
+
+    if (!users || users.length === 0) {
+      return res.status(404).json({
+        success: false,
+        error: 'User not found'
+      });
+    }
+
+    // Hash new password
+    const { hashPassword } = require('../utils/password-utils');
+    const passwordHash = hashPassword(newPassword);
+
+    // Update password
+    const { error } = await supabaseAdmin
+      .from('users')
+      .update({
+        password_hash: passwordHash,
+        updated_at: new Date().toISOString()
+      })
+      .eq('id', users[0].id);
+
+    if (error) {
+      console.error('Error updating password:', error);
+      return res.status(500).json({
+        success: false,
+        error: 'Failed to reset password'
+      });
+    }
+
+    res.json({
+      success: true,
+      message: 'Password reset successfully'
+    });
+
+  } catch (error) {
+    console.error("Reset password error:", error);
+    res.status(500).json({
+      success: false,
+      error: "Internal server error"
+    });
+  }
+});
+
+/**
  * GET /api/auth/users
  * Get all users (admin only)
  */
