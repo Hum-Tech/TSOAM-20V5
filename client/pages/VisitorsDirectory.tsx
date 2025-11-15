@@ -247,9 +247,9 @@ export default function VisitorsDirectory() {
 
   const filteredVisitors = visitorsData.filter((visitor) => {
     const matchesSearch =
-      visitor.fullName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      visitor.visitorId.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      visitor.phoneNumber.includes(searchTerm);
+      (visitor.fullName || "").toLowerCase().includes(searchTerm.toLowerCase()) ||
+      (visitor.visitorId || "").toLowerCase().includes(searchTerm.toLowerCase()) ||
+      (visitor.phoneNumber || "").includes(searchTerm);
 
     const matchesStatus =
       statusFilter === "all" || visitor.status === statusFilter;
