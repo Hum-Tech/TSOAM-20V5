@@ -451,28 +451,31 @@ export default function MemberManagement() {
   };
 
   // Function to save home cell edits
-  const saveHomeCellEdits = () => {
+  const saveHomeCellEdits = async () => {
     if (!selectedHomeCellForDetails) return;
 
-    const updated = homeCellService.updateHomeCell(selectedHomeCellForDetails.id, editHomeCellForm);
+    try {
+      const updated = await homeCellService.updateHomeCell(selectedHomeCellForDetails.id, editHomeCellForm);
 
-    if (updated) {
-      // Update local state
-      const updatedHomeCells = homeCells.filter(cell =>
-        cell.id !== selectedHomeCellForDetails.id
-      );
       if (updated && typeof updated === 'object' && 'id' in updated) {
-        setHomeCells([...updatedHomeCells, updated as HomeCell]);
+        // Update local state
+        const updatedHomeCells = homeCells.map(cell =>
+          cell.id === selectedHomeCellForDetails.id ? (updated as HomeCell) : cell
+        );
+        setHomeCells(updatedHomeCells);
         setSelectedHomeCellForDetails(updated as HomeCell);
+        setIsEditingHomeCell(false);
+
+        // Emit event to notify other components
+        window.dispatchEvent(new CustomEvent('homeCellUpdated'));
+
+        alert(`Home cell updated successfully`);
+      } else {
+        alert("Failed to update home cell");
       }
-      setIsEditingHomeCell(false);
-
-      // Emit event to notify other components
-      window.dispatchEvent(new CustomEvent('homeCellUpdated'));
-
-      alert(`Home cell "${updated.name}" has been updated successfully`);
-    } else {
+    } catch (error) {
       alert("Failed to update home cell");
+      console.error(error);
     }
   };
 
