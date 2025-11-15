@@ -3,6 +3,10 @@
  * DEVELOPMENT ONLY - No-op in production builds
  */
 
+let originalFetch: typeof window.fetch | null = null;
+let isInitialized = false;
+let authInProgress = false;
+
 // Production-safe implementation that does nothing
 export function disableConflictingAuth() {
   // Compile-time check - this entire function becomes empty in production
@@ -14,9 +18,9 @@ export function disableConflictingAuth() {
 
       console.log("🚫 [DEV] Authentication conflict disabler active");
 
-      // Simple auth request tracking for development only
-      const originalFetch = window.fetch;
-      let authInProgress = false;
+      // Store original fetch and mark as initialized
+      originalFetch = window.fetch;
+      isInitialized = true;
 
       window.fetch = function(input: RequestInfo | URL, init?: RequestInit): Promise<Response> {
         const url = typeof input === 'string' ? input : input instanceof URL ? input.href : input.url;
@@ -29,7 +33,7 @@ export function disableConflictingAuth() {
           }
 
           authInProgress = true;
-          const promise = originalFetch(input, init);
+          const promise = originalFetch!(input, init);
 
           promise.finally(() => {
             authInProgress = false;
@@ -38,7 +42,7 @@ export function disableConflictingAuth() {
           return promise;
         }
 
-        return originalFetch(input, init);
+        return originalFetch!(input, init);
       };
     }
   }
@@ -48,7 +52,7 @@ export function disableConflictingAuth() {
 export function restoreOriginalFetch() {
   if (!isInitialized || !originalFetch) return;
 
-  console.log("�� RESTORING: Original fetch");
+  console.log("🔄 RESTORING: Original fetch");
   window.fetch = originalFetch;
   isInitialized = false;
 }
