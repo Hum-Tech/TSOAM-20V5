@@ -239,9 +239,9 @@ export default function Events() {
     (event) =>
       (filterType === "all" || event.type === filterType) &&
       (filterCategory === "all" || event.category === filterCategory) &&
-      (event.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        event.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        event.organizer.toLowerCase().includes(searchTerm.toLowerCase())),
+      ((event.title || "").toLowerCase().includes(searchTerm.toLowerCase()) ||
+        (event.description || "").toLowerCase().includes(searchTerm.toLowerCase()) ||
+        (event.organizer || "").toLowerCase().includes(searchTerm.toLowerCase())),
   );
 
   const getStatusBadge = (status: string) => {

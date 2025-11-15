@@ -467,8 +467,8 @@ export default function Messaging() {
   // Filter messages
   const filteredMessages = messages.filter((message) => {
     const matchesSearch =
-      message.recipient.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      message.message.toLowerCase().includes(searchTerm.toLowerCase());
+      (message.recipient || "").toLowerCase().includes(searchTerm.toLowerCase()) ||
+      (message.message || "").toLowerCase().includes(searchTerm.toLowerCase());
     const matchesType = filterType === "All" || message.type === filterType;
     const matchesStatus =
       filterStatus === "All" || message.status === filterStatus;

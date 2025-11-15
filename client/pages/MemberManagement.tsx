@@ -653,10 +653,10 @@ export default function MemberManagement() {
    */
   const filteredMembers = members.filter((member) => {
     const matchesSearch =
-      member.fullName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      member.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      member.memberId.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      member.titheNumber.toLowerCase().includes(searchTerm.toLowerCase());
+      (member.fullName || "").toLowerCase().includes(searchTerm.toLowerCase()) ||
+      (member.email || "").toLowerCase().includes(searchTerm.toLowerCase()) ||
+      (member.memberId || "").toLowerCase().includes(searchTerm.toLowerCase()) ||
+      (member.titheNumber || "").toLowerCase().includes(searchTerm.toLowerCase());
 
     const matchesStatus =
       filterStatus === "All" || member.membershipStatus === filterStatus;
