@@ -583,8 +583,8 @@ export function Header({ onMenuClick, sidebarOpen }: HeaderProps) {
           {/* Notifications */}
           <Dialog open={showNotifications} onOpenChange={setShowNotifications}>
             <DialogTrigger asChild>
-              <Button variant="ghost" size="icon" className="relative">
-                <Bell className="h-5 w-5" />
+              <Button variant="ghost" size="icon" className="relative h-9 w-9 md:h-10 md:w-10">
+                <Bell className="h-4 md:h-5 w-4 md:w-5" />
                 {unreadCount + unreadMessages > 0 && (
                   <Badge
                     variant="destructive"
