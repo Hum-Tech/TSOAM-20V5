@@ -398,14 +398,18 @@ router.get("/status", async (req, res) => {
  */
 router.get("/users/pending-verification", async (req, res) => {
   try {
+    console.log("📨 GET /api/users/pending-verification - Fetching pending user requests");
+
     const { data: pendingRequests, error } = await supabaseAdmin
       .from('user_requests')
       .select('*')
       .eq('status', 'pending')
       .order('created_at', { ascending: false });
 
+    console.log("📦 Pending requests response:", { error, count: pendingRequests?.length });
+
     if (error) {
-      console.error('Error fetching pending requests:', error);
+      console.error('❌ Error fetching pending requests:', error);
       return res.status(500).json({
         success: false,
         error: 'Failed to fetch pending requests'
@@ -428,6 +432,8 @@ router.get("/users/pending-verification", async (req, res) => {
       status: req.status || 'pending'
     }));
 
+    console.log("✅ Returning", users.length, "pending users");
+
     res.json({
       success: true,
       users: users,
@@ -435,7 +441,7 @@ router.get("/users/pending-verification", async (req, res) => {
     });
 
   } catch (error) {
-    console.error("Fetch pending requests error:", error);
+    console.error("❌ Fetch pending requests error:", error);
     res.status(500).json({
       success: false,
       error: "Internal server error"
