@@ -44,6 +44,11 @@ async function authenticateUser(email, password) {
 
     const user = users[0];
 
+    // Debug: Log user data structure
+    console.log('🔍 User found. Columns available:', Object.keys(user));
+    console.log('🔍 password_hash present:', !!user.password_hash);
+    console.log('🔍 User role:', user.role);
+
     // Check if user is active
     if (!user.is_active) {
       return {
@@ -53,6 +58,14 @@ async function authenticateUser(email, password) {
     }
 
     // Verify password
+    if (!user.password_hash) {
+      console.error('❌ Password hash not found for user:', email);
+      return {
+        success: false,
+        error: 'Account authentication data missing'
+      };
+    }
+
     const passwordMatch = verifyPassword(password, user.password_hash);
     if (!passwordMatch) {
       return {
