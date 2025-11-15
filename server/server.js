@@ -107,6 +107,7 @@ app.use("/api/system-logs", systemLogsRoutes);
 app.use("/api/messages", messagesRoutes);
 app.use("/api/homecells", homecellsRoutes);
 app.use("/api/setup", setupRoutes);
+app.use("/api/migrate", migrateHomecellsRoutes);
 app.use("/api/users", authRoutes);
 
 // File upload endpoint
@@ -237,7 +238,7 @@ async function startServer() {
 
     app.listen(PORT, "0.0.0.0", () => {
       console.log("🚀 TSOAM Church Management System Server Started");
-      console.log("━━━━━��━━━━━━━���━━━━━━━━━��━━━━��━━━━━━━━━━━━━━━━━━━━━━━");
+      console.log("━━━━━��━��━━━━━���━━━━━━━━━��━━━━��━━━━━━━━━━━━━━━━━━━━━━━");
       console.log(`🌐 Server running on: http://localhost:${PORT}`);
       console.log(`🔗 LAN Access: http://[YOUR-IP]:${PORT}`);
       console.log(`📁 Upload directory: ${uploadsDir}`);
