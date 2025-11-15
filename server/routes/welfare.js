@@ -3,6 +3,29 @@ const { query } = require("../config/database");
 const { authMiddleware } = require("../middleware/auth");
 const router = express.Router();
 
+// Get welfare service status
+router.get("/status", async (req, res) => {
+  try {
+    res.json({
+      success: true,
+      status: "operational",
+      features: {
+        viewWelfareRequests: true,
+        createWelfareRequests: true,
+        approveRequests: true,
+        welfareReports: true,
+        beneficiaryTracking: true
+      }
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      status: "error",
+      error: error.message
+    });
+  }
+});
+
 // Get all welfare requests
 router.get("/", authMiddleware, async (req, res) => {
   try {
