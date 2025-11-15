@@ -79,7 +79,13 @@ const allMenuItems = [
     permission: "settings",
   },
   {
-    path: "/database-setup",
+    path: "/settings",
+    label: "Settings",
+    icon: Settings,
+    permission: "settings",
+  },
+  {
+    path: "/admin/setup",
     label: "Database Setup",
     icon: Database,
     permission: "settings",
