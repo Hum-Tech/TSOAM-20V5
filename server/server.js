@@ -6,10 +6,13 @@ const multer = require("multer");
 const fs = require("fs");
 require("dotenv").config();
 
-const { testConnection, initializeDatabase } = require("./config/database");
+// Use Supabase if configured, otherwise fall back to local database
+const useSupabase = process.env.SUPABASE_URL && process.env.SUPABASE_ANON_KEY;
+const { testConnection: testSupabaseConnection } = require("./config/supabase-client");
+const { testConnection: testLocalConnection, initializeDatabase } = require("./config/database");
 
 // Import route modules
-const authRoutes = require("./routes/auth");
+const authRoutes = useSupabase ? require("./routes/auth-supabase") : require("./routes/auth");
 const membersRoutes = require("./routes/members");
 const hrRoutes = require("./routes/hr");
 const financeRoutes = require("./routes/finance");
