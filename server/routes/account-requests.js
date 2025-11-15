@@ -449,29 +449,4 @@ router.post('/:requestId/reject', authMiddleware, async (req, res) => {
   }
 });
 
-/**
- * GET /api/account-requests/status
- * Check account requests service status
- */
-router.get('/status', async (req, res) => {
-  try {
-    res.json({
-      success: true,
-      status: 'operational',
-      features: {
-        requestAccount: true,
-        viewPendingRequests: true,
-        approveRequests: true,
-        rejectRequests: true
-      }
-    });
-  } catch (error) {
-    res.status(500).json({
-      success: false,
-      status: 'error',
-      error: error.message
-    });
-  }
-});
-
 module.exports = router;
