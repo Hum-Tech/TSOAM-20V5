@@ -32,6 +32,7 @@ import {
   AlertTriangle,
 } from "lucide-react";
 import { BackupRecovery } from "@/components/BackupRecovery";
+import { HomeCellsManagement } from "@/components/HomeCellsManagement";
 import {
   settingsService,
   type ChurchSettings,
