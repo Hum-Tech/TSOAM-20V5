@@ -105,6 +105,11 @@ async function testConnection() {
 
 // Initialize database (create tables if they don't exist)
 async function initializeDatabase() {
+  if (FORCE_SUPABASE && supabaseAdmin) {
+    console.log("✅ Supabase database initialized");
+    return true;
+  }
+
   if (USE_SQLITE) {
     console.log("🔄 SQLite database already initialized");
     return true;
@@ -151,11 +156,20 @@ async function initializeDatabase() {
   }
 }
 
-// Execute query with MySQL priority
+// Execute query with Supabase priority, then MySQL, then SQLite
 async function query(sql, params = []) {
-  // Try MySQL first unless explicitly disabled
+  // If Supabase is configured, use SQLite as a fallback but don't attempt MySQL
+  if (FORCE_SUPABASE && supabaseAdmin) {
+    console.log("🔄 Supabase enabled - using SQLite adapter for query operations");
+    return await sqlite.query(sql, params);
+  }
+
+  // Try MySQL unless explicitly disabled
   if (!USE_SQLITE || global.FORCE_MYSQL) {
     try {
+      if (!pool) {
+        throw new Error("MySQL pool not initialized");
+      }
       const [results] = await pool.execute(sql, params);
       console.log("✅ MySQL query executed successfully");
       return { success: true, data: results };
@@ -175,6 +189,9 @@ async function query(sql, params = []) {
 // Get connection from pool
 async function getConnection() {
   try {
+    if (!pool) {
+      throw new Error("Database pool not initialized");
+    }
     return await pool.getConnection();
   } catch (error) {
     console.error("Failed to get database connection:", error.message);
