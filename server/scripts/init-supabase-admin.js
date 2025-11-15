@@ -53,9 +53,7 @@ async function initializeSupabaseAdmin() {
         id: uuidv4(),
         email: 'admin@tsoam.org',
         password_hash: passwordHash,
-        name: 'Church Administrator',
-        role: 'admin',
-        is_active: true
+        name: 'Church Administrator'
       }])
       .select()
       .single();
