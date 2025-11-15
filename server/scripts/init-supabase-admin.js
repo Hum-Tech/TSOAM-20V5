@@ -47,19 +47,34 @@ async function initializeSupabaseAdmin() {
 
     const passwordHash = hashPassword('admin123');
 
-    const { data: newUser, error: createError } = await supabaseAdmin
-      .from('users')
-      .insert([{
-        id: uuidv4(),
-        email: 'admin@tsoam.org',
-        password_hash: passwordHash,
-        name: 'Church Administrator'
-      }])
-      .select()
-      .single();
+    // Try with different role variations
+    const roles = ['Admin', 'admin', 'ADMIN'];
+    let newUser = null;
+    let createError = null;
 
-    if (createError) {
-      console.log('⚠️  Could not create admin user:', createError.message);
+    for (const role of roles) {
+      const result = await supabaseAdmin
+        .from('users')
+        .insert([{
+          id: uuidv4(),
+          email: 'admin@tsoam.org',
+          password_hash: passwordHash,
+          name: 'Church Administrator',
+          role: role
+        }])
+        .select()
+        .single();
+
+      if (!result.error) {
+        newUser = result.data;
+        break;
+      }
+      createError = result.error;
+    }
+
+    if (!newUser) {
+      console.log('⚠️  Could not create admin user with any role variation');
+      console.log('   Last error:', createError?.message);
       return false;
     }
 
