@@ -1,8 +1,8 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { AlertCircle, CheckCircle2, Loader2, Database } from "lucide-react";
+import { AlertCircle, CheckCircle2, Loader2, Database, Copy, ExternalLink } from "lucide-react";
 import { toast } from "@/components/ui/use-toast";
 
 interface SetupStatus {
