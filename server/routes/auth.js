@@ -79,7 +79,7 @@ router.post("/bootstrap", async (req, res) => {
       message: 'System initialized with admin user',
       user: {
         email: newUser.email,
-        fullName: newUser.full_name,
+        fullName: newUser.name,
         role: newUser.role
       }
     });
