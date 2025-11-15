@@ -37,16 +37,10 @@ async function fixAdminName() {
     const adminUser = currentUser[0];
     console.log('🔧 Admin user columns:', Object.keys(adminUser));
 
-    // Try to update with full_name or name field
-    let updateData = {};
-    if ('full_name' in adminUser) {
-      updateData.full_name = 'Humphrey Njoroge';
-    } else if ('name' in adminUser) {
-      updateData.name = 'Humphrey Njoroge';
-    } else {
-      console.log('⚠️  Could not find name column in user table');
-      return false;
-    }
+    // Update the name field
+    const updateData = {
+      name: 'Humphrey Njoroge'
+    };
 
     const { data: updatedUser, error } = await supabaseAdmin
       .from('users')
