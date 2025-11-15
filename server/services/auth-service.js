@@ -227,13 +227,17 @@ async function createUser(userData) {
       };
     }
 
+    // Normalize name field - handle both 'name' and 'full_name' columns
+    const createdUserName = (newUser.name || newUser.full_name || fullName || newUser.email || "User").trim();
+
     return {
       success: true,
       user: {
         id: newUser.id,
         email: newUser.email,
-        fullName: newUser.full_name,
-        phone: newUser.phone,
+        fullName: createdUserName,
+        name: createdUserName,
+        phone: newUser.phone || "",
         role: newUser.role,
         createdAt: newUser.created_at
       }
