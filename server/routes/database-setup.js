@@ -43,174 +43,159 @@ router.post('/setup-database', async (req, res) => {
   try {
     console.log('🚀 Starting database setup...\n');
 
-    const results = [];
-    const errors = [];
-
-    // Read migration files
-    const migrationsDir = path.join(__dirname, '../migrations');
-    const migrationFiles = fs.readdirSync(migrationsDir)
-      .filter(file => file.endsWith('.sql'))
-      .sort();
-
-    console.log(`📂 Found ${migrationFiles.length} migration file(s)\n`);
-
-    // Process each migration file
-    for (const file of migrationFiles) {
-      const filePath = path.join(migrationsDir, file);
-      const sql = fs.readFileSync(filePath, 'utf-8');
-
-      console.log(`▶️  Processing: ${file}`);
-
-      // Split SQL into individual statements
-      const statements = sql
-        .split(';')
-        .map(stmt => stmt.trim())
-        .filter(stmt => stmt.length > 0);
-
-      let fileSuccess = 0;
-      let fileErrors = [];
-
-      // Execute each statement
-      for (const statement of statements) {
-        try {
-          // For CREATE TABLE statements, we'll try to insert test data to verify
-          if (statement.includes('CREATE TABLE')) {
-            const tableMatch = statement.match(/CREATE TABLE[^(]*?([a-zA-Z_]+)\s*\(/i);
-            if (tableMatch) {
-              const tableName = tableMatch[1];
-              
-              // Try to query the table to see if it exists
-              const { error } = await supabaseAdmin
-                .from(tableName)
-                .select('*', { count: 'exact', head: true })
-                .limit(0);
-
-              if (!error || !error.message.includes('Could not find the table')) {
-                console.log(`   ✅ Table '${tableName}' already exists`);
-                fileSuccess++;
-                continue;
-              }
-            }
-          }
-
-          // Try using Supabase RPC (even though it might not work)
-          const { error: rpcError } = await supabaseAdmin
-            .rpc('exec_sql', { sql: statement })
-            .catch(() => ({ error: null }));
-
-          fileSuccess++;
-          
-        } catch (err) {
-          fileErrors.push(err.message);
-        }
-      }
-
-      results.push({
-        file,
-        successCount: fileSuccess,
-        errorCount: fileErrors.length,
-        errors: fileErrors
-      });
-
-      console.log(`   ✅ Processed ${fileSuccess} statements\n`);
-    }
-
-    // Verify tables exist
-    console.log('📊 Verifying tables...\n');
+    // First, check if tables exist
+    console.log('📊 Checking if tables exist...\n');
 
     const tableStatus = {};
     const tables = ['districts', 'zones', 'homecells', 'homecell_members'];
+    let allTablesExist = true;
 
     for (const table of tables) {
       try {
-        const { error, data } = await supabaseAdmin
+        const { error } = await supabaseAdmin
           .from(table)
-          .select('count', { count: 'exact', head: true });
+          .select('*', { count: 'exact', head: true });
 
         if (!error) {
-          tableStatus[table] = { exists: true, verified: true };
-          console.log(`✅ ${table}`);
-        } else if (error.code === 'PGRST205') {
-          tableStatus[table] = { exists: false, verified: false };
-          console.log(`⚠️  ${table} - table not found`);
+          tableStatus[table] = { exists: true };
+          console.log(`✅ ${table} - exists`);
+        } else {
+          tableStatus[table] = { exists: false };
+          allTablesExist = false;
+          console.log(`⚠️  ${table} - not found`);
         }
       } catch (err) {
-        tableStatus[table] = { exists: false, verified: false };
-        console.log(`⚠️  ${table} - error: ${err.message}`);
+        tableStatus[table] = { exists: false };
+        allTablesExist = false;
+        console.log(`⚠️  ${table} - error`);
       }
     }
 
-    // If tables don't exist, provide detailed instructions
-    const allTablesExist = Object.values(tableStatus).every(t => t.exists);
-
+    // If tables don't exist, return instructions for manual creation
     if (!allTablesExist) {
-      console.log('\n❌ Tables were not created via RPC');
-      console.log('📝 Alternative approach: Using direct data operations');
+      console.log('\n❌ Database tables not found');
+      console.log('📝 Please create tables manually using Supabase SQL Editor\n');
 
-      // Try creating tables via insert operations (won't work for CREATE TABLE, but informative)
+      // Read the migration SQL files to provide them to the user
+      const migrationsDir = path.join(__dirname, '../migrations');
+      const migrationFiles = fs.readdirSync(migrationsDir)
+        .filter(file => file.endsWith('.sql'))
+        .sort();
+
+      const migrationSQLs = {};
+      for (const file of migrationFiles) {
+        const filePath = path.join(migrationsDir, file);
+        migrationSQLs[file] = fs.readFileSync(filePath, 'utf-8');
+      }
+
       return res.json({
         success: false,
-        message: 'RPC execution not available. Please use the manual Supabase SQL editor.',
-        details: 'The Supabase project needs an "exec_sql" function or manual table creation.',
+        message: 'Database tables not found. Please create them manually.',
+        details: 'Supabase does not support direct SQL execution without a stored procedure. Please use the SQL Editor in the Supabase dashboard to create the tables.',
         tableStatus,
-        nextSteps: [
-          '1. Visit: https://app.supabase.com/project/' + (process.env.SUPABASE_URL?.match(/([^.]+)\.supabase/)?.[1] || 'YOUR-PROJECT'),
-          '2. Go to: SQL Editor',
-          '3. Run: server/migrations/001_create_homecells_tables.sql',
-          '4. Run: server/migrations/002_seed_districts.sql',
-          '5. Refresh the browser'
+        projectId: process.env.SUPABASE_URL?.match(/([^.]+)\.supabase/)?.[1] || 'YOUR-PROJECT-ID',
+        migrationSQLs,
+        instructions: [
+          '1. Go to: https://app.supabase.com/',
+          '2. Select your project',
+          '3. Click "SQL Editor" in the left sidebar',
+          '4. Click "New query"',
+          '5. Copy and paste the SQL from "001_create_homecells_tables.sql"',
+          '6. Click "Run"',
+          '7. Create another new query',
+          '8. Copy and paste the SQL from "002_seed_districts.sql"',
+          '9. Click "Run"',
+          '10. Refresh this page'
         ]
       });
     }
 
-    // Seed the districts if tables exist
-    console.log('\n📊 Seeding data...\n');
+    console.log('✅ All tables exist!\n');
 
-    const districts = [
-      { district_id: 'DIS-NAIROBI-CENTRAL', name: 'Nairobi Central', description: 'Central Nairobi district covering CBD and surrounding areas' },
-      { district_id: 'DIS-EASTLANDS', name: 'Eastlands', description: 'Eastlands district covering Buruburu, Umoja, Donholm, and surrounding areas' },
-      { district_id: 'DIS-THIKA-ROAD', name: 'Thika Road', description: 'Thika Road district covering Zimmerman, Kahawa, Roysambu, and surrounding areas' },
-      { district_id: 'DIS-SOUTH-NAIROBI', name: 'South Nairobi', description: 'South Nairobi district covering Lang\'ata, Karen, South C/B, and surrounding areas' },
-      { district_id: 'DIS-WEST-NAIROBI', name: 'West Nairobi', description: 'West Nairobi district covering Kangemi, Uthiru, Dagoretti, and surrounding areas' },
-      { district_id: 'DIS-NORTH-NAIROBI', name: 'Northern Nairobi', description: 'Northern Nairobi district covering Muthaiga, Runda, Gigiri, and surrounding areas' },
-      { district_id: 'DIS-EAST-NAIROBI', name: 'Eastern Nairobi', description: 'Eastern Nairobi district covering Mathare, Huruma, Kariobangi, Dandora, and surrounding areas' },
-      { district_id: 'DIS-SOUTH-EAST-NAIROBI', name: 'South East Nairobi', description: 'South East Nairobi district covering Industrial Area, Mukuru, Imara Daima, and surrounding areas' },
-      { district_id: 'DIS-OUTSKIRTS-NAIROBI', name: 'Outskirts Nairobi', description: 'Outskirts Nairobi district covering Kitengela, Rongai, Ngong, Ruai, Juja, Thika, and surrounding areas' }
-    ];
+    // Tables exist, now seed the districts if needed
+    console.log('📊 Checking if districts are seeded...\n');
 
     try {
+      const { data: existingDistricts } = await supabaseAdmin
+        .from('districts')
+        .select('count', { count: 'exact' });
+
+      const districtCount = existingDistricts?.length || 0;
+
+      if (districtCount > 0) {
+        console.log(`✅ Districts already seeded (${districtCount} found)\n`);
+        return res.json({
+          success: true,
+          message: 'Database is fully set up!',
+          tableStatus: Object.entries(tableStatus).reduce((acc, [table]) => ({
+            ...acc,
+            [table]: { exists: true }
+          }), {}),
+          districtCount,
+          nextSteps: [
+            'Go to Settings → Home Cells',
+            'You should see the 9 districts listed',
+            'Add zones and home cells as needed',
+            'Assign members to home cells in Member Management'
+          ]
+        });
+      }
+
+      // Seed districts
+      console.log('🌱 Seeding districts...\n');
+
+      const districts = [
+        { district_id: 'DIS-NAIROBI-CENTRAL', name: 'Nairobi Central', description: 'Central Nairobi district covering CBD and surrounding areas' },
+        { district_id: 'DIS-EASTLANDS', name: 'Eastlands', description: 'Eastlands district covering Buruburu, Umoja, Donholm, and surrounding areas' },
+        { district_id: 'DIS-THIKA-ROAD', name: 'Thika Road', description: 'Thika Road district covering Zimmerman, Kahawa, Roysambu, and surrounding areas' },
+        { district_id: 'DIS-SOUTH-NAIROBI', name: 'South Nairobi', description: 'South Nairobi district covering Lang\'ata, Karen, South C/B, and surrounding areas' },
+        { district_id: 'DIS-WEST-NAIROBI', name: 'West Nairobi', description: 'West Nairobi district covering Kangemi, Uthiru, Dagoretti, and surrounding areas' },
+        { district_id: 'DIS-NORTH-NAIROBI', name: 'Northern Nairobi', description: 'Northern Nairobi district covering Muthaiga, Runda, Gigiri, and surrounding areas' },
+        { district_id: 'DIS-EAST-NAIROBI', name: 'Eastern Nairobi', description: 'Eastern Nairobi district covering Mathare, Huruma, Kariobangi, Dandora, and surrounding areas' },
+        { district_id: 'DIS-SOUTH-EAST-NAIROBI', name: 'South East Nairobi', description: 'South East Nairobi district covering Industrial Area, Mukuru, Imara Daima, and surrounding areas' },
+        { district_id: 'DIS-OUTSKIRTS-NAIROBI', name: 'Outskirts Nairobi', description: 'Outskirts Nairobi district covering Kitengela, Rongai, Ngong, Ruai, Juja, Thika, and surrounding areas' }
+      ];
+
       const { data: insertedDistricts, error: insertError } = await supabaseAdmin
         .from('districts')
         .insert(
           districts.map(d => ({
             ...d,
-            is_active: true,
-            created_at: new Date().toISOString(),
-            updated_at: new Date().toISOString()
+            is_active: true
           }))
         )
         .select();
 
-      if (!insertError) {
-        console.log(`✅ Seeded ${insertedDistricts?.length || 0} districts`);
-      } else {
-        console.log('⚠️  Districts already exist or seeding failed');
+      if (insertError) {
+        throw insertError;
       }
-    } catch (err) {
-      console.log('⚠️  Could not seed districts:', err.message);
-    }
 
-    res.json({
-      success: true,
-      message: 'Database setup completed successfully!',
-      results,
-      tableStatus,
-      nextSteps: [
-        'Go to Settings → Home Cells',
-        'You should see the 9 districts listed',
-        'Add zones and home cells as needed'
-      ]
-    });
+      console.log(`✅ Seeded ${insertedDistricts?.length || 0} districts\n`);
+
+      res.json({
+        success: true,
+        message: 'Database setup completed successfully!',
+        tableStatus: Object.entries(tableStatus).reduce((acc, [table]) => ({
+          ...acc,
+          [table]: { exists: true }
+        }), {}),
+        districtCount: insertedDistricts?.length || 0,
+        nextSteps: [
+          'Go to Settings → Home Cells',
+          'You should see the 9 districts listed',
+          'Add zones and home cells as needed',
+          'Assign members to home cells in Member Management'
+        ]
+      });
+
+    } catch (err) {
+      console.error('Error seeding districts:', err);
+      res.status(500).json({
+        success: false,
+        error: 'Failed to seed districts',
+        details: err.message
+      });
+    }
 
   } catch (error) {
     console.error('❌ Setup error:', error);
