@@ -3,6 +3,30 @@ const router = express.Router();
 const Member = require("../models/Member");
 const { authMiddleware, requireRole } = require("../middleware/auth");
 
+// Get members service status
+router.get("/status", async (req, res) => {
+  try {
+    res.json({
+      success: true,
+      status: "operational",
+      features: {
+        viewMembers: true,
+        createMembers: true,
+        updateMembers: true,
+        deleteMembers: true,
+        searchMembers: true,
+        memberStats: true
+      }
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      status: "error",
+      error: error.message
+    });
+  }
+});
+
 // Get all members
 router.get("/", authMiddleware, async (req, res) => {
   try {
