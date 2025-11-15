@@ -83,13 +83,18 @@ async function authenticateUser(email, password) {
     // Get user permissions
     const permissions = await getUserPermissions(user.role);
 
+    // Normalize name field - handle both 'name' and 'full_name' columns from database
+    const fullName = (user.name || user.full_name || user.email || "User").trim();
+
+    // Ensure fullName is never empty or undefined
+    const safeName = fullName && fullName !== "" && fullName !== "User" ? fullName : (user.email || "User");
+
     // Generate JWT token
-    const fullName = user.name || user.full_name || user.email || "User";
     const token = jwt.sign(
       {
         userId: user.id,
         email: user.email,
-        fullName: fullName,
+        fullName: safeName,
         role: user.role,
         permissions: permissions
       },
@@ -103,9 +108,9 @@ async function authenticateUser(email, password) {
       user: {
         id: user.id,
         email: user.email,
-        fullName: user.name || user.full_name || user.email || "User",
-        name: user.name || user.full_name || user.email || "User",
-        phone: user.phone,
+        fullName: safeName,
+        name: safeName,
+        phone: user.phone || "",
         role: user.role,
         permissions: permissions,
         lastLogin: user.last_login
