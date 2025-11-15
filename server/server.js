@@ -6,7 +6,8 @@ const multer = require("multer");
 const fs = require("fs");
 require("dotenv").config();
 
-const { testConnection, initializeDatabase } = require("./config/database");
+const { testConnection: testLocalConnection, initializeDatabase: initializeLocalDatabase } = require("./config/database");
+const { testConnection: testSupabaseConnection, initializeDatabase: initializeSupabaseDatabase } = require("./config/supabase-client");
 
 // Import route modules
 const authRoutes = require("./routes/auth");
