@@ -24,6 +24,7 @@ const systemLogsRoutes = require("./routes/system-logs");
 const messagesRoutes = require("./routes/messages");
 const homecellsRoutes = require("./routes/homecells");
 const setupRoutes = require("./routes/setup");
+const migrateHomecellsRoutes = require("./routes/migrate-homecells");
 
 const app = express();
 const PORT = process.env.PORT || 3001;
