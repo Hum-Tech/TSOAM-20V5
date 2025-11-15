@@ -458,11 +458,13 @@ export default function MemberManagement() {
 
     if (updated) {
       // Update local state
-      const updatedHomeCells = homeCells.map(cell =>
-        cell.id === selectedHomeCellForDetails.id ? updated : cell
+      const updatedHomeCells = homeCells.filter(cell =>
+        cell.id !== selectedHomeCellForDetails.id
       );
-      setHomeCells(updatedHomeCells);
-      setSelectedHomeCellForDetails(updated);
+      if (updated && typeof updated === 'object' && 'id' in updated) {
+        setHomeCells([...updatedHomeCells, updated as HomeCell]);
+        setSelectedHomeCellForDetails(updated as HomeCell);
+      }
       setIsEditingHomeCell(false);
 
       // Emit event to notify other components
