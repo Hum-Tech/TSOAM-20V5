@@ -427,6 +427,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           setUser({
             ...userData,
             name: userData.name || userData.fullName || "User",
+            fullName: userData.fullName || userData.name || "User",
             permissions:
               userData.permissions || getRolePermissions(userData.role),
           });
