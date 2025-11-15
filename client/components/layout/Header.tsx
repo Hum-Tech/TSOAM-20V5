@@ -524,14 +524,28 @@ export function Header({ onMenuClick, sidebarOpen }: HeaderProps) {
 
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-      <div className="container flex h-16 items-center justify-between px-4">
+      <div className="flex h-14 md:h-16 items-center justify-between px-3 md:px-4 gap-2 md:gap-4">
+        {/* Mobile Menu Button */}
+        <Button
+          variant="ghost"
+          size="icon"
+          className="md:hidden flex-shrink-0"
+          onClick={onMenuClick}
+        >
+          {sidebarOpen ? (
+            <X className="h-5 w-5" />
+          ) : (
+            <Menu className="h-5 w-5" />
+          )}
+        </Button>
+
         {/* Left side - Greeting and Time */}
-        <div className="flex items-center space-x-4">
+        <div className="flex items-center space-x-2 md:space-x-4 min-w-0 flex-1 md:flex-none">
           <div className="hidden md:block">
-            <h2 className="text-lg font-semibold text-foreground">
+            <h2 className="text-base md:text-lg font-semibold text-foreground">
               {getTimeBasedGreeting()}, {user.name.split(" ")[0]}!
             </h2>
-            <p className="text-sm text-muted-foreground">
+            <p className="text-xs md:text-sm text-muted-foreground">
               {currentTime.toLocaleDateString("en-US", {
                 weekday: "long",
                 year: "numeric",
@@ -539,6 +553,11 @@ export function Header({ onMenuClick, sidebarOpen }: HeaderProps) {
                 day: "numeric",
               })}
             </p>
+          </div>
+          <div className="md:hidden text-xs truncate">
+            <h2 className="font-medium text-foreground">
+              {getTimeBasedGreeting()}!
+            </h2>
           </div>
         </div>
 
