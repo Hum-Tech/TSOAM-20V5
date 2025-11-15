@@ -6,16 +6,64 @@ import { AlertCircle, CheckCircle2, Loader2, Database, Copy, ExternalLink } from
 import { toast } from "@/components/ui/use-toast";
 
 interface SetupStatus {
-  districts?: boolean;
-  zones?: boolean;
-  homecells?: boolean;
-  homecell_members?: boolean;
+  [key: string]: { exists: boolean };
+}
+
+interface SetupResponse {
+  success: boolean;
+  message: string;
+  tableStatus?: SetupStatus;
+  districtCount?: number;
+  projectId?: string;
+  instructions?: string[];
+  migrationSQLs?: {
+    [key: string]: string;
+  };
 }
 
 export default function AdminSetup() {
   const [isLoading, setIsLoading] = useState(false);
-  const [setupComplete, setSetupComplete] = useState(false);
-  const [tableStatus, setTableStatus] = useState<SetupStatus | null>(null);
+  const [setupStatus, setSetupStatus] = useState<SetupResponse | null>(null);
+  const [copiedSQL, setCopiedSQL] = useState<string | null>(null);
+
+  useEffect(() => {
+    checkSetupStatus();
+  }, []);
+
+  const checkSetupStatus = async () => {
+    try {
+      const response = await fetch("/api/database-setup/setup-database", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        }
+      });
+
+      const data: SetupResponse = await response.json();
+      setSetupStatus(data);
+
+      if (data.success) {
+        toast({
+          title: "✅ All Set!",
+          description: "Database is fully configured. Districts are ready to use.",
+          variant: "default"
+        });
+      }
+    } catch (error) {
+      console.error("Setup check error:", error);
+    }
+  };
+
+  const copyToClipboard = (sql: string, fileName: string) => {
+    navigator.clipboard.writeText(sql);
+    setCopiedSQL(fileName);
+    toast({
+      title: "Copied!",
+      description: `${fileName} SQL copied to clipboard`,
+      variant: "default"
+    });
+    setTimeout(() => setCopiedSQL(null), 3000);
+  };
 
   const handleSetupDatabase = async () => {
     setIsLoading(true);
@@ -27,23 +75,21 @@ export default function AdminSetup() {
         }
       });
 
-      const data = await response.json();
+      const data: SetupResponse = await response.json();
+      setSetupStatus(data);
 
       if (data.success) {
-        setSetupComplete(true);
-        setTableStatus(data.tableStatus);
         toast({
           title: "Success!",
-          description: "Database tables created successfully. Districts have been seeded.",
+          description: `Database setup complete! ${data.districtCount} districts seeded.`,
           variant: "default"
         });
       } else {
         toast({
-          title: "Setup Incomplete",
-          description: data.message || "Please follow the manual setup instructions below.",
-          variant: "destructive"
+          title: "Tables Need to be Created",
+          description: "Please follow the manual instructions below.",
+          variant: "default"
         });
-        setTableStatus(data.tableStatus);
       }
     } catch (error) {
       toast({
