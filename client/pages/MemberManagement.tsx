@@ -357,7 +357,7 @@ export default function MemberManagement() {
 
   // Load home cells and refresh when settings change
   const loadHomeCells = () => {
-    const availableHomeCells = homeCellService.getActiveHomeCells();
+    const availableHomeCells = homeCellService.getAllHomeCells();
     setHomeCells(availableHomeCells);
   };
 
@@ -419,11 +419,11 @@ export default function MemberManagement() {
   const viewHomeCellDetails = (cell: HomeCell) => {
     setSelectedHomeCellForDetails(cell);
     setEditHomeCellForm({
-      leader: cell.leader || "",
-      leaderPhone: cell.leaderPhone || "",
-      meetingDay: cell.meetingDay || "",
-      meetingTime: cell.meetingTime || "",
-      location: cell.location || "",
+      leader: cell.leader_id || "",
+      leaderPhone: "",
+      meetingDay: cell.meeting_day || "",
+      meetingTime: cell.meeting_time || "",
+      location: cell.meeting_location || "",
       description: cell.description || "",
     });
     setIsEditingHomeCell(false);
@@ -440,9 +440,9 @@ export default function MemberManagement() {
     if (selectedHomeCellForDetails) {
       setEditHomeCellForm({
         leader: selectedHomeCellForDetails.leader || "",
-        leaderPhone: selectedHomeCellForDetails.leaderPhone || "",
-        meetingDay: selectedHomeCellForDetails.meetingDay || "",
-        meetingTime: selectedHomeCellForDetails.meetingTime || "",
+        leaderPhone: "",
+        meetingDay: selectedHomeCellForDetails.meeting_day || "",
+        meetingTime: selectedHomeCellForDetails.meeting_time || "",
         location: selectedHomeCellForDetails.location || "",
         description: selectedHomeCellForDetails.description || "",
       });
@@ -2736,7 +2736,7 @@ export default function MemberManagement() {
                     </SelectTrigger>
                     <SelectContent>
                       {homeCells
-                        .filter(cell => cell.isActive)
+                        .filter(cell => cell.is_active)
                         .map((cell) => (
                           <SelectItem key={cell.id} value={cell.name}>
                             {cell.name}
