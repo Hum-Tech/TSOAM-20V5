@@ -563,7 +563,7 @@ export function Header({ onMenuClick, sidebarOpen }: HeaderProps) {
         </div>
 
         {/* Center - Clock */}
-        <div className="flex items-center space-x-2 text-sm font-mono">
+        <div className="hidden md:flex items-center space-x-2 text-xs md:text-sm font-mono flex-shrink-0">
           <Clock className="h-4 w-4" />
           <span>
             {currentTime.toLocaleTimeString("en-US", {
@@ -576,7 +576,7 @@ export function Header({ onMenuClick, sidebarOpen }: HeaderProps) {
         </div>
 
         {/* Right side - Status and User Actions */}
-        <div className="flex items-center space-x-4">
+        <div className="flex items-center space-x-2 md:space-x-4 flex-shrink-0">
           {/* Offline Indicator with Sync Status */}
           <OfflineIndicator />
 
