@@ -43,7 +43,7 @@ async function initializeSupabaseAdmin() {
 
     // Create admin user
     console.log('🔧 Creating admin user...');
-    
+
     const passwordHash = hashPassword('admin123');
 
     const { data: newUser, error: createError } = await supabaseAdmin
@@ -51,17 +51,33 @@ async function initializeSupabaseAdmin() {
       .insert([{
         email: 'admin@tsoam.org',
         password_hash: passwordHash,
-        full_name: 'Church Administrator',
-        phone: '',
-        role: 'admin',
-        is_active: true
+        full_name: 'Church Administrator'
       }])
       .select()
       .single();
 
     if (createError) {
       console.log('⚠️  Could not create admin user:', createError.message);
-      return false;
+      console.log('   Error details:', createError.details);
+      console.log('   Trying alternative approach...');
+
+      // Try with minimal fields
+      const { data: altUser, error: altError } = await supabaseAdmin
+        .from('users')
+        .insert([{
+          email: 'admin@tsoam.org',
+          password_hash: passwordHash
+        }])
+        .select()
+        .single();
+
+      if (altError) {
+        console.log('⚠️  Alternative also failed:', altError.message);
+        return false;
+      }
+
+      console.log('✅ Admin user created with alternative schema');
+      return true;
     }
 
     console.log('✅ Admin user created successfully');
