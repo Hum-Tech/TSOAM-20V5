@@ -226,9 +226,9 @@ export function Header({ onMenuClick, sidebarOpen }: HeaderProps) {
 
         // If it's an internal message, only show to the specific recipient
         if (notif.type === "internal" && notif.recipientId) {
-          return notif.recipientId === user.id ||
-                 notif.recipientEmail === user.email ||
-                 notif.recipientId === `E00${user.id}`;
+          return notif.recipientId === user?.id ||
+                 notif.recipientEmail === user?.email ||
+                 notif.recipientId === `E00${user?.id}`;
         }
         // Show all other types of notifications
         return true;
