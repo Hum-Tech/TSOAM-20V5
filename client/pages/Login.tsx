@@ -303,8 +303,8 @@ export default function Login() {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
 
-      // Use safe JSON parsing to avoid body stream issues
-      const result = await safeJsonParse(response);
+      // Parse JSON response
+      const result = await response.json();
 
       if (result.success) {
         // Reset form and validation state
