@@ -248,12 +248,14 @@ export function AccountVerification({
     }
 
     try {
-      const response = await fetch("/api/users/verify-account", {
+      // Use correct endpoint based on action
+      const endpoint = approvalAction === "approve" ? "/api/users/approve" : "/api/users/reject";
+
+      const response = await fetch(endpoint, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          userId: selectedUser.id,
-          action: approvalAction,
+          requestId: selectedUser.id,
           assignedRole: assignedRole,
           assignedDepartment: assignedDepartment,
           reason: approvalReason,
