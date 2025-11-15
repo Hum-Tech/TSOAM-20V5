@@ -864,9 +864,9 @@ export function Header({ onMenuClick, sidebarOpen }: HeaderProps) {
             </DropdownMenuTrigger>
             <DropdownMenuContent className="w-48 md:w-56" align="end" forceMount>
               <div className="flex flex-col space-y-1 p-2">
-                <p className="text-xs md:text-sm font-medium leading-none truncate">{user.name}</p>
+                <p className="text-xs md:text-sm font-medium leading-none truncate">{user?.name || "User"}</p>
                 <p className="text-xs leading-none text-muted-foreground truncate">
-                  {user.email}
+                  {user?.email || ""}
                 </p>
                 <Badge variant="outline" className="w-fit text-xs mt-1">
                   {user.role}
