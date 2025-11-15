@@ -60,7 +60,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { transferService } from "@/services/TransferService";
 import { homeCellService, type HomeCell } from "@/services/HomeCellService";
 import { MemberTitheRecords } from "@/components/MemberTitheRecords";
-import { HomeCellsHierarchyView } from "@/components/HomeCellsHierarchyView";
+import { HomeCellsView } from "@/components/HomeCellsView";
 import RoleBasedAccessService from "@/services/RoleBasedAccessService";
 
 /**
