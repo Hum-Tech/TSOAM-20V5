@@ -1,4 +1,10 @@
-const { createClient } = require('@supabase/supabase-js');
+let createClient;
+try {
+  ({ createClient } = require('@supabase/supabase-js'));
+} catch (error) {
+  console.warn('Supabase client not available:', error.message);
+  createClient = null;
+}
 require('dotenv').config();
 
 const supabaseUrl = process.env.SUPABASE_URL || 'https://ncrecohwtejwygkyoaul.supabase.co';
