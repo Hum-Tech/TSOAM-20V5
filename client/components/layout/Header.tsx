@@ -544,7 +544,7 @@ export function Header({ onMenuClick, sidebarOpen }: HeaderProps) {
         <div className="flex items-center space-x-2 md:space-x-4 min-w-0 flex-1 md:flex-none">
           <div className="hidden md:block">
             <h2 className="text-base md:text-lg font-semibold text-foreground">
-              {getTimeBasedGreeting()}, {user.name.split(" ")[0]}!
+              {getTimeBasedGreeting()}, {user?.name ? user.name.split(" ")[0] : "User"}!
             </h2>
             <p className="text-xs md:text-sm text-muted-foreground">
               {currentTime.toLocaleDateString("en-US", {
