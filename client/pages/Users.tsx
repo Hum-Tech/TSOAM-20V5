@@ -87,16 +87,58 @@ export default function Users() {
     });
   }, []);
 
-  const loadUsers = () => {
+  const loadUsers = async () => {
+    try {
+      // First, try to fetch pending users from database
+      const pendingResponse = await fetch("/api/users/pending-verification");
+      if (pendingResponse.ok) {
+        const pendingData = await pendingResponse.json();
+        if (pendingData.success && pendingData.users) {
+          // Convert pending users to the expected format and merge with system users
+          const pendingUsers = pendingData.users.map((user: any) => ({
+            id: user.id || user.request_id,
+            name: user.name,
+            email: user.email,
+            phone: user.phone || "",
+            role: user.role || "User",
+            department: user.department || "",
+            employeeId: user.employeeId || user.employee_id || "",
+            isActive: false,
+            isNewAccount: true,
+            permissions: {},
+            createdAt: user.requestedAt || user.created_at
+          }));
+
+          // Also get system users from localStorage
+          const allSystemUsers = getAllUsers();
+
+          // Combine, with pending users shown first
+          const allUsers = [...pendingUsers, ...allSystemUsers];
+
+          // Deduplicate
+          const uniqueUsers = allUsers.filter(
+            (user, index, self) => index === self.findIndex((u) => u.id === user.id),
+          );
+
+          console.log("Loading users from database:", uniqueUsers);
+          setUsers(uniqueUsers);
+          return;
+        }
+      }
+    } catch (error) {
+      console.warn("Could not fetch pending users from database:", error);
+    }
+
+    // Fallback to localStorage only
     const allUsers = getAllUsers();
-    console.log("Loading users:", allUsers); // Debug log
+    console.log("Loading users from localStorage:", allUsers);
 
     // Deduplicate users to prevent duplicate keys
     const uniqueUsers = allUsers.filter(
       (user, index, self) => index === self.findIndex((u) => u.id === user.id),
     );
 
-    console.log("Unique users:", uniqueUsers); // Debug log
+    console.log("Unique users:", uniqueUsers);
     setUsers(uniqueUsers);
   };
 
