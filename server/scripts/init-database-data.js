@@ -6,10 +6,10 @@ async function initializeData() {
   console.log("🔄 Initializing database with sample data...");
 
   try {
-    // Check if data already exists
-    const existingUsers = await query("SELECT COUNT(*) as count FROM users");
-    if (existingUsers.success && existingUsers.data[0].count > 0) {
-      console.log("📋 Sample data already exists, skipping initialization");
+    // Ensure admin user exists
+    const existingAdmin = await query("SELECT id FROM users WHERE email = ?", ["admin@tsoam.org"]);
+    if (existingAdmin.success && existingAdmin.data && existingAdmin.data.length > 0) {
+      console.log("📋 Admin user already exists, skipping initialization");
       return;
     }
 
