@@ -62,10 +62,11 @@ async function initializeSupabaseAdmin() {
       console.log('   Error details:', createError.details);
       console.log('   Trying alternative approach...');
 
-      // Try with minimal fields
+      // Try with UUID ID
       const { data: altUser, error: altError } = await supabaseAdmin
         .from('users')
         .insert([{
+          id: uuidv4(),
           email: 'admin@tsoam.org',
           password_hash: passwordHash
         }])
