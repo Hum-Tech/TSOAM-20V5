@@ -134,11 +134,16 @@ app.post("/api/upload", upload.array("files", 10), (req, res) => {
 
 // Health check endpoint
 app.get("/api/health", async (req, res) => {
-  const dbStatus = await testConnection();
+  const localDbStatus = await testLocalConnection();
+  const supabaseStatus = process.env.SUPABASE_URL ? await testSupabaseConnection() : false;
+
   res.json({
     status: "OK",
     timestamp: new Date().toISOString(),
-    database: dbStatus ? "Connected" : "Disconnected",
+    database: {
+      local: localDbStatus ? "Connected" : "Disconnected",
+      supabase: supabaseStatus ? "Connected" : "Not Configured"
+    },
     server: "Running",
   });
 });
