@@ -393,6 +393,16 @@ const AppContent = () => {
                   </ProtectedRoute>
                 }
               />
+              <Route
+                path="/admin/setup"
+                element={
+                  <ProtectedRoute allowedRoles={["admin"]}>
+                    <Layout>
+                      <AdminSetup />
+                    </Layout>
+                  </ProtectedRoute>
+                }
+              />
               {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
               <Route path="*" element={<NotFound />} />
             </Routes>
