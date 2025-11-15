@@ -74,12 +74,17 @@ router.post("/bootstrap", async (req, res) => {
       });
     }
 
+    // Ensure name is always provided
+    const adminName = (newUser.name || newUser.full_name || newUser.email || "Admin").trim();
+
     res.json({
       success: true,
       message: 'System initialized with admin user',
       user: {
+        id: newUser.id,
         email: newUser.email,
-        fullName: newUser.name,
+        fullName: adminName,
+        name: adminName,
         role: newUser.role
       }
     });
