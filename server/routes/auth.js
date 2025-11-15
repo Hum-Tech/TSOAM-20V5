@@ -304,7 +304,7 @@ router.post("/users/create-request", async (req, res) => {
 
     // Check if request already exists
     const { data: existingRequest } = await supabaseAdmin
-      .from('account_requests')
+      .from('user_requests')
       .select('id, status')
       .eq('email', email)
       .limit(1);
@@ -320,24 +320,22 @@ router.post("/users/create-request", async (req, res) => {
     }
 
     // Create account request
-    const { v4: uuidv4 } = require('uuid');
     const requestId = `REQ-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
 
     const { data: newRequest, error: createError } = await supabaseAdmin
-      .from('account_requests')
+      .from('user_requests')
       .insert([{
         request_id: requestId,
         name: name,
         email: email,
         phone: phone || null,
-        role: role || 'user',
+        role: role || 'User',
         department: department || null,
         employee_id: employee_id || null,
         requested_by: requested_by || 'Self',
         ip_address: ip_address || null,
         request_reason: request_reason || 'New user account creation request',
-        status: 'pending',
-        created_at: new Date().toISOString()
+        status: 'pending'
       }])
       .select()
       .single();
