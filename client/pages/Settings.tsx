@@ -32,7 +32,6 @@ import {
   AlertTriangle,
 } from "lucide-react";
 import { BackupRecovery } from "@/components/BackupRecovery";
-import { HomeCellsManagement } from "@/components/HomeCellsManagement";
 import {
   settingsService,
   type ChurchSettings,
@@ -46,6 +45,7 @@ import {
 } from "@/services/SettingsService";
 import { backupService } from "@/services/BackupService";
 import { homeCellService, type HomeCell } from "@/services/HomeCellService";
+import { homeCellHierarchyService, type District, type Zone, type Homecell } from "@/services/HomeCellHierarchyService";
 
 export default function Settings() {
   const { toast } = useToast();
@@ -75,9 +75,114 @@ export default function Settings() {
     settingsService.getEmailSettings(),
   );
 
-  // HomeCells state
-  const [districts, setDistricts] = useState<any[]>([]);
-  const [homeCellsLoading, setHomeCellsLoading] = useState(false);
+  // Home Cells state
+  const [homeCells, setHomeCells] = useState<HomeCell[]>([]);
+  const [showAddHomeCellDialog, setShowAddHomeCellDialog] = useState(false);
+  const [newHomeCellForm, setNewHomeCellForm] = useState({
+    name: "",
+    leader: "",
+    leaderPhone: "",
+    meetingDay: "",
+    meetingTime: "",
+    location: "",
+    description: "",
+  });
+
+  // Hierarchical Home Cells
+  const [districts, setDistricts] = useState<District[]>([]);
+  const [zones, setZones] = useState<Zone[]>([]);
+  const [hierHomecells, setHierHomecells] = useState<Homecell[]>([]);
+  const [zoneEdits, setZoneEdits] = useState<Record<number, { leader: string; leaderPhone: string }>>({});
+  const [homecellEdits, setHomecellEdits] = useState<Record<number, Partial<Homecell>>>({});
+
+  const refreshHierarchy = () => {
+    const d = homeCellHierarchyService.getDistricts();
+    const z = homeCellHierarchyService.getZones();
+    const h = homeCellHierarchyService.getHomecells();
+    setDistricts(d);
+    setZones(z);
+    setHierHomecells(h);
+    const zEdits: Record<number, { leader: string; leaderPhone: string }> = {};
+    z.forEach((zz) => {
+      zEdits[zz.id] = { leader: zz.leader || "", leaderPhone: zz.leaderPhone || "" };
+    });
+    setZoneEdits(zEdits);
+    const hEdits: Record<number, Partial<Homecell>> = {};
+    h.forEach((hc) => {
+      hEdits[hc.id] = {
+        name: hc.name,
+        leader: hc.leader || "",
+        leaderPhone: hc.leaderPhone || "",
+        meetingDay: hc.meetingDay || "",
+        meetingTime: hc.meetingTime || "",
+        location: hc.location || "",
+        description: hc.description || "",
+      };
+    });
+    setHomecellEdits(hEdits);
+  };
+
+  const saveZoneLeader = (zoneId: number) => {
+    const edit = zoneEdits[zoneId] || { leader: "", leaderPhone: "" };
+    const updated = homeCellHierarchyService.assignZoneLeader(zoneId, edit.leader, edit.leaderPhone);
+    if (updated) {
+      refreshHierarchy();
+      window.dispatchEvent(new CustomEvent("homeCellUpdated"));
+      toast({ title: "Zone updated", description: `Leader set for ${updated.name}` });
+    }
+  };
+
+  const saveHomecell = (homecellId: number) => {
+    const edit = homecellEdits[homecellId] || {};
+    const updated = homeCellHierarchyService.updateHomecellDetails(homecellId, {
+      name: (edit.name as string) || "",
+      leader: edit.leader || "",
+      leaderPhone: edit.leaderPhone || "",
+      meetingDay: edit.meetingDay || "",
+      meetingTime: edit.meetingTime || "",
+      location: edit.location || "",
+      description: edit.description || "",
+    });
+    if (updated) {
+      refreshHierarchy();
+      window.dispatchEvent(new CustomEvent("homeCellUpdated"));
+      toast({ title: "Homecell updated", description: `Details saved for ${updated.name}` });
+    }
+  };
+
+  const toggleHomecellActive = (homecellId: number, active: boolean) => {
+    const ok = homeCellHierarchyService.toggleHomecellActive(homecellId, active);
+    if (ok) {
+      refreshHierarchy();
+      window.dispatchEvent(new CustomEvent("homeCellUpdated"));
+    }
+  };
+
+  const [zoneNewHomecellName, setZoneNewHomecellName] = useState<Record<number, string>>({});
+
+  const addHomecellToZone = (zoneId: number) => {
+    const name = (zoneNewHomecellName[zoneId] || "").trim();
+    if (!name) {
+      toast({ title: "Name required", description: "Enter a Homecell name" });
+      return;
+    }
+    const created = homeCellHierarchyService.createHomecell(zoneId, name);
+    if (created) {
+      setZoneNewHomecellName((prev) => ({ ...prev, [zoneId]: "" }));
+      refreshHierarchy();
+      window.dispatchEvent(new CustomEvent("homeCellUpdated"));
+      toast({ title: "Homecell created", description: `${name} added` });
+    }
+  };
+
+  const deleteHomecell = (homecellId: number) => {
+    const ok = homeCellHierarchyService.deleteHomecell(homecellId);
+    if (ok) {
+      refreshHierarchy();
+      window.dispatchEvent(new CustomEvent("homeCellUpdated"));
+      toast({ title: "Homecell removed" });
+    }
+  };
 
   const [isSaving, setIsSaving] = useState(false);
 
@@ -97,38 +202,14 @@ export default function Settings() {
     return unsubscribe;
   }, []);
 
-  // Load home cells hierarchy
+  // Load home cells and hierarchy
   useEffect(() => {
-    const loadHomeCells = async () => {
-      setHomeCellsLoading(true);
-      try {
-        const districtData = await homeCellService.getAllDistricts();
-
-        // Load zones and homecells for each district
-        const districtsWithHierarchy = await Promise.all(
-          districtData.map(async (district) => {
-            const zones = await homeCellService.getZonesByDistrict(district.id);
-            const zonesWithHomeCells = await Promise.all(
-              zones.map(async (zone) => {
-                const homecells = await homeCellService.getHomeCellsByZone(
-                  zone.id
-                );
-                return { ...zone, homecells };
-              })
-            );
-            return { ...district, zones: zonesWithHomeCells };
-          })
-        );
-
-        setDistricts(districtsWithHierarchy);
-      } catch (error) {
-        console.error("Error loading home cells:", error);
-      } finally {
-        setHomeCellsLoading(false);
-      }
-    };
-
-    loadHomeCells();
+    const cells = homeCellService.getAllHomeCells();
+    setHomeCells(cells);
+    refreshHierarchy();
+    const onUpdate = () => refreshHierarchy();
+    window.addEventListener("homeCellUpdated", onUpdate);
+    return () => window.removeEventListener("homeCellUpdated", onUpdate);
   }, []);
 
   /**
@@ -559,6 +640,96 @@ export default function Settings() {
       });
     } finally {
       setIsSaving(false);
+    }
+  };
+
+  // Home Cell Management Functions
+  const handleAddHomeCell = () => {
+    if (!newHomeCellForm.name.trim()) {
+      toast({
+        title: "Error",
+        description: "Home cell name is required",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    const newCell = homeCellService.createHomeCell({
+      name: newHomeCellForm.name,
+      leader: newHomeCellForm.leader,
+      leaderPhone: newHomeCellForm.leaderPhone,
+      meetingDay: newHomeCellForm.meetingDay,
+      meetingTime: newHomeCellForm.meetingTime,
+      location: newHomeCellForm.location,
+      description: newHomeCellForm.description,
+      isActive: true,
+    });
+
+    setHomeCells([...homeCells, newCell]);
+    setNewHomeCellForm({
+      name: "",
+      leader: "",
+      leaderPhone: "",
+      meetingDay: "",
+      meetingTime: "",
+      location: "",
+      description: "",
+    });
+    setShowAddHomeCellDialog(false);
+
+    // Emit event to notify other components
+    window.dispatchEvent(new CustomEvent('homeCellUpdated'));
+
+    toast({
+      title: "Success",
+      description: `Home cell "${newCell.name}" has been created`,
+      duration: 3000,
+    });
+  };
+
+  const handleToggleHomeCellStatus = (id: number) => {
+    const cell = homeCells.find(c => c.id === id);
+    if (!cell) return;
+
+    const updated = cell.isActive
+      ? homeCellService.deactivateHomeCell(id)
+      : homeCellService.activateHomeCell(id);
+
+    if (updated) {
+      const updatedCells = homeCells.map(c =>
+        c.id === id ? { ...c, isActive: !c.isActive } : c
+      );
+      setHomeCells(updatedCells);
+
+      // Emit event to notify other components
+      window.dispatchEvent(new CustomEvent('homeCellUpdated'));
+
+      toast({
+        title: "Success",
+        description: `Home cell "${cell.name}" has been ${cell.isActive ? 'deactivated' : 'activated'}`,
+        duration: 3000,
+      });
+    }
+  };
+
+  const handleDeleteHomeCell = (id: number) => {
+    const cell = homeCells.find(c => c.id === id);
+    if (!cell) return;
+
+    if (confirm(`Are you sure you want to delete "${cell.name}" home cell? This action cannot be undone.`)) {
+      const deleted = homeCellService.deleteHomeCell(id);
+      if (deleted) {
+        setHomeCells(homeCells.filter(c => c.id !== id));
+
+        // Emit event to notify other components
+        window.dispatchEvent(new CustomEvent('homeCellUpdated'));
+
+        toast({
+          title: "Success",
+          description: `Home cell "${cell.name}" has been deleted`,
+          duration: 3000,
+        });
+      }
     }
   };
 
@@ -1484,57 +1655,276 @@ export default function Settings() {
           </TabsContent>
 
           <TabsContent value="homecells">
-            <HomeCellsManagement
-              districts={districts}
-              isLoading={homeCellsLoading}
-              onAddDistrict={() => {
-                toast({
-                  title: "Feature coming soon",
-                  description: "Add district functionality will be available soon",
-                });
-              }}
-              onEditDistrict={(id) => {
-                toast({
-                  title: "Feature coming soon",
-                  description: "Edit district functionality will be available soon",
-                });
-              }}
-              onDeleteDistrict={(id) => {
-                // Handle delete
-              }}
-              onAddZone={(districtId) => {
-                toast({
-                  title: "Feature coming soon",
-                  description: "Add zone functionality will be available soon",
-                });
-              }}
-              onEditZone={(id) => {
-                toast({
-                  title: "Feature coming soon",
-                  description: "Edit zone functionality will be available soon",
-                });
-              }}
-              onDeleteZone={(id) => {
-                // Handle delete
-              }}
-              onAddHomeCell={(zoneId) => {
-                toast({
-                  title: "Feature coming soon",
-                  description: "Add home cell functionality will be available soon",
-                });
-              }}
-              onEditHomeCell={(id) => {
-                toast({
-                  title: "Feature coming soon",
-                  description: "Edit home cell functionality will be available soon",
-                });
-              }}
-              onDeleteHomeCell={(id) => {
-                // Handle delete
-              }}
-            />
+            <div className="space-y-6">
+              <Card>
+                <CardHeader>
+                  <CardTitle>Districts, Zones & Homecells</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-6">
+                    {districts.map((d) => (
+                      <div key={d.id} className="border rounded-lg p-4">
+                        <h3 className="font-semibold text-lg mb-3">District: {d.name}</h3>
+                        <div className="space-y-4">
+                          {zones.filter((z) => z.districtId === d.id).map((z) => (
+                            <div key={z.id} className="border rounded p-3 bg-muted/30">
+                              <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-3">
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-3 flex-1">
+                                  <div>
+                                    <Label>Zone Leader</Label>
+                                    <Input
+                                      value={zoneEdits[z.id]?.leader ?? ""}
+                                      onChange={(e) =>
+                                        setZoneEdits((prev) => ({
+                                          ...prev,
+                                          [z.id]: { ...(prev[z.id] || { leader: "", leaderPhone: "" }), leader: e.target.value },
+                                        }))
+                                      }
+                                      placeholder="Full name"
+                                    />
+                                  </div>
+                                  <div>
+                                    <Label>Leader Phone</Label>
+                                    <Input
+                                      value={zoneEdits[z.id]?.leaderPhone ?? ""}
+                                      onChange={(e) =>
+                                        setZoneEdits((prev) => ({
+                                          ...prev,
+                                          [z.id]: { ...(prev[z.id] || { leader: "", leaderPhone: "" }), leaderPhone: e.target.value },
+                                        }))
+                                      }
+                                      placeholder="+254 ..."
+                                    />
+                                  </div>
+                                </div>
+                                <Button onClick={() => saveZoneLeader(z.id)}>Save Zone Leader</Button>
+                              </div>
+
+                              <div className="mt-3 grid gap-2">
+                                <div className="flex items-center gap-2">
+                                  <Input
+                                    placeholder="Add homecell name (e.g., Zion, Judah, Siloam)"
+                                    value={zoneNewHomecellName[z.id] || ""}
+                                    onChange={(e)=> setZoneNewHomecellName((p)=> ({...p, [z.id]: e.target.value}))}
+                                  />
+                                  <Button variant="outline" onClick={()=> addHomecellToZone(z.id)}>Add Homecell</Button>
+                                </div>
+                                {hierHomecells.filter((h) => h.zoneId === z.id).map((h) => (
+                                  <div key={h.id} className="rounded border bg-white p-3">
+                                    <div className="flex items-center justify-between">
+                                      <div className="font-medium w-full max-w-md">
+                                        <Label className="text-xs">Homecell Name</Label>
+                                        <Input
+                                          value={homecellEdits[h.id]?.name as string || ""}
+                                          onChange={(e)=> setHomecellEdits((prev)=> ({...prev, [h.id]: { ...(prev[h.id] || {}), name: e.target.value }}))}
+                                        />
+                                      </div>
+                                      <div className="flex items-center gap-2">
+                                        <Badge variant={h.isActive ? "default" : "secondary"}>{h.isActive ? "Active" : "Inactive"}</Badge>
+                                        <Switch checked={h.isActive} onCheckedChange={(checked) => toggleHomecellActive(h.id, checked)} />
+                                        <Button variant="destructive" size="sm" onClick={()=> deleteHomecell(h.id)}>Delete</Button>
+                                      </div>
+                                    </div>
+                                    <div className="mt-2 grid grid-cols-1 md:grid-cols-3 gap-3">
+                                      <div>
+                                        <Label>Leader</Label>
+                                        <Input
+                                          value={homecellEdits[h.id]?.leader ?? ""}
+                                          onChange={(e) =>
+                                            setHomecellEdits((prev) => ({
+                                              ...prev,
+                                              [h.id]: { ...(prev[h.id] || {}), leader: e.target.value },
+                                            }))
+                                          }
+                                        />
+                                      </div>
+                                      <div>
+                                        <Label>Leader Phone</Label>
+                                        <Input
+                                          value={homecellEdits[h.id]?.leaderPhone ?? ""}
+                                          onChange={(e) =>
+                                            setHomecellEdits((prev) => ({
+                                              ...prev,
+                                              [h.id]: { ...(prev[h.id] || {}), leaderPhone: e.target.value },
+                                            }))
+                                          }
+                                        />
+                                      </div>
+                                      <div>
+                                        <Label>Meeting Day</Label>
+                                        <Input
+                                          value={homecellEdits[h.id]?.meetingDay ?? ""}
+                                          onChange={(e) =>
+                                            setHomecellEdits((prev) => ({
+                                              ...prev,
+                                              [h.id]: { ...(prev[h.id] || {}), meetingDay: e.target.value },
+                                            }))
+                                          }
+                                        />
+                                      </div>
+                                      <div>
+                                        <Label>Meeting Time</Label>
+                                        <Input
+                                          value={homecellEdits[h.id]?.meetingTime ?? ""}
+                                          onChange={(e) =>
+                                            setHomecellEdits((prev) => ({
+                                              ...prev,
+                                              [h.id]: { ...(prev[h.id] || {}), meetingTime: e.target.value },
+                                            }))
+                                          }
+                                        />
+                                      </div>
+                                      <div className="md:col-span-2">
+                                        <Label>Location</Label>
+                                        <Input
+                                          value={homecellEdits[h.id]?.location ?? ""}
+                                          onChange={(e) =>
+                                            setHomecellEdits((prev) => ({
+                                              ...prev,
+                                              [h.id]: { ...(prev[h.id] || {}), location: e.target.value },
+                                            }))
+                                          }
+                                        />
+                                      </div>
+                                      <div className="md:col-span-3">
+                                        <Label>Description</Label>
+                                        <Input
+                                          value={homecellEdits[h.id]?.description ?? ""}
+                                          onChange={(e) =>
+                                            setHomecellEdits((prev) => ({
+                                              ...prev,
+                                              [h.id]: { ...(prev[h.id] || {}), description: e.target.value },
+                                            }))
+                                          }
+                                        />
+                                      </div>
+                                    </div>
+                                    <div className="mt-2 flex justify-end">
+                                      <Button size="sm" onClick={() => saveHomecell(h.id)}>Save Homecell</Button>
+                                    </div>
+                                  </div>
+                                ))}
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
           </TabsContent>
         </Tabs>
+
+        {/* Add Home Cell Dialog */}
+        {showAddHomeCellDialog && (
+          <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+            <div className="bg-white rounded-lg p-6 w-full max-w-md mx-4">
+              <h3 className="text-lg font-semibold mb-4">Add New Home Cell</h3>
+              <div className="space-y-4">
+                <div>
+                  <Label htmlFor="cellName">Home Cell Name *</Label>
+                  <Input
+                    id="cellName"
+                    value={newHomeCellForm.name}
+                    onChange={(e) =>
+                      setNewHomeCellForm({
+                        ...newHomeCellForm,
+                        name: e.target.value,
+                      })
+                    }
+                    placeholder="Enter home cell name"
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="cellLeader">Cell Leader</Label>
+                  <Input
+                    id="cellLeader"
+                    value={newHomeCellForm.leader}
+                    onChange={(e) =>
+                      setNewHomeCellForm({
+                        ...newHomeCellForm,
+                        leader: e.target.value,
+                      })
+                    }
+                    placeholder="Enter leader name"
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="cellLeaderPhone">Leader Phone</Label>
+                  <Input
+                    id="cellLeaderPhone"
+                    value={newHomeCellForm.leaderPhone}
+                    onChange={(e) =>
+                      setNewHomeCellForm({
+                        ...newHomeCellForm,
+                        leaderPhone: e.target.value,
+                      })
+                    }
+                    placeholder="Enter leader phone"
+                  />
+                </div>
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <Label htmlFor="meetingDay">Meeting Day</Label>
+                    <Input
+                      id="meetingDay"
+                      value={newHomeCellForm.meetingDay}
+                      onChange={(e) =>
+                        setNewHomeCellForm({
+                          ...newHomeCellForm,
+                          meetingDay: e.target.value,
+                        })
+                      }
+                      placeholder="e.g., Wednesday"
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="meetingTime">Meeting Time</Label>
+                    <Input
+                      id="meetingTime"
+                      value={newHomeCellForm.meetingTime}
+                      onChange={(e) =>
+                        setNewHomeCellForm({
+                          ...newHomeCellForm,
+                          meetingTime: e.target.value,
+                        })
+                      }
+                      placeholder="e.g., 6:00 PM"
+                    />
+                  </div>
+                </div>
+                <div>
+                  <Label htmlFor="cellLocation">Location</Label>
+                  <Input
+                    id="cellLocation"
+                    value={newHomeCellForm.location}
+                    onChange={(e) =>
+                      setNewHomeCellForm({
+                        ...newHomeCellForm,
+                        location: e.target.value,
+                      })
+                    }
+                    placeholder="Enter meeting location"
+                  />
+                </div>
+              </div>
+              <div className="flex gap-2 mt-6">
+                <Button
+                  variant="outline"
+                  onClick={() => setShowAddHomeCellDialog(false)}
+                  className="flex-1"
+                >
+                  Cancel
+                </Button>
+                <Button onClick={handleAddHomeCell} className="flex-1">
+                  Add Home Cell
+                </Button>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     </Layout>
   );

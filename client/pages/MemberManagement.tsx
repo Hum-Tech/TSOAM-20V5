@@ -58,9 +58,8 @@ import {
 import { exportService } from "@/services/ExportService";
 import { useAuth } from "@/contexts/AuthContext";
 import { transferService } from "@/services/TransferService";
-import { homeCellService, type HomeCell } from "@/services/HomeCellService";
+import { homeCellHierarchyService, type District, type Zone, type Homecell } from "@/services/HomeCellHierarchyService";
 import { MemberTitheRecords } from "@/components/MemberTitheRecords";
-import { HomeCellsView } from "@/components/HomeCellsView";
 import RoleBasedAccessService from "@/services/RoleBasedAccessService";
 
 /**
@@ -247,10 +246,7 @@ export default function MemberManagement() {
   const isAdmin = user?.role === "admin";
 
   // Check if user can access tithe management (disabled for normal users)
-  const canAccessTitheManagement = user?.role !== "user" &&
-    (user?.role === "admin" ||
-     user?.role === "pastor" ||
-     user?.role === "finance");
+  const canAccessTitheManagement = user?.role !== "user";
   const [searchTerm, setSearchTerm] = useState("");
   const [members, setMembers] = useState(mockMembers);
   const [selectedMember, setSelectedMember] = useState<Member | null>(null);
@@ -288,13 +284,17 @@ export default function MemberManagement() {
   const [statusChangeReason, setStatusChangeReason] = useState("");
   const [filterEmployment, setFilterEmployment] = useState("All");
   const [filterHomeCell, setFilterHomeCell] = useState("All");
-  const [homeCells, setHomeCells] = useState<HomeCell[]>([]);
-  const [districts, setDistricts] = useState<any[]>([]);
-  const [homeCellsLoading, setHomeCellsLoading] = useState(false);
+  const [districts, setDistricts] = useState<District[]>([]);
+  const [zones, setZones] = useState<Zone[]>([]);
+  const [homecells, setHomecells] = useState<Homecell[]>([]);
+  const [homecellOptions, setHomecellOptions] = useState<{id:number; name:string; fullPath:string; isActive:boolean}[]>([]);
   const [activeTab, setActiveTab] = useState("members");
   const [showTransferHomeCellDialog, setShowTransferHomeCellDialog] = useState(false);
   const [memberToTransfer, setMemberToTransfer] = useState<Member | null>(null);
   const [newHomeCellForTransfer, setNewHomeCellForTransfer] = useState("");
+  const [transferDistrictId, setTransferDistrictId] = useState<number | null>(null);
+  const [transferZoneId, setTransferZoneId] = useState<number | null>(null);
+  const [transferHomecellId, setTransferHomecellId] = useState<number | null>(null);
   const [showHomeCellDetailsDialog, setShowHomeCellDetailsDialog] = useState(false);
   const [selectedHomeCellForDetails, setSelectedHomeCellForDetails] = useState<any>(null);
   const [isEditingHomeCell, setIsEditingHomeCell] = useState(false);
@@ -309,6 +309,9 @@ export default function MemberManagement() {
   const [showAssignHomeCellDialog, setShowAssignHomeCellDialog] = useState(false);
   const [memberToAssign, setMemberToAssign] = useState<Member | null>(null);
   const [selectedHomeCellForAssignment, setSelectedHomeCellForAssignment] = useState("");
+  const [assignDistrictId, setAssignDistrictId] = useState<number | null>(null);
+  const [assignZoneId, setAssignZoneId] = useState<number | null>(null);
+  const [assignHomecellId, setAssignHomecellId] = useState<number | null>(null);
   const [showAddMemberDialog, setShowAddMemberDialog] = useState(false);
   const [isTransferMode, setIsTransferMode] = useState(false);
   const [showTitheRecords, setShowTitheRecords] = useState(false);
@@ -329,11 +332,14 @@ export default function MemberManagement() {
     membershipState: "Active",
     serviceGroups: [] as string[],
     bornAgain: false,
-    baptized: true, // Default to true since they're becoming full members
+    baptized: true,
     baptismDate: "",
     bibleStudyCompleted: false,
     bibleStudyCompletionDate: "",
   });
+  const [addDistrictId, setAddDistrictId] = useState<number | null>(null);
+  const [addZoneId, setAddZoneId] = useState<number | null>(null);
+  const [addHomecellId, setAddHomecellId] = useState<number | null>(null);
 
   // Load members including transferred ones on component mount
   useEffect(() => {
@@ -356,44 +362,12 @@ export default function MemberManagement() {
   }, []);
 
   // Load home cells and refresh when settings change
-  const loadHomeCells = async () => {
-    const availableHomeCells = await homeCellService.getAllHomeCells();
-    setHomeCells(availableHomeCells);
+  const loadHomeCells = () => {
+    setDistricts(homeCellHierarchyService.getDistricts());
+    setZones(homeCellHierarchyService.getZones());
+    setHomecells(homeCellHierarchyService.getHomecells());
+    setHomecellOptions(homeCellHierarchyService.getActiveHomecellOptions());
   };
-
-  // Load home cells hierarchy
-  useEffect(() => {
-    const loadHomeCellsHierarchy = async () => {
-      setHomeCellsLoading(true);
-      try {
-        const districtData = await homeCellService.getAllDistricts();
-
-        // Load zones and homecells for each district
-        const districtsWithHierarchy = await Promise.all(
-          districtData.map(async (district) => {
-            const zones = await homeCellService.getZonesByDistrict(district.id);
-            const zonesWithHomeCells = await Promise.all(
-              zones.map(async (zone) => {
-                const homecells = await homeCellService.getHomeCellsByZone(
-                  zone.id
-                );
-                return { ...zone, homecells };
-              })
-            );
-            return { ...district, zones: zonesWithHomeCells };
-          })
-        );
-
-        setDistricts(districtsWithHierarchy);
-      } catch (error) {
-        console.error("Error loading home cells hierarchy:", error);
-      } finally {
-        setHomeCellsLoading(false);
-      }
-    };
-
-    loadHomeCellsHierarchy();
-  }, []);
 
   // Refresh home cells when settings page updates them
   useEffect(() => {
@@ -410,20 +384,20 @@ export default function MemberManagement() {
   }, []);
 
   // Function to switch to members tab with home cell filter
-  const viewHomeCellMembers = (homeCellName: string) => {
-    setFilterHomeCell(homeCellName);
+  const viewHomeCellMembers = (homeCellFullPath: string) => {
+    setFilterHomeCell(homeCellFullPath);
     setActiveTab("members");
   };
 
   // Function to view home cell details
-  const viewHomeCellDetails = (cell: HomeCell) => {
+  const viewHomeCellDetails = (cell: Homecell) => {
     setSelectedHomeCellForDetails(cell);
     setEditHomeCellForm({
-      leader: cell.leader_id || "",
-      leaderPhone: "",
-      meetingDay: cell.meeting_day || "",
-      meetingTime: cell.meeting_time || "",
-      location: cell.meeting_location || "",
+      leader: cell.leader || "",
+      leaderPhone: cell.leaderPhone || "",
+      meetingDay: cell.meetingDay || "",
+      meetingTime: cell.meetingTime || "",
+      location: cell.location || "",
       description: cell.description || "",
     });
     setIsEditingHomeCell(false);
@@ -440,9 +414,9 @@ export default function MemberManagement() {
     if (selectedHomeCellForDetails) {
       setEditHomeCellForm({
         leader: selectedHomeCellForDetails.leader || "",
-        leaderPhone: "",
-        meetingDay: selectedHomeCellForDetails.meeting_day || "",
-        meetingTime: selectedHomeCellForDetails.meeting_time || "",
+        leaderPhone: selectedHomeCellForDetails.leaderPhone || "",
+        meetingDay: selectedHomeCellForDetails.meetingDay || "",
+        meetingTime: selectedHomeCellForDetails.meetingTime || "",
         location: selectedHomeCellForDetails.location || "",
         description: selectedHomeCellForDetails.description || "",
       });
@@ -451,56 +425,52 @@ export default function MemberManagement() {
   };
 
   // Function to save home cell edits
-  const saveHomeCellEdits = async () => {
+  const saveHomeCellEdits = () => {
     if (!selectedHomeCellForDetails) return;
 
-    try {
-      const updated = await homeCellService.updateHomeCell(selectedHomeCellForDetails.id, editHomeCellForm);
+    const updated = homeCellHierarchyService.updateHomecellDetails(selectedHomeCellForDetails.id, editHomeCellForm);
 
-      if (updated && typeof updated === 'object' && 'id' in updated) {
-        // Update local state
-        const updatedHomeCells = homeCells.map(cell =>
-          cell.id === selectedHomeCellForDetails.id ? (updated as HomeCell) : cell
-        );
-        setHomeCells(updatedHomeCells);
-        setSelectedHomeCellForDetails(updated as HomeCell);
-        setIsEditingHomeCell(false);
+    if (updated) {
+      const updatedHomecells = homecells.map(cell =>
+        cell.id === selectedHomeCellForDetails.id ? updated : cell
+      );
+      setHomecells(updatedHomecells);
+      setSelectedHomeCellForDetails(updated);
+      setIsEditingHomeCell(false);
 
-        // Emit event to notify other components
-        window.dispatchEvent(new CustomEvent('homeCellUpdated'));
+      window.dispatchEvent(new CustomEvent('homeCellUpdated'));
 
-        alert(`Home cell updated successfully`);
-      } else {
-        alert("Failed to update home cell");
-      }
-    } catch (error) {
+      alert(`Home cell "${updated.name}" has been updated successfully`);
+    } else {
       alert("Failed to update home cell");
-      console.error(error);
     }
   };
 
   // Function to assign member to home cell
   const assignMemberToHomeCell = () => {
-    if (!memberToAssign || !selectedHomeCellForAssignment) {
-      alert("Please select a home cell for assignment");
+    if (!memberToAssign || assignHomecellId == null) {
+      alert("Please select a district, zone and home cell for assignment");
       return;
     }
 
-    // Update the member's home cell
+    const fullPath = homeCellHierarchyService.getHomecellFullPath(assignHomecellId);
+
     const updatedMembers = members.map(member =>
       member.id === memberToAssign.id
-        ? { ...member, homeCell: selectedHomeCellForAssignment }
+        ? { ...member, homeCell: fullPath }
         : member
     );
 
     setMembers(updatedMembers);
 
-    // Reset assignment dialog
     setShowAssignHomeCellDialog(false);
     setMemberToAssign(null);
     setSelectedHomeCellForAssignment("");
+    setAssignDistrictId(null);
+    setAssignZoneId(null);
+    setAssignHomecellId(null);
 
-    alert(`${memberToAssign.fullName} has been assigned to ${selectedHomeCellForAssignment} home cell`);
+    alert(`${memberToAssign.fullName} has been assigned to ${fullPath}`);
   };
 
   // Function to open assignment dialog for unassigned member
@@ -512,26 +482,29 @@ export default function MemberManagement() {
 
   // Function to transfer member to different home cell
   const handleTransferHomeCell = () => {
-    if (!memberToTransfer || !newHomeCellForTransfer) {
-      alert("Please select a home cell for transfer");
+    if (!memberToTransfer || transferHomecellId == null) {
+      alert("Please select a district, zone and home cell for transfer");
       return;
     }
 
-    // Update the member's home cell
+    const fullPath = homeCellHierarchyService.getHomecellFullPath(transferHomecellId);
+
     const updatedMembers = members.map(member =>
       member.id === memberToTransfer.id
-        ? { ...member, homeCell: newHomeCellForTransfer }
+        ? { ...member, homeCell: fullPath }
         : member
     );
 
     setMembers(updatedMembers);
 
-    // Reset transfer dialog
     setShowTransferHomeCellDialog(false);
     setMemberToTransfer(null);
     setNewHomeCellForTransfer("");
+    setTransferDistrictId(null);
+    setTransferZoneId(null);
+    setTransferHomecellId(null);
 
-    alert(`${memberToTransfer.fullName} has been transferred to ${newHomeCellForTransfer} home cell`);
+    alert(`${memberToTransfer.fullName} has been transferred to ${fullPath}`);
   };
 
   // Function to open form with pre-filled data from new member transfer
@@ -1123,14 +1096,14 @@ export default function MemberManagement() {
                 value={filterHomeCell}
                 onValueChange={setFilterHomeCell}
               >
-                <SelectTrigger className="w-40">
+                <SelectTrigger className="w-64">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="All">All Home Cells</SelectItem>
-                  {homeCells.map((cell) => (
-                    <SelectItem key={cell.id} value={cell.name}>
-                      {cell.name}
+                  {homecellOptions.map((opt) => (
+                    <SelectItem key={opt.id} value={opt.fullPath}>
+                      {opt.fullPath}
                     </SelectItem>
                   ))}
                 </SelectContent>
@@ -1177,7 +1150,7 @@ export default function MemberManagement() {
                       </div>
                     </TableCell>
                     <TableCell>
-                      <Badge variant="outline" className="text-sm">
+                      <Badge variant="outline" className="text-sm max-w-[260px] truncate" title={member.homeCell || "Not assigned"}>
                         {member.homeCell || "Not assigned"}
                       </Badge>
                     </TableCell>
@@ -1321,10 +1294,108 @@ export default function MemberManagement() {
           </TabsContent>
 
           <TabsContent value="homecells">
-            <HomeCellsView
-              districts={districts}
-              isLoading={homeCellsLoading}
-            />
+            <Card>
+              <CardHeader>
+                <CardTitle>Home Cells Management</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-6">
+                  {/* Home Cells Summary */}
+                  <div className="space-y-4">
+                    {districts.map((d) => (
+                      <Card key={d.id} className="border-l-4 border-l-primary/70">
+                        <CardContent className="p-4 space-y-3">
+                          <h3 className="text-lg font-semibold">District: {d.name}</h3>
+                          <div className="space-y-3">
+                            {zones.filter(z=>z.districtId===d.id).map((z)=>{
+                              const zHomecells = homecells.filter(h=>h.zoneId===z.id);
+                              const zoneMemberCount = filteredMembers.filter(m=> zHomecells.some(h=> m.homeCell===homeCellHierarchyService.getHomecellFullPath(h.id))).length;
+                              return (
+                                <div key={z.id} className="border rounded p-3 bg-muted/30">
+                                  <div className="flex items-center justify-between">
+                                    <div className="font-medium">Zone: {z.name}</div>
+                                    <Badge variant="outline">{zoneMemberCount} members</Badge>
+                                  </div>
+                                  <div className="text-sm text-muted-foreground">Leader: {z.leader || "Not assigned"} {z.leaderPhone ? `• ${z.leaderPhone}`: ""}</div>
+                                  <div className="mt-2 grid gap-2">
+                                    {zHomecells.map((hc)=>{
+                                      const fullPath = homeCellHierarchyService.getHomecellFullPath(hc.id);
+                                      const cellMembers = filteredMembers.filter(m=> m.homeCell===fullPath);
+                                      return (
+                                        <div key={hc.id} className="flex items-center justify-between rounded border bg-white p-2">
+                                          <div>
+                                            <div className="font-medium">{hc.name}</div>
+                                            <div className="text-xs text-muted-foreground">Leader: {hc.leader || "Not assigned"}{hc.leaderPhone? ` • ${hc.leaderPhone}`:""}</div>
+                                          </div>
+                                          <div className="flex items-center gap-2">
+                                            <Badge variant="outline">{cellMembers.length} members</Badge>
+                                            <Button size="sm" variant="outline" onClick={()=>viewHomeCellMembers(fullPath)}>View Members</Button>
+                                            <Button size="sm" variant="outline" onClick={()=>handleExportHomeCell(fullPath, "excel")}><Download className="h-4 w-4 mr-1"/>Excel</Button>
+                                            <Button size="sm" variant="outline" onClick={()=>handleExportHomeCell(fullPath, "pdf")}><FileText className="h-4 w-4 mr-1"/>PDF</Button>
+                                          </div>
+                                        </div>
+                                      );
+                                    })}
+                                  </div>
+                                </div>
+                              );
+                            })}
+                          </div>
+                        </CardContent>
+                      </Card>
+                    ))}
+                  </div>
+
+                  {/* Members without Home Cell */}
+                  {(() => {
+                    const unassignedMembers = filteredMembers.filter(m => !m.homeCell || m.homeCell === "");
+                    if (unassignedMembers.length > 0) {
+                      return (
+                        <Card className="border-l-4 border-l-orange-500">
+                          <CardContent className="p-4">
+                            <div className="flex items-center justify-between mb-2">
+                              <h3 className="font-semibold text-lg text-orange-700">
+                                Unassigned Members
+                              </h3>
+                              <Badge variant="outline" className="bg-orange-50 text-orange-700">
+                                {unassignedMembers.length} members
+                              </Badge>
+                            </div>
+                            <p className="text-sm text-muted-foreground mb-3">
+                              These members haven't been assigned to a home cell yet.
+                            </p>
+                            <div className="space-y-2">
+                              {unassignedMembers.slice(0, 8).map((member) => (
+                                <div key={member.id} className="flex items-center justify-between text-sm p-2 bg-gray-50 rounded">
+                                  <div className="flex-1">
+                                    <span className="font-medium">{member.fullName}</span>
+                                    <Badge variant="secondary" className="ml-2 text-xs">{member.memberId}</Badge>
+                                  </div>
+                                  <Button
+                                    size="sm"
+                                    variant="outline"
+                                    onClick={() => openAssignmentDialog(member)}
+                                    className="text-xs"
+                                  >
+                                    Assign
+                                  </Button>
+                                </div>
+                              ))}
+                              {unassignedMembers.length > 8 && (
+                                <div className="text-sm text-muted-foreground text-center p-2">
+                                  ... and {unassignedMembers.length - 8} more unassigned members
+                                </div>
+                              )}
+                            </div>
+                          </CardContent>
+                        </Card>
+                      );
+                    }
+                    return null;
+                  })()}
+                </div>
+              </CardContent>
+            </Card>
           </TabsContent>
         </Tabs>
 
@@ -2281,27 +2352,51 @@ export default function MemberManagement() {
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="addHomeCell">Home Cell</Label>
-                  <Select
-                    value={addMemberForm.homeCell}
-                    onValueChange={(value) =>
-                      setAddMemberForm({
-                        ...addMemberForm,
-                        homeCell: value,
-                      })
-                    }
-                  >
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select home cell" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {homeCells.map((cell) => (
-                        <SelectItem key={cell.id} value={cell.name}>
-                          {cell.name}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
+                  <Label>Home Cell</Label>
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                    <div>
+                      <Label>District</Label>
+                      <Select value={addDistrictId?.toString() || ""} onValueChange={(v)=>{ setAddDistrictId(parseInt(v)); setAddZoneId(null); setAddHomecellId(null); setAddMemberForm({...addMemberForm, homeCell: ""}); }}>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Select district" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {districts.map((d)=>(
+                            <SelectItem key={d.id} value={d.id.toString()}>{d.name}</SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    <div>
+                      <Label>Zone</Label>
+                      <Select value={addZoneId?.toString() || ""} onValueChange={(v)=>{ setAddZoneId(parseInt(v)); setAddHomecellId(null); setAddMemberForm({...addMemberForm, homeCell: ""}); }} disabled={!addDistrictId}>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Select zone" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {zones.filter(z=>z.districtId===addDistrictId).map((z)=>(
+                            <SelectItem key={z.id} value={z.id.toString()}>{z.name}</SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    <div>
+                      <Label>Homecell</Label>
+                      <Select value={addHomecellId?.toString() || ""} onValueChange={(v)=>{ const id = parseInt(v); setAddHomecellId(id); const fullPath = homeCellHierarchyService.getHomecellFullPath(id); setAddMemberForm({...addMemberForm, homeCell: fullPath}); }} disabled={!addZoneId}>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Select homecell" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {homecells.filter(h=>h.zoneId===addZoneId && h.isActive).map((h)=>(
+                            <SelectItem key={h.id} value={h.id.toString()}>{h.name}</SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+                  </div>
+                  {addMemberForm.homeCell && (
+                    <p className="text-xs text-muted-foreground">Selected: {addMemberForm.homeCell}</p>
+                  )}
                 </div>
               </div>
 
@@ -2726,30 +2821,50 @@ export default function MemberManagement() {
                     Member ID: {memberToAssign.memberId}
                   </p>
                   <p className="text-sm text-muted-foreground">
-                    Currently unassigned to any home cell
+                    Select District, then Zone, then Homecell
                   </p>
                 </div>
 
-                <div className="space-y-2">
-                  <Label htmlFor="assignHomeCell">Select Home Cell</Label>
-                  <Select
-                    value={selectedHomeCellForAssignment}
-                    onValueChange={setSelectedHomeCellForAssignment}
-                  >
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select a home cell" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {homeCells
-                        .filter(cell => cell.is_active)
-                        .map((cell) => (
-                          <SelectItem key={cell.id} value={cell.name}>
-                            {cell.name}
-                            {cell.leader && ` (Leader: ${cell.leader})`}
-                          </SelectItem>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                  <div>
+                    <Label>District</Label>
+                    <Select value={assignDistrictId?.toString() || ""} onValueChange={(v)=>{ setAssignDistrictId(parseInt(v)); setAssignZoneId(null); setAssignHomecellId(null); }}>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select district" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {districts.map((d)=>(
+                          <SelectItem key={d.id} value={d.id.toString()}>{d.name}</SelectItem>
                         ))}
-                    </SelectContent>
-                  </Select>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div>
+                    <Label>Zone</Label>
+                    <Select value={assignZoneId?.toString() || ""} onValueChange={(v)=>{ setAssignZoneId(parseInt(v)); setAssignHomecellId(null); }} disabled={!assignDistrictId}>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select zone" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {zones.filter(z=>z.districtId===assignDistrictId).map((z)=>(
+                          <SelectItem key={z.id} value={z.id.toString()}>{z.name}</SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div>
+                    <Label>Homecell</Label>
+                    <Select value={assignHomecellId?.toString() || ""} onValueChange={(v)=> setAssignHomecellId(parseInt(v))} disabled={!assignZoneId}>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select homecell" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {homecells.filter(h=>h.zoneId===assignZoneId && h.isActive).map((h)=>(
+                          <SelectItem key={h.id} value={h.id.toString()}>{h.name}</SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
                 </div>
 
                 <div className="flex gap-2 pt-4">
@@ -2759,6 +2874,9 @@ export default function MemberManagement() {
                       setShowAssignHomeCellDialog(false);
                       setMemberToAssign(null);
                       setSelectedHomeCellForAssignment("");
+                      setAssignDistrictId(null);
+                      setAssignZoneId(null);
+                      setAssignHomecellId(null);
                     }}
                     className="flex-1"
                   >
@@ -2767,7 +2885,7 @@ export default function MemberManagement() {
                   <Button
                     onClick={assignMemberToHomeCell}
                     className="flex-1"
-                    disabled={!selectedHomeCellForAssignment}
+                    disabled={assignHomecellId==null}
                   >
                     Assign Member
                   </Button>
@@ -2798,25 +2916,46 @@ export default function MemberManagement() {
                   </p>
                 </div>
 
-                <div className="space-y-2">
-                  <Label htmlFor="transferHomeCell">Select New Home Cell</Label>
-                  <Select
-                    value={newHomeCellForTransfer}
-                    onValueChange={setNewHomeCellForTransfer}
-                  >
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select new home cell" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {homeCells
-                        .filter(cell => cell.name !== memberToTransfer.homeCell)
-                        .map((cell) => (
-                          <SelectItem key={cell.id} value={cell.name}>
-                            {cell.name}
-                          </SelectItem>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                  <div>
+                    <Label>District</Label>
+                    <Select value={transferDistrictId?.toString() || ""} onValueChange={(v)=>{ setTransferDistrictId(parseInt(v)); setTransferZoneId(null); setTransferHomecellId(null); }}>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select district" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {districts.map((d)=>(
+                          <SelectItem key={d.id} value={d.id.toString()}>{d.name}</SelectItem>
                         ))}
-                    </SelectContent>
-                  </Select>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div>
+                    <Label>Zone</Label>
+                    <Select value={transferZoneId?.toString() || ""} onValueChange={(v)=>{ setTransferZoneId(parseInt(v)); setTransferHomecellId(null); }} disabled={!transferDistrictId}>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select zone" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {zones.filter(z=>z.districtId===transferDistrictId).map((z)=>(
+                          <SelectItem key={z.id} value={z.id.toString()}>{z.name}</SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div>
+                    <Label>Homecell</Label>
+                    <Select value={transferHomecellId?.toString() || ""} onValueChange={(v)=> setTransferHomecellId(parseInt(v))} disabled={!transferZoneId}>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select homecell" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {homecells.filter(h=>h.zoneId===transferZoneId && h.isActive).map((h)=>(
+                          <SelectItem key={h.id} value={h.id.toString()}>{h.name}</SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
                 </div>
 
                 <div className="flex gap-2 pt-4">
@@ -2826,6 +2965,9 @@ export default function MemberManagement() {
                       setShowTransferHomeCellDialog(false);
                       setMemberToTransfer(null);
                       setNewHomeCellForTransfer("");
+                      setTransferDistrictId(null);
+                      setTransferZoneId(null);
+                      setTransferHomecellId(null);
                     }}
                     className="flex-1"
                   >
@@ -2834,7 +2976,7 @@ export default function MemberManagement() {
                   <Button
                     onClick={handleTransferHomeCell}
                     className="flex-1"
-                    disabled={!newHomeCellForTransfer}
+                    disabled={transferHomecellId==null}
                   >
                     Transfer Member
                   </Button>
