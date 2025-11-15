@@ -25,6 +25,7 @@
     "supabase:init": "node server/scripts/init-supabase-full.js",
     "supabase:setup": "node server/scripts/setup-supabase-complete.js",
     "supabase:verify": "node server/scripts/verify-supabase.js",
+    "supabase:test": "node server/scripts/test-supabase-operations.js",
     "supabase:migrate": "node server/scripts/supabase-complete-migration.js",
     "supabase:rls": "node server/scripts/setup-rls-policies.js",
     "verify": "node verify-system.js",
