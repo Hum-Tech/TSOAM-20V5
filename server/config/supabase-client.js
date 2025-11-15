@@ -1,40 +1,23 @@
-let createClient;
-try {
-  ({ createClient } = require('@supabase/supabase-js'));
-} catch (error) {
-  console.warn('Supabase client not available:', error.message);
-  createClient = null;
-}
 require('dotenv').config();
 
-const supabaseUrl = process.env.SUPABASE_URL || 'https://ncrecohwtejwygkyoaul.supabase.co';
-const supabaseAnonKey = process.env.SUPABASE_ANON_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5jcmVjb2h3dGVqd3lna3lvYXVsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjMxNjI2MjcsImV4cCI6MjA3ODczODYyN30.CpBi70Ukc2WNisqMkAYDxJFaCPYFgsf390igeHPJv_M';
-const supabaseServiceKey = process.env.SUPABASE_SERVICE_KEY;
+// Placeholder for future Supabase integration
+// Currently using local database (MySQL/SQLite)
 
-// Create Supabase client with anon key for client-side
-const supabase = createClient(supabaseUrl, supabaseAnonKey, {
-  auth: {
-    autoRefreshToken: true,
-    persistSession: false,
-  },
-});
+const supabaseUrl = process.env.SUPABASE_URL;
+const supabaseAnonKey = process.env.SUPABASE_ANON_KEY;
 
-// Create service role client for admin operations
-const supabaseAdmin = supabaseServiceKey ? createClient(supabaseUrl, supabaseServiceKey) : supabase;
+// Supabase client will be initialized when needed
+let supabase = null;
+let supabaseAdmin = null;
 
 async function testConnection() {
+  if (!supabaseUrl || !supabaseAnonKey) {
+    console.log('⚠️  Supabase not configured');
+    return false;
+  }
+  
   try {
-    const { data, error } = await supabase
-      .from('users')
-      .select('id')
-      .limit(1);
-
-    if (error) {
-      console.error('Supabase connection error:', error);
-      return false;
-    }
-
-    console.log('✅ Supabase connection successful');
+    console.log('✅ Supabase credentials available');
     return true;
   } catch (error) {
     console.error('Supabase connection failed:', error.message);
