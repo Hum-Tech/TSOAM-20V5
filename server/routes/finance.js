@@ -4,6 +4,30 @@ const { authMiddleware, requireRole } = require("../middleware/auth");
 
 const router = express.Router();
 
+// Get finance service status
+router.get("/status", async (req, res) => {
+  try {
+    res.json({
+      success: true,
+      status: "operational",
+      features: {
+        viewTransactions: true,
+        createTransactions: true,
+        updateTransactions: true,
+        financialReports: true,
+        budgetTracking: true,
+        cashFlow: true
+      }
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      status: "error",
+      error: error.message
+    });
+  }
+});
+
 // Get all transactions
 router.get("/transactions", authMiddleware, async (req, res) => {
   try {
