@@ -313,7 +313,7 @@ export default function NewMembers() {
   // Listen for home cell updates from settings
   useEffect(() => {
     const handleHomeCellUpdate = () => {
-      const availableHomeCells = homeCellService.getActiveHomeCells().map(cell => ({
+      const availableHomeCells = homeCellService.getAllHomeCells().map(cell => ({
         id: cell.id,
         name: cell.name
       }));
@@ -540,7 +540,7 @@ export default function NewMembers() {
 
     // Load home cells
     const loadHomeCells = () => {
-      const availableHomeCells = homeCellService.getActiveHomeCells().map(cell => ({
+      const availableHomeCells = homeCellService.getAllHomeCells().map(cell => ({
         id: cell.id,
         name: cell.name
       }));
