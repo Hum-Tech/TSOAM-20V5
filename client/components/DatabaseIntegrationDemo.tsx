@@ -51,7 +51,7 @@ export default function DatabaseIntegrationDemo() {
     const token = AuthService.getToken();
     
     if (user && token) {
-      setAuthStatus(`Authenticated as ${user.name} (${user.role})`);
+      setAuthStatus(`Authenticated as ${user?.name || "User"} (${user?.role || ""})`);
     } else {
       setAuthStatus('Not authenticated');
     }
