@@ -180,28 +180,37 @@ async function initializeDatabase() {
     console.log('🔄 Checking Supabase database tables...');
 
     // Check if main tables exist
-    const tablesRequired = ['users', 'members', 'employees', 'financial_transactions'];
+    const tablesRequired = ['users', 'members', 'employees', 'financial_transactions', 'system_logs'];
     let allTablesExist = true;
+    let missingTables = [];
 
     for (const table of tablesRequired) {
       const exists = await tableExists(table);
       if (!exists) {
         allTablesExist = false;
-        console.log(`⚠️  Table missing: ${table}`);
+        missingTables.push(table);
       }
     }
 
     if (!allTablesExist) {
-      console.log('📋 Running Supabase setup script...');
-      const { setupSupabase } = require('../scripts/setup-supabase-complete');
-      const setupSuccess = await setupSupabase();
-      
-      if (!setupSuccess) {
-        console.error('❌ Supabase setup failed');
-        return false;
-      }
+      console.log(`⚠️  Missing tables: ${missingTables.join(', ')}`);
+      console.log('📋 Note: Database tables need to be created.');
+      console.log('   Run: npm run supabase:init');
+      console.log('   Or manually in Supabase console');
+      return false; // Return false - user needs to run setup
     } else {
       console.log('✅ All required tables exist');
+
+      // Verify we can perform basic operations
+      const { data: adminUsers, error } = await supabase
+        .from('users')
+        .select('id')
+        .eq('email', 'admin@tsoam.org')
+        .limit(1);
+
+      if (!error && adminUsers && adminUsers.length > 0) {
+        console.log('✅ Admin user verified');
+      }
     }
 
     return true;
