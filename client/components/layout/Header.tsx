@@ -69,7 +69,12 @@ interface Message {
   category: string;
 }
 
-export function Header() {
+interface HeaderProps {
+  onMenuClick?: () => void;
+  sidebarOpen?: boolean;
+}
+
+export function Header({ onMenuClick, sidebarOpen }: HeaderProps) {
   const navigate = useNavigate();
 
   // Add error handling for auth context
