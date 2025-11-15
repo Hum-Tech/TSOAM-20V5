@@ -204,6 +204,14 @@ async function startServer() {
           } catch (error) {
             console.log("⚠️  Admin initialization:", error.message);
           }
+
+          // Fix admin user name
+          try {
+            const { fixAdminName } = require("./scripts/fix-admin-name");
+            await fixAdminName();
+          } catch (error) {
+            console.log("⚠️  Admin name fix:", error.message);
+          }
         } else {
           console.log("\n⚠️  IMPORTANT: Database tables not found!");
           console.log("   Please run: npm run supabase:init");
