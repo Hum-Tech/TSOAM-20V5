@@ -22,6 +22,7 @@ import {
   FileText,
   Shield,
   LogOut,
+  Database,
 } from "lucide-react";
 
 const allMenuItems = [
