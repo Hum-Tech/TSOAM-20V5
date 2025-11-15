@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
@@ -10,6 +10,10 @@ import {
   Download,
   FileText,
   Search,
+  MapPin,
+  Calendar,
+  Clock,
+  Layers,
 } from "lucide-react";
 
 interface HomeCell {
@@ -53,7 +57,7 @@ export function HomeCellsHierarchyView({
   isLoading,
 }: HomeCellsHierarchyViewProps) {
   const [expandedDistricts, setExpandedDistricts] = useState<Set<number>>(
-    new Set(districts.map((d) => d.id).slice(0, 1)) // Expand first district by default
+    new Set(districts.map((d) => d.id).slice(0, 1))
   );
   const [expandedZones, setExpandedZones] = useState<Set<number>>(new Set());
   const [searchTerm, setSearchTerm] = useState("");
@@ -122,122 +126,155 @@ export function HomeCellsHierarchyView({
   };
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-6">
+      {/* Header */}
+      <div>
+        <h2 className="text-2xl font-bold text-slate-900 dark:text-slate-100">
+          Home Cells Hierarchy
+        </h2>
+        <p className="text-sm text-slate-600 dark:text-slate-400 mt-1">
+          View the organization structure of districts, zones, and home cells
+        </p>
+      </div>
+
       {/* Search Bar */}
       <div className="relative">
-        <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+        <Search className="absolute left-3 top-3 h-4 w-4 text-slate-400" />
         <Input
           placeholder="Search districts, zones, or home cells..."
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
-          className="pl-10"
+          className="pl-10 h-10"
         />
       </div>
 
-      {/* Hierarchy List */}
+      {/* Hierarchy Tree */}
       {isLoading ? (
-        <div className="text-center py-12 text-muted-foreground">
-          <div className="animate-spin h-8 w-8 border-4 border-primary border-t-transparent rounded-full mx-auto mb-2"></div>
-          Loading home cells...
-        </div>
+        <Card className="border-none shadow-sm">
+          <CardContent className="py-12 text-center">
+            <div className="animate-spin h-8 w-8 border-4 border-slate-300 border-t-slate-600 rounded-full mx-auto mb-4"></div>
+            <p className="text-slate-600 dark:text-slate-400">
+              Loading home cells...
+            </p>
+          </CardContent>
+        </Card>
       ) : filteredDistricts.length === 0 ? (
-        <Card>
-          <CardContent className="py-12 text-center text-muted-foreground">
-            <Users className="h-12 w-12 mx-auto mb-4 opacity-50" />
-            <p>No districts or home cells found</p>
+        <Card className="border-none shadow-sm">
+          <CardContent className="py-12 text-center">
+            <MapPin className="h-12 w-12 mx-auto mb-4 text-slate-400" />
+            <p className="text-slate-600 dark:text-slate-400">
+              No districts found
+            </p>
           </CardContent>
         </Card>
       ) : (
         <div className="space-y-2">
           {filteredDistricts.map((district) => (
-            <div key={district.id} className="border rounded-lg overflow-hidden">
-              {/* DISTRICT ROW */}
+            <div key={district.id} className="space-y-1">
+              {/* DISTRICT */}
               <div
-                className="bg-gradient-to-r from-blue-50 to-blue-100 dark:from-blue-950 dark:to-blue-900 p-4 cursor-pointer hover:shadow-md transition-shadow"
+                className="group bg-gradient-to-r from-blue-50 to-blue-100 dark:from-blue-950 dark:to-blue-900 p-4 rounded-lg cursor-pointer hover:shadow-md transition-all duration-200 border border-blue-200 dark:border-blue-800"
                 onClick={() => toggleDistrict(district.id)}
               >
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-3 flex-1">
-                    {expandedDistricts.has(district.id) ? (
-                      <ChevronDown className="h-5 w-5 text-blue-600" />
-                    ) : (
-                      <ChevronRight className="h-5 w-5 text-blue-600" />
-                    )}
-                    <div>
-                      <div className="font-bold text-blue-900 dark:text-blue-100">
-                        District: {district.name}
+                    <div className="p-1.5 bg-blue-200 dark:bg-blue-800 rounded">
+                      {expandedDistricts.has(district.id) ? (
+                        <ChevronDown className="h-4 w-4 text-blue-700 dark:text-blue-300" />
+                      ) : (
+                        <ChevronRight className="h-4 w-4 text-blue-700 dark:text-blue-300" />
+                      )}
+                    </div>
+
+                    <div className="flex-1">
+                      <div className="flex items-center gap-2">
+                        <Layers className="h-4 w-4 text-blue-600 dark:text-blue-400" />
+                        <p className="font-bold text-blue-900 dark:text-blue-100">
+                          {district.name}
+                        </p>
                       </div>
                       {district.leader_id && (
-                        <div className="text-xs text-blue-700 dark:text-blue-300">
-                          Leader: {district.leader_id}
-                        </div>
+                        <p className="text-xs text-blue-700 dark:text-blue-300 mt-1">
+                          📋 Leader: {district.leader_id}
+                        </p>
                       )}
                     </div>
                   </div>
-                  <Badge className="bg-blue-200 text-blue-900 dark:bg-blue-800 dark:text-blue-100">
-                    {getTotalMembers(district)} members
-                  </Badge>
+
+                  <div className="flex items-center gap-2 flex-shrink-0">
+                    <Badge className="bg-blue-200 text-blue-900 dark:bg-blue-800 dark:text-blue-100 text-xs">
+                      {getTotalMembers(district)} members
+                    </Badge>
+                  </div>
                 </div>
               </div>
 
-              {/* ZONES (Shown when district expanded) */}
+              {/* ZONES */}
               {expandedDistricts.has(district.id) && (
-                <div className="border-t bg-white dark:bg-slate-950 space-y-1 p-2">
+                <div className="ml-6 space-y-1 py-2">
                   {district.zones && district.zones.length > 0 ? (
                     district.zones.map((zone) => (
-                      <div key={zone.id} className="ml-4 border rounded overflow-hidden">
-                        {/* ZONE ROW */}
+                      <div key={zone.id} className="space-y-1">
+                        {/* ZONE */}
                         <div
-                          className="bg-gradient-to-r from-amber-50 to-amber-100 dark:from-amber-950 dark:to-amber-900 p-3 cursor-pointer hover:shadow-sm transition-shadow"
+                          className="bg-gradient-to-r from-amber-50 to-amber-100 dark:from-amber-950 dark:to-amber-900 p-3 rounded-lg cursor-pointer hover:shadow-md transition-all duration-200 border border-amber-200 dark:border-amber-800"
                           onClick={() => toggleZone(zone.id)}
                         >
                           <div className="flex items-center justify-between">
                             <div className="flex items-center gap-3 flex-1">
-                              {expandedZones.has(zone.id) ? (
-                                <ChevronDown className="h-4 w-4 text-amber-600" />
-                              ) : (
-                                <ChevronRight className="h-4 w-4 text-amber-600" />
-                              )}
-                              <div>
-                                <div className="font-semibold text-amber-900 dark:text-amber-100 text-sm">
-                                  Zone: {zone.name}
-                                </div>
+                              <div className="p-1 bg-amber-200 dark:bg-amber-800 rounded">
+                                {expandedZones.has(zone.id) ? (
+                                  <ChevronDown className="h-3 w-3 text-amber-700 dark:text-amber-300" />
+                                ) : (
+                                  <ChevronRight className="h-3 w-3 text-amber-700 dark:text-amber-300" />
+                                )}
+                              </div>
+
+                              <div className="flex-1">
+                                <p className="font-semibold text-amber-900 dark:text-amber-100 text-sm">
+                                  {zone.name}
+                                </p>
                                 {zone.leader_id && (
-                                  <div className="text-xs text-amber-700 dark:text-amber-300">
-                                    Leader: {zone.leader_id}
-                                  </div>
+                                  <p className="text-xs text-amber-700 dark:text-amber-300 mt-0.5">
+                                    📋 {zone.leader_id}
+                                  </p>
                                 )}
                               </div>
                             </div>
-                            <Badge variant="outline" className="text-xs">
+
+                            <Badge
+                              variant="outline"
+                              className="text-xs whitespace-nowrap"
+                            >
                               {getZoneMembers(zone)} members
                             </Badge>
                           </div>
                         </div>
 
-                        {/* HOMECELLS (Shown when zone expanded) */}
+                        {/* HOMECELLS */}
                         {expandedZones.has(zone.id) && (
-                          <div className="border-t bg-white dark:bg-slate-950 space-y-1 p-2">
+                          <div className="ml-6 space-y-1 py-2">
                             {zone.homecells && zone.homecells.length > 0 ? (
                               zone.homecells.map((homeCell) => (
                                 <div
                                   key={homeCell.id}
-                                  className="ml-4 bg-slate-50 dark:bg-slate-900 p-3 rounded border border-slate-200 dark:border-slate-700 hover:shadow-sm transition-shadow"
+                                  className="bg-white dark:bg-slate-900 p-3 rounded-lg border border-slate-200 dark:border-slate-700 hover:shadow-sm transition-all duration-200"
                                 >
                                   <div className="space-y-2">
-                                    {/* Header Row */}
-                                    <div className="flex items-center justify-between">
+                                    {/* Header */}
+                                    <div className="flex items-start justify-between gap-3">
                                       <div className="flex-1">
-                                        <div className="font-semibold text-slate-900 dark:text-slate-100">
-                                          {homeCell.name}
-                                        </div>
+                                        <p className="font-semibold text-slate-900 dark:text-slate-100 text-sm">
+                                          🏠 {homeCell.name}
+                                        </p>
                                         {homeCell.leader_id && (
-                                          <div className="text-xs text-slate-600 dark:text-slate-400">
+                                          <p className="text-xs text-slate-600 dark:text-slate-400 mt-1">
                                             Leader: {homeCell.leader_id}
-                                          </div>
+                                          </p>
                                         )}
                                       </div>
-                                      <Badge variant="secondary">
+
+                                      <Badge variant="secondary" className="text-xs flex-shrink-0">
                                         {homeCell.member_count || 0} members
                                       </Badge>
                                     </div>
@@ -246,30 +283,40 @@ export function HomeCellsHierarchyView({
                                     {(homeCell.meeting_day ||
                                       homeCell.meeting_time ||
                                       homeCell.meeting_location) && (
-                                      <div className="text-xs text-slate-600 dark:text-slate-400 space-y-1">
+                                      <div className="text-xs text-slate-600 dark:text-slate-400 space-y-1 pt-2 border-t border-slate-100 dark:border-slate-800">
                                         {homeCell.meeting_day && (
-                                          <div>📅 {homeCell.meeting_day}</div>
+                                          <div className="flex items-center gap-2">
+                                            <Calendar className="h-3 w-3 text-slate-400" />
+                                            {homeCell.meeting_day}
+                                          </div>
                                         )}
                                         {homeCell.meeting_time && (
-                                          <div>⏰ {homeCell.meeting_time}</div>
+                                          <div className="flex items-center gap-2">
+                                            <Clock className="h-3 w-3 text-slate-400" />
+                                            {homeCell.meeting_time}
+                                          </div>
                                         )}
                                         {homeCell.meeting_location && (
-                                          <div>📍 {homeCell.meeting_location}</div>
+                                          <div className="flex items-center gap-2">
+                                            <MapPin className="h-3 w-3 text-slate-400" />
+                                            {homeCell.meeting_location}
+                                          </div>
                                         )}
                                       </div>
                                     )}
 
-                                    {/* Action Buttons */}
-                                    <div className="flex gap-2 pt-2 flex-wrap">
+                                    {/* Actions */}
+                                    <div className="flex gap-2 pt-2">
                                       <Button
                                         size="sm"
                                         variant="outline"
                                         onClick={() =>
                                           onViewMembers?.(homeCell.name)
                                         }
-                                        className="text-xs"
+                                        className="text-xs h-7 flex-1"
                                       >
-                                        View Members
+                                        <Users className="h-3 w-3 mr-1" />
+                                        Members
                                       </Button>
                                       <Button
                                         size="sm"
@@ -278,14 +325,12 @@ export function HomeCellsHierarchyView({
                                           handleExport(homeCell.name, "excel")
                                         }
                                         disabled={
-                                          exporting === `${homeCell.name}-excel`
+                                          exporting ===
+                                          `${homeCell.name}-excel`
                                         }
-                                        className="text-xs"
+                                        className="text-xs h-7 px-2"
                                       >
-                                        <Download className="h-3 w-3 mr-1" />
-                                        {exporting === `${homeCell.name}-excel`
-                                          ? "Exporting..."
-                                          : "Excel"}
+                                        <Download className="h-3 w-3" />
                                       </Button>
                                       <Button
                                         size="sm"
@@ -294,22 +339,20 @@ export function HomeCellsHierarchyView({
                                           handleExport(homeCell.name, "pdf")
                                         }
                                         disabled={
-                                          exporting === `${homeCell.name}-pdf`
+                                          exporting ===
+                                          `${homeCell.name}-pdf`
                                         }
-                                        className="text-xs"
+                                        className="text-xs h-7 px-2"
                                       >
-                                        <FileText className="h-3 w-3 mr-1" />
-                                        {exporting === `${homeCell.name}-pdf`
-                                          ? "Exporting..."
-                                          : "PDF"}
+                                        <FileText className="h-3 w-3" />
                                       </Button>
                                     </div>
                                   </div>
                                 </div>
                               ))
                             ) : (
-                              <div className="ml-4 p-3 text-xs text-slate-500 dark:text-slate-400 text-center">
-                                No home cells in this zone
+                              <div className="text-center py-2 text-xs text-slate-500 dark:text-slate-400">
+                                No home cells yet
                               </div>
                             )}
                           </div>
@@ -317,8 +360,8 @@ export function HomeCellsHierarchyView({
                       </div>
                     ))
                   ) : (
-                    <div className="ml-4 p-3 text-xs text-slate-500 dark:text-slate-400 text-center">
-                      No zones in this district
+                    <div className="text-center py-2 text-xs text-slate-500 dark:text-slate-400">
+                      No zones yet
                     </div>
                   )}
                 </div>
