@@ -557,11 +557,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         : SESSION_DURATION;
       const expiryTime = new Date(currentTime.getTime() + sessionDuration);
 
-      // Extract user data (without password) and map fullName to name for UI consistency
+      // Extract user data (without password) and ensure name field is set
       const { password: _, ...userData } = foundUser;
       const userWithSession = {
         ...userData,
-        name: userData.fullName || userData.name || "User",
+        name: userData.name || userData.fullName || "User",
+        fullName: userData.fullName || userData.name || "User",
         lastLogin: currentTime.toISOString(),
         sessionExpires: expiryTime.toISOString(),
         permissions: getRolePermissions(userData.role),
