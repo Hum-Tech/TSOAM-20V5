@@ -53,34 +53,16 @@ async function initializeSupabaseAdmin() {
         id: uuidv4(),
         email: 'admin@tsoam.org',
         password_hash: passwordHash,
-        full_name: 'Church Administrator'
+        name: 'Church Administrator',
+        role: 'admin',
+        is_active: true
       }])
       .select()
       .single();
 
     if (createError) {
       console.log('⚠️  Could not create admin user:', createError.message);
-      console.log('   Error details:', createError.details);
-      console.log('   Trying alternative approach...');
-
-      // Try with UUID ID
-      const { data: altUser, error: altError } = await supabaseAdmin
-        .from('users')
-        .insert([{
-          id: uuidv4(),
-          email: 'admin@tsoam.org',
-          password_hash: passwordHash
-        }])
-        .select()
-        .single();
-
-      if (altError) {
-        console.log('⚠️  Alternative also failed:', altError.message);
-        return false;
-      }
-
-      console.log('✅ Admin user created with alternative schema');
-      return true;
+      return false;
     }
 
     console.log('✅ Admin user created successfully');
