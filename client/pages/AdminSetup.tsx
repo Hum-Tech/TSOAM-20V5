@@ -272,9 +272,10 @@ export default function AdminSetup() {
             <div>
               <h3 className="font-semibold mb-2">Next Steps</h3>
               <ol className="text-sm text-slate-700 space-y-1 ml-4 list-decimal">
-                <li>Click "Create Database Tables" above</li>
-                <li>Wait for the setup to complete</li>
-                <li>Go to <strong>Settings → Home Cells</strong></li>
+                <li>Use the "Check Database Status" button to verify tables exist</li>
+                <li>If tables need creation, follow the SQL instructions above</li>
+                <li>Once setup is complete, go to <strong>Settings → Home Cells</strong></li>
+                <li>You'll see all 9 districts listed</li>
                 <li>Add zones and home cells under each district</li>
                 <li>Assign members to home cells in <strong>Member Management</strong></li>
               </ol>
