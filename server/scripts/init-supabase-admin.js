@@ -59,7 +59,7 @@ async function initializeSupabaseAdmin() {
           id: uuidv4(),
           email: 'admin@tsoam.org',
           password_hash: passwordHash,
-          full_name: 'Humphrey Njoroge',
+          name: 'Humphrey Njoroge',
           phone: '',
           role: role,
           is_active: true
