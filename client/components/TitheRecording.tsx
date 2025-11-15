@@ -132,7 +132,7 @@ export function TitheRecording({
     };
 
     try {
-      const titheId = titheService.recordTithe(titheData, user.name);
+      const titheId = titheService.recordTithe(titheData, user?.name || "Anonymous");
 
       // Reset form
       setTitheForm({
