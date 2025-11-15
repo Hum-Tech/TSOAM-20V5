@@ -21,22 +21,34 @@ if (supabaseUrl && supabaseAnonKey && createClient) {
   try {
     // Regular client for user operations
     supabase = createClient(supabaseUrl, supabaseAnonKey);
-    
+
     // Admin client for backend operations (uses service role key)
+    if (!supabaseServiceKey) {
+      console.warn('⚠️  SUPABASE_SERVICE_ROLE_KEY not set - using anonymous key for admin operations');
+    }
+
     supabaseAdmin = createClient(
       supabaseUrl,
       supabaseServiceKey || supabaseAnonKey
     );
-    
+
     isSupabaseConfigured = true;
     console.log('✅ Supabase clients initialized successfully');
+    console.log('   URL:', supabaseUrl);
+    console.log('   Anon Key:', supabaseAnonKey.substring(0, 20) + '...');
+    if (supabaseServiceKey) {
+      console.log('   Service Role Key: Configured');
+    }
   } catch (error) {
     console.error('❌ Failed to initialize Supabase clients:', error.message);
   }
 } else {
   console.log('⚠️  Supabase not fully configured');
   console.log('   Required: SUPABASE_URL, SUPABASE_ANON_KEY');
-  console.log('   Optional: SUPABASE_SERVICE_ROLE_KEY (for admin operations)');
+  console.log('   Required for admin operations: SUPABASE_SERVICE_ROLE_KEY');
+  if (!supabaseUrl) console.log('   Missing: SUPABASE_URL');
+  if (!supabaseAnonKey) console.log('   Missing: SUPABASE_ANON_KEY');
+  if (!supabaseServiceKey) console.log('   Missing: SUPABASE_SERVICE_ROLE_KEY');
 }
 
 // Test connection
