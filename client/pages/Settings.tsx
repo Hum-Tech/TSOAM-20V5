@@ -75,6 +75,10 @@ export default function Settings() {
     settingsService.getEmailSettings(),
   );
 
+  // HomeCells state
+  const [districts, setDistricts] = useState<any[]>([]);
+  const [homeCellsLoading, setHomeCellsLoading] = useState(false);
+
   const [isSaving, setIsSaving] = useState(false);
 
   // Load settings on component mount
@@ -91,6 +95,40 @@ export default function Settings() {
     });
 
     return unsubscribe;
+  }, []);
+
+  // Load home cells hierarchy
+  useEffect(() => {
+    const loadHomeCells = async () => {
+      setHomeCellsLoading(true);
+      try {
+        const districtData = await homeCellService.getAllDistricts();
+
+        // Load zones and homecells for each district
+        const districtsWithHierarchy = await Promise.all(
+          districtData.map(async (district) => {
+            const zones = await homeCellService.getZonesByDistrict(district.id);
+            const zonesWithHomeCells = await Promise.all(
+              zones.map(async (zone) => {
+                const homecells = await homeCellService.getHomeCellsByZone(
+                  zone.id
+                );
+                return { ...zone, homecells };
+              })
+            );
+            return { ...district, zones: zonesWithHomeCells };
+          })
+        );
+
+        setDistricts(districtsWithHierarchy);
+      } catch (error) {
+        console.error("Error loading home cells:", error);
+      } finally {
+        setHomeCellsLoading(false);
+      }
+    };
+
+    loadHomeCells();
   }, []);
 
   /**
