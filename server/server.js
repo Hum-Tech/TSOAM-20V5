@@ -167,42 +167,66 @@ app.use((error, req, res, next) => {
 // Start server
 async function startServer() {
   try {
-    // Test database connection with fallback
-    const dbConnected = await testConnection();
-    if (!dbConnected) {
-      console.log("⚠️  Database connection failed");
-      console.log("📋 Please check database configuration in .env file");
-      console.log("🔄 Server will continue with limited functionality");
+    let dbConnected = false;
+
+    // Check if using Supabase
+    if (useSupabase) {
+      console.log("🔄 Testing Supabase connection...");
+      dbConnected = await testSupabaseConnection();
+      if (dbConnected) {
+        console.log("✅ Supabase connection established");
+        console.log("🔄 Database synchronization ready");
+
+        // Initialize Supabase with admin user
+        try {
+          const { initSupabase } = require("./scripts/init-supabase");
+          await initSupabase();
+        } catch (error) {
+          console.log("📋 Supabase initialization:", error.message);
+        }
+      } else {
+        console.log("⚠️  Supabase connection failed");
+        console.log("📋 Please check Supabase configuration in .env file");
+      }
     } else {
-      console.log("✅ Database connection established");
-      console.log("🔄 Database synchronization ready");
-    }
-
-    // Initialize database
-    if (dbConnected) {
-      await initializeDatabase();
-
-      // Setup database tables and default data
-      try {
-        const setupDatabase = require("./database/setup");
-        await setupDatabase();
-        console.log("✅ Database setup completed");
-      } catch (error) {
-        console.log("📋 Database setup skipped:", error.message);
+      // Fall back to local database
+      console.log("🔄 Using local database (SQLite/MySQL)");
+      dbConnected = await testLocalConnection();
+      if (!dbConnected) {
+        console.log("⚠️  Database connection failed");
+        console.log("📋 Please check database configuration in .env file");
+        console.log("🔄 Server will continue with limited functionality");
+      } else {
+        console.log("✅ Database connection established");
+        console.log("🔄 Database synchronization ready");
       }
 
-      // Always initialize sample data including admin user
-      try {
-        const { initializeData } = require("./scripts/init-database-data");
-        await initializeData();
-      } catch (error) {
-        console.log("📋 Sample data initialization:", error.message);
+      // Initialize local database
+      if (dbConnected) {
+        await initializeDatabase();
+
+        // Setup database tables and default data
+        try {
+          const setupDatabase = require("./database/setup");
+          await setupDatabase();
+          console.log("✅ Database setup completed");
+        } catch (error) {
+          console.log("📋 Database setup skipped:", error.message);
+        }
+
+        // Always initialize sample data including admin user
+        try {
+          const { initializeData } = require("./scripts/init-database-data");
+          await initializeData();
+        } catch (error) {
+          console.log("📋 Sample data initialization:", error.message);
+        }
       }
     }
 
     app.listen(PORT, "0.0.0.0", () => {
       console.log("🚀 TSOAM Church Management System Server Started");
-      console.log("━━━━━��━━━━━━━━━━━━━━━━━��━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
+      console.log("━━━━━��━━━━━━━���━━━━━━━━━��━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
       console.log(`🌐 Server running on: http://localhost:${PORT}`);
       console.log(`🔗 LAN Access: http://[YOUR-IP]:${PORT}`);
       console.log(`📁 Upload directory: ${uploadsDir}`);
