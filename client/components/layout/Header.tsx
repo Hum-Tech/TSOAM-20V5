@@ -862,8 +862,8 @@ export function Header({ onMenuClick, sidebarOpen }: HeaderProps) {
             </DropdownMenuTrigger>
             <DropdownMenuContent className="w-48 md:w-56" align="end" forceMount>
               <div className="flex flex-col space-y-1 p-2">
-                <p className="text-sm font-medium leading-none">{user.name}</p>
-                <p className="text-xs leading-none text-muted-foreground">
+                <p className="text-xs md:text-sm font-medium leading-none truncate">{user.name}</p>
+                <p className="text-xs leading-none text-muted-foreground truncate">
                   {user.email}
                 </p>
                 <Badge variant="outline" className="w-fit text-xs mt-1">
@@ -872,10 +872,10 @@ export function Header({ onMenuClick, sidebarOpen }: HeaderProps) {
               </div>
               <DropdownMenuSeparator />
               <DropdownMenuItem
-                className="cursor-pointer"
+                className="cursor-pointer text-xs md:text-sm"
                 onClick={() => navigate("/profile")}
               >
-                <User className="mr-2 h-4 w-4" />
+                <User className="mr-2 h-3 md:h-4 w-3 md:w-4" />
                 <span>Profile</span>
               </DropdownMenuItem>
               {/* Only show Settings for Finance Officer and other authorized roles */}
@@ -884,19 +884,19 @@ export function Header({ onMenuClick, sidebarOpen }: HeaderProps) {
                 user.role === "hr" ||
                 user?.permissions?.settings) && (
                 <DropdownMenuItem
-                  className="cursor-pointer"
+                  className="cursor-pointer text-xs md:text-sm"
                   onClick={() => navigate("/settings")}
                 >
-                  <Settings className="mr-2 h-4 w-4" />
+                  <Settings className="mr-2 h-3 md:h-4 w-3 md:w-4" />
                   <span>Settings</span>
                 </DropdownMenuItem>
               )}
               <DropdownMenuSeparator />
               <DropdownMenuItem
-                className="cursor-pointer text-red-600 hover:text-red-700 hover:bg-red-50"
+                className="cursor-pointer text-xs md:text-sm text-red-600 hover:text-red-700 hover:bg-red-50"
                 onClick={logout}
               >
-                <LogOut className="mr-2 h-4 w-4" />
+                <LogOut className="mr-2 h-3 md:h-4 w-3 md:w-4" />
                 <span>Sign out</span>
               </DropdownMenuItem>
             </DropdownMenuContent>
