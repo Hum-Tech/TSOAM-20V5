@@ -109,6 +109,7 @@ app.use("/api/messages", messagesRoutes);
 app.use("/api/homecells", homecellsRoutes);
 app.use("/api/setup", setupRoutes);
 app.use("/api/migrate", migrateHomecellsRoutes);
+app.use("/api/database-setup", databaseSetupRoutes);
 app.use("/api/users", authRoutes);
 
 // File upload endpoint
