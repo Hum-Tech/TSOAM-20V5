@@ -7,6 +7,31 @@ const { authMiddleware, requireRole, optionalAuth } = require("../middleware/aut
 
 const router = express.Router();
 
+// Get HR service status
+router.get("/status", async (req, res) => {
+  try {
+    res.json({
+      success: true,
+      status: "operational",
+      features: {
+        viewEmployees: true,
+        createEmployees: true,
+        updateEmployees: true,
+        leaveManagement: true,
+        payrollProcessing: true,
+        performanceTracking: true,
+        employeeDocuments: true
+      }
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      status: "error",
+      error: error.message
+    });
+  }
+});
+
 // Configure multer for file uploads
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
