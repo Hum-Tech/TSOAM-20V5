@@ -6,6 +6,7 @@
 require('dotenv').config();
 
 const crypto = require('crypto');
+const { v4: uuidv4 } = require('uuid');
 
 function hashPassword(password) {
   const salt = crypto.randomBytes(32).toString('hex');
