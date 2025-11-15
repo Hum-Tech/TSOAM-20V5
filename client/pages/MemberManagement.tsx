@@ -361,6 +361,40 @@ export default function MemberManagement() {
     setHomeCells(availableHomeCells);
   };
 
+  // Load home cells hierarchy
+  useEffect(() => {
+    const loadHomeCellsHierarchy = async () => {
+      setHomeCellsLoading(true);
+      try {
+        const districtData = await homeCellService.getAllDistricts();
+
+        // Load zones and homecells for each district
+        const districtsWithHierarchy = await Promise.all(
+          districtData.map(async (district) => {
+            const zones = await homeCellService.getZonesByDistrict(district.id);
+            const zonesWithHomeCells = await Promise.all(
+              zones.map(async (zone) => {
+                const homecells = await homeCellService.getHomeCellsByZone(
+                  zone.id
+                );
+                return { ...zone, homecells };
+              })
+            );
+            return { ...district, zones: zonesWithHomeCells };
+          })
+        );
+
+        setDistricts(districtsWithHierarchy);
+      } catch (error) {
+        console.error("Error loading home cells hierarchy:", error);
+      } finally {
+        setHomeCellsLoading(false);
+      }
+    };
+
+    loadHomeCellsHierarchy();
+  }, []);
+
   // Refresh home cells when settings page updates them
   useEffect(() => {
     const handleHomeCellUpdate = () => {
