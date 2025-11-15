@@ -22,6 +22,7 @@ const documentsRoutes = require("./routes/documents");
 const dashboardRoutes = require("./routes/dashboard");
 const systemLogsRoutes = require("./routes/system-logs");
 const messagesRoutes = require("./routes/messages");
+const homecellsRoutes = require("./routes/homecells");
 const setupRoutes = require("./routes/setup");
 
 const app = express();
@@ -234,7 +235,7 @@ async function startServer() {
 
     app.listen(PORT, "0.0.0.0", () => {
       console.log("🚀 TSOAM Church Management System Server Started");
-      console.log("━━━━━��━━━━━━━���━━━━━━━━━��━━━━����━━━━━━━━━━━━━━━━━━━━━━━");
+      console.log("━━━━━��━━━━━━━���━━━━━━━━━��━━━━��━━━━━━━━━━━━━━━━━━━━━━━");
       console.log(`🌐 Server running on: http://localhost:${PORT}`);
       console.log(`🔗 LAN Access: http://[YOUR-IP]:${PORT}`);
       console.log(`📁 Upload directory: ${uploadsDir}`);
