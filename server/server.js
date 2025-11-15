@@ -174,13 +174,29 @@ async function startServer() {
     const useSupabase = process.env.SUPABASE_URL && process.env.SUPABASE_ANON_KEY;
 
     if (useSupabase) {
-      console.log("🔄 Setting up Supabase database...");
-      const supabaseReady = await initializeSupabaseDatabase();
+      console.log("\n🔄 Checking Supabase configuration...");
+      console.log(`   URL: ${process.env.SUPABASE_URL.substring(0, 30)}...`);
 
-      if (supabaseReady) {
-        console.log("✅ Supabase database initialized");
+      // Test Supabase connection
+      const supabaseConnected = await testSupabaseConnection();
+
+      if (supabaseConnected) {
+        console.log("✅ Supabase connection verified");
+
+        // Initialize Supabase database
+        const supabaseReady = await initializeSupabaseDatabase();
+
+        if (supabaseReady) {
+          console.log("✅ Supabase database ready");
+        } else {
+          console.log("\n⚠️  IMPORTANT: Database tables not found!");
+          console.log("   Please run: npm run supabase:init");
+          console.log("   This will create all tables and initialize data.\n");
+        }
       } else {
-        console.log("⚠️  Supabase setup encountered issues");
+        console.log("❌ Cannot connect to Supabase");
+        console.log("   Please verify SUPABASE_URL and SUPABASE_ANON_KEY in .env");
+        console.log("   Server will start with limited functionality\n");
       }
     } else {
       console.log("📋 Supabase not configured, using local database");
@@ -218,7 +234,7 @@ async function startServer() {
 
     app.listen(PORT, "0.0.0.0", () => {
       console.log("🚀 TSOAM Church Management System Server Started");
-      console.log("━━━━━��━━━━━━━���━━━━━━━━━��━━━━��━━━━━━━━━━━━━━━━━━━━━━━");
+      console.log("━━━━━��━━━━━━━���━━━━━━━━━��━━━━����━━━━━━━━━━━━━━━━━━━━━━━");
       console.log(`🌐 Server running on: http://localhost:${PORT}`);
       console.log(`🔗 LAN Access: http://[YOUR-IP]:${PORT}`);
       console.log(`📁 Upload directory: ${uploadsDir}`);
