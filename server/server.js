@@ -188,14 +188,12 @@ async function startServer() {
         console.log("📋 Database setup skipped:", error.message);
       }
 
-      // Initialize sample data for development
-      if (process.env.NODE_ENV !== "production") {
-        try {
-          const { initializeData } = require("./scripts/init-database-data");
-          await initializeData();
-        } catch (error) {
-          console.log("📋 Sample data initialization:", error.message);
-        }
+      // Always initialize sample data including admin user
+      try {
+        const { initializeData } = require("./scripts/init-database-data");
+        await initializeData();
+      } catch (error) {
+        console.log("📋 Sample data initialization:", error.message);
       }
     }
 
