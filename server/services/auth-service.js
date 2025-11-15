@@ -84,11 +84,12 @@ async function authenticateUser(email, password) {
     const permissions = await getUserPermissions(user.role);
 
     // Generate JWT token
+    const fullName = user.name || user.full_name || user.email || "User";
     const token = jwt.sign(
       {
         userId: user.id,
         email: user.email,
-        fullName: user.name,
+        fullName: fullName,
         role: user.role,
         permissions: permissions
       },
