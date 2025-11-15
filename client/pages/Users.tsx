@@ -80,15 +80,21 @@ export default function Users() {
   }, []);
 
   const loadUsers = async () => {
+    console.log("📋 loadUsers called");
     try {
       // First, try to fetch pending users from database
+      console.log("🔄 Fetching pending users from /api/users/pending-verification");
       const pendingResponse = await fetch("/api/users/pending-verification");
+      console.log("📦 Pending response status:", pendingResponse.status);
+
       if (pendingResponse.ok) {
         const pendingData = await pendingResponse.json();
-        if (pendingData.success && pendingData.users) {
+        console.log("✅ Pending data received:", pendingData);
+
+        if (pendingData.success && pendingData.users && pendingData.users.length > 0) {
           // Convert pending users to the expected format and merge with system users
           const pendingUsers = pendingData.users.map((user: any) => ({
-            id: user.id || user.request_id,
+            id: user.id,
             name: user.name,
             email: user.email,
             phone: user.phone || "",
@@ -101,6 +107,8 @@ export default function Users() {
             createdAt: user.requestedAt || user.created_at
           }));
 
+          console.log("🎯 Pending users mapped:", pendingUsers);
+
           // Also get system users from localStorage
           const allSystemUsers = getAllUsers();
 
@@ -112,25 +120,30 @@ export default function Users() {
             (user, index, self) => index === self.findIndex((u) => u.id === user.id),
           );
 
-          console.log("Loading users from database:", uniqueUsers);
+          console.log("✨ Final users list:", uniqueUsers);
           setUsers(uniqueUsers);
           return;
+        } else {
+          console.log("ℹ️ No pending users or empty response");
         }
+      } else {
+        console.warn("⚠️ Pending response not ok:", pendingResponse.status);
       }
     } catch (error) {
-      console.warn("Could not fetch pending users from database:", error);
+      console.warn("❌ Could not fetch pending users from database:", error);
     }
 
     // Fallback to localStorage only
+    console.log("↩️ Falling back to localStorage");
     const allUsers = getAllUsers();
-    console.log("Loading users from localStorage:", allUsers);
+    console.log("📚 Loading users from localStorage:", allUsers);
 
     // Deduplicate users to prevent duplicate keys
     const uniqueUsers = allUsers.filter(
       (user, index, self) => index === self.findIndex((u) => u.id === user.id),
     );
 
-    console.log("Unique users:", uniqueUsers);
+    console.log("🏁 Final unique users:", uniqueUsers);
     setUsers(uniqueUsers);
   };
 
