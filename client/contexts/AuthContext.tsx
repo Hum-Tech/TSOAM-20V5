@@ -529,7 +529,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         // Store OTP in database with expiry time (5 minutes)
         // await storeOTPInDatabase(foundUser.id, otpCode, Date.now() + 300000);
 
-        setRequireOTP(true);
+        // setRequireOTP(true); // TODO: Implement OTP
         setIsLoading(false);
         return false;
       }
@@ -763,8 +763,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         body: JSON.stringify(accountData),
       });
 
-      // Use safe response parsing
-      const data = await safeParseResponse(response);
+      // Parse response
+      const data = await response.json();
 
       if (!response.ok) {
         return {
