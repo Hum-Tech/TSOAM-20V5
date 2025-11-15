@@ -196,6 +196,14 @@ async function startServer() {
 
         if (supabaseReady) {
           console.log("✅ Supabase database ready");
+
+          // Initialize admin user if not exists
+          try {
+            const { initializeSupabaseAdmin } = require("./scripts/init-supabase-admin");
+            await initializeSupabaseAdmin();
+          } catch (error) {
+            console.log("⚠️  Admin initialization:", error.message);
+          }
         } else {
           console.log("\n⚠️  IMPORTANT: Database tables not found!");
           console.log("   Please run: npm run supabase:init");
