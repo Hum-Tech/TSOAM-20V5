@@ -11,6 +11,7 @@ const { testConnection: testSupabaseConnection, initializeDatabase: initializeSu
 
 // Import route modules
 const authRoutes = require("./routes/auth");
+const accountRequestsRoutes = require("./routes/account-requests");
 const membersRoutes = require("./routes/members");
 const hrRoutes = require("./routes/hr");
 const financeRoutes = require("./routes/finance");
