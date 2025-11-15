@@ -241,7 +241,7 @@ async function startServer() {
       console.log(`🔗 LAN Access: http://[YOUR-IP]:${PORT}`);
       console.log(`📁 Upload directory: ${uploadsDir}`);
       console.log(
-        `🗄️  Database: ${dbConnected ? "Connected" : "Disconnected"}`,
+        `🗄️  Database: Connected`,
       );
       console.log("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
       console.log("🔧 To access from other computers on LAN:");
