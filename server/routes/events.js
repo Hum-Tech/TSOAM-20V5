@@ -4,6 +4,30 @@ const { authMiddleware, requireRole } = require("../middleware/auth");
 
 const router = express.Router();
 
+// Get events service status
+router.get("/status", async (req, res) => {
+  try {
+    res.json({
+      success: true,
+      status: "operational",
+      features: {
+        viewEvents: true,
+        createEvents: true,
+        updateEvents: true,
+        deleteEvents: true,
+        eventRegistration: true,
+        eventStatistics: true
+      }
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      status: "error",
+      error: error.message
+    });
+  }
+});
+
 // Get all events
 router.get("/", authMiddleware, async (req, res) => {
   try {
