@@ -213,10 +213,12 @@ export default function Profile() {
               <div className="flex justify-center mb-4">
                 <Avatar className="h-24 w-24">
                   <AvatarFallback className="bg-red-800 text-white text-2xl">
-                    {profile.name
-                      .split(" ")
-                      .map((n) => n[0])
-                      .join("")}
+                    {profile?.name
+                      ? profile.name
+                          .split(" ")
+                          .map((n) => n[0])
+                          .join("")
+                      : "U"}
                   </AvatarFallback>
                 </Avatar>
               </div>
