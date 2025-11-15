@@ -312,8 +312,9 @@ export default function NewMembers() {
 
   // Listen for home cell updates from settings
   useEffect(() => {
-    const handleHomeCellUpdate = () => {
-      const availableHomeCells = homeCellService.getAllHomeCells().map(cell => ({
+    const handleHomeCellUpdate = async () => {
+      const allCells = await homeCellService.getAllHomeCells();
+      const availableHomeCells = allCells.map(cell => ({
         id: cell.id,
         name: cell.name
       }));
@@ -539,8 +540,9 @@ export default function NewMembers() {
     setServiceGroups(mockServiceGroups);
 
     // Load home cells
-    const loadHomeCells = () => {
-      const availableHomeCells = homeCellService.getAllHomeCells().map(cell => ({
+    const loadHomeCells = async () => {
+      const allCells = await homeCellService.getAllHomeCells();
+      const availableHomeCells = allCells.map(cell => ({
         id: cell.id,
         name: cell.name
       }));
