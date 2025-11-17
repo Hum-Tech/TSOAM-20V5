@@ -190,19 +190,24 @@ router.post('/zones', async (req, res) => {
       return res.status(400).json({ error: 'District ID and zone name are required' });
     }
 
+    // Generate unique zone_id
+    const zoneId = `ZONE-${name.toUpperCase().replace(/\s+/g, '-')}-${Date.now()}`;
+
     const { data, error } = await supabaseAdmin
       .from('zones')
       .insert([{
+        zone_id: zoneId,
         district_id: parseInt(district_id),
         name: name.trim(),
         description: description?.trim() || null,
-        leader: leader?.trim() || null,
-        leader_phone: leader_phone?.trim() || null,
         is_active: true
       }])
       .select();
 
-    if (error) throw error;
+    if (error) {
+      console.error('Error creating zone:', error);
+      return res.status(500).json({ error: error.message });
+    }
 
     res.json({ success: true, data: data[0] });
   } catch (error) {
