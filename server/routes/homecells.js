@@ -63,16 +63,23 @@ router.post('/districts', async (req, res) => {
       return res.status(400).json({ error: 'District name is required' });
     }
 
+    // Generate unique district_id from name
+    const districtId = `DIS-${name.toUpperCase().replace(/\s+/g, '-')}-${Date.now()}`;
+
     const { data, error } = await supabaseAdmin
       .from('districts')
       .insert([{
+        district_id: districtId,
         name: name.trim(),
         description: description?.trim() || null,
         is_active: true
       }])
       .select();
 
-    if (error) throw error;
+    if (error) {
+      console.error('Error creating district:', error);
+      return res.status(500).json({ error: error.message });
+    }
 
     res.json({ success: true, data: data[0] });
   } catch (error) {
