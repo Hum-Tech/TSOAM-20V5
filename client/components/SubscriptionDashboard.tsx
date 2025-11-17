@@ -2,7 +2,6 @@ import { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Progress } from '@/components/ui/progress';
 import { useToast } from '@/hooks/use-toast';
 import { moduleService, ModuleSubscription } from '@/services/ModuleService';
 import {
@@ -307,10 +306,16 @@ export function SubscriptionDashboard({ token, onDeactivate }: SubscriptionDashb
                         )}%
                       </p>
                     </div>
-                    <Progress
-                      value={(subscription.activeUsersCount / subscription.maxUsers) * 100}
-                      className="h-2"
-                    />
+                    <div className="w-full bg-gray-200 rounded-full h-2 overflow-hidden">
+                      <div
+                        className="bg-blue-500 h-2 rounded-full transition-all"
+                        style={{
+                          width: `${Math.round(
+                            (subscription.activeUsersCount / subscription.maxUsers) * 100
+                          )}%`,
+                        }}
+                      />
+                    </div>
                   </div>
                 )}
 
