@@ -356,7 +356,72 @@ CREATE INDEX IF NOT EXISTS idx_logs_user ON system_logs(user_id);
 CREATE INDEX IF NOT EXISTS idx_logs_date ON system_logs(created_at);
 
 -- ============================================================================
--- 14. INSERT SAMPLE DATA
+-- 14. DISTRICTS TABLE
+-- ============================================================================
+CREATE TABLE IF NOT EXISTS districts (
+  id BIGSERIAL PRIMARY KEY,
+  district_id VARCHAR(50) UNIQUE,
+  name VARCHAR(255) NOT NULL,
+  description TEXT,
+  leader_id UUID REFERENCES users(id),
+  is_active BOOLEAN DEFAULT true,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE INDEX IF NOT EXISTS idx_districts_active ON districts(is_active);
+CREATE INDEX IF NOT EXISTS idx_districts_leader ON districts(leader_id);
+
+-- ============================================================================
+-- 15. ZONES TABLE
+-- ============================================================================
+CREATE TABLE IF NOT EXISTS zones (
+  id BIGSERIAL PRIMARY KEY,
+  zone_id VARCHAR(50) UNIQUE,
+  district_id BIGINT NOT NULL REFERENCES districts(id) ON DELETE CASCADE,
+  name VARCHAR(255) NOT NULL,
+  description TEXT,
+  leader_id UUID REFERENCES users(id),
+  leader VARCHAR(255),
+  leader_phone VARCHAR(20),
+  is_active BOOLEAN DEFAULT true,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE INDEX IF NOT EXISTS idx_zones_district ON zones(district_id);
+CREATE INDEX IF NOT EXISTS idx_zones_leader ON zones(leader_id);
+CREATE INDEX IF NOT EXISTS idx_zones_active ON zones(is_active);
+
+-- ============================================================================
+-- 16. HOMECELLS TABLE
+-- ============================================================================
+CREATE TABLE IF NOT EXISTS homecells (
+  id BIGSERIAL PRIMARY KEY,
+  homecell_id VARCHAR(50) UNIQUE,
+  zone_id BIGINT NOT NULL REFERENCES zones(id) ON DELETE CASCADE,
+  district_id BIGINT REFERENCES districts(id) ON DELETE SET NULL,
+  name VARCHAR(255) NOT NULL,
+  description TEXT,
+  leader_id UUID REFERENCES users(id),
+  leader VARCHAR(255),
+  leader_phone VARCHAR(20),
+  meeting_day VARCHAR(20),
+  meeting_time VARCHAR(10),
+  meeting_location VARCHAR(255),
+  member_count INT DEFAULT 0,
+  is_active BOOLEAN DEFAULT true,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE INDEX IF NOT EXISTS idx_homecells_zone ON homecells(zone_id);
+CREATE INDEX IF NOT EXISTS idx_homecells_district ON homecells(district_id);
+CREATE INDEX IF NOT EXISTS idx_homecells_leader ON homecells(leader_id);
+CREATE INDEX IF NOT EXISTS idx_homecells_active ON homecells(is_active);
+
+-- ============================================================================
+-- 17. INSERT SAMPLE DATA
 -- ============================================================================
 
 -- Districts
