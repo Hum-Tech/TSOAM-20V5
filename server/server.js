@@ -27,6 +27,7 @@ const homecellsRoutes = require("./routes/homecells");
 const setupRoutes = require("./routes/setup");
 const migrateHomecellsRoutes = require("./routes/migrate-homecells");
 const databaseSetupRoutes = require("./routes/database-setup");
+const modulesRoutes = require("./routes/modules");
 
 const app = express();
 const PORT = process.env.PORT || 3001;
