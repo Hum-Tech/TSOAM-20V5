@@ -80,6 +80,12 @@ const allMenuItems = [
     permission: "settings",
   },
   {
+    path: "/module-store",
+    label: "Module Store",
+    icon: ShoppingCart,
+    permission: "settings",
+  },
+  {
     path: "/admin/setup",
     label: "Database Setup",
     icon: Database,
