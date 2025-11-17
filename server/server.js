@@ -111,6 +111,7 @@ app.use("/api/dashboard", dashboardRoutes);
 app.use("/api/system-logs", systemLogsRoutes);
 app.use("/api/messages", messagesRoutes);
 app.use("/api/homecells", homecellsRoutes);
+app.use("/api/reports", homecellReportsRoutes);
 app.use("/api/setup", setupRoutes);
 app.use("/api/migrate", migrateHomecellsRoutes);
 app.use("/api/database-setup", databaseSetupRoutes);
