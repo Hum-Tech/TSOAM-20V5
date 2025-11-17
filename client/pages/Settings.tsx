@@ -1658,6 +1658,52 @@ export default function Settings() {
             </div>
           </TabsContent>
 
+          <TabsContent value="modules">
+            <div className="space-y-6">
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <Package className="h-5 w-5" />
+                    Purchased Modules
+                  </CardTitle>
+                  <p className="text-sm text-muted-foreground mt-2">
+                    Manage your active modules and subscriptions. Go to the Module Store to purchase additional modules.
+                  </p>
+                </CardHeader>
+                <CardContent>
+                  {token ? (
+                    <PurchasedModules token={token} />
+                  ) : (
+                    <div className="text-center py-8 text-muted-foreground">
+                      Please log in to view your modules
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
+
+              <Card>
+                <CardHeader>
+                  <CardTitle>Module Store</CardTitle>
+                  <p className="text-sm text-muted-foreground mt-2">
+                    Browse and activate new modules for your church
+                  </p>
+                </CardHeader>
+                <CardContent>
+                  <Button
+                    onClick={() => window.location.hash = '#/module-store'}
+                    className="w-full md:w-auto"
+                  >
+                    <ShoppingCart className="h-4 w-4 mr-2" />
+                    Go to Module Store
+                  </Button>
+                  <p className="text-xs text-muted-foreground mt-4">
+                    Visit the Module Store to browse all available modules, view detailed features, and activate them for your church.
+                  </p>
+                </CardContent>
+              </Card>
+            </div>
+          </TabsContent>
+
           <TabsContent value="homecells">
             <div className="space-y-6">
               <Card>
