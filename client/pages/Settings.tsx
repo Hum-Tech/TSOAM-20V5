@@ -1661,8 +1661,32 @@ export default function Settings() {
                   <CardTitle>Districts, Zones & Homecells</CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <div className="space-y-6">
-                    {districts.map((d) => (
+                  {districts.length === 0 ? (
+                    <div className="border rounded-lg p-8 text-center bg-muted/30">
+                      <AlertTriangle className="h-12 w-12 mx-auto mb-3 text-amber-600" />
+                      <h3 className="text-lg font-semibold mb-2">No districts found</h3>
+                      <p className="text-muted-foreground mb-4">
+                        The HomeCells database tables need to be set up first. Please follow the instructions below:
+                      </p>
+                      <div className="bg-white border rounded p-4 text-left mb-4 space-y-2">
+                        <p className="font-medium">To set up HomeCells:</p>
+                        <ol className="list-decimal list-inside space-y-1 text-sm text-muted-foreground">
+                          <li>Go to <a href="https://app.supabase.com/" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">Supabase Dashboard</a></li>
+                          <li>Open the SQL Editor</li>
+                          <li>Copy and run SQL Block 1 to create tables</li>
+                          <li>Copy and run SQL Block 2 to seed 9 districts</li>
+                        </ol>
+                      </div>
+                      <Button
+                        onClick={() => window.location.hash = '#/database-setup'}
+                        className="bg-primary"
+                      >
+                        Go to Database Setup Page
+                      </Button>
+                    </div>
+                  ) : (
+                    <div className="space-y-6">
+                      {districts.map((d) => (
                       <div key={d.id} className="border rounded-lg p-4">
                         <h3 className="font-semibold text-lg mb-3">District: {d.name}</h3>
                         <div className="space-y-4">
@@ -1810,7 +1834,8 @@ export default function Settings() {
                         </div>
                       </div>
                     ))}
-                  </div>
+                    </div>
+                  )}
                 </CardContent>
               </Card>
             </div>
