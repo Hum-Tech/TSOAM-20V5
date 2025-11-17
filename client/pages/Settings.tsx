@@ -35,6 +35,7 @@ import {
 } from "lucide-react";
 import { BackupRecovery } from "@/components/BackupRecovery";
 import { PurchasedModules } from "@/components/PurchasedModules";
+import { HomeCellsManagement } from "@/components/settings/HomeCellsManagement";
 import {
   settingsService,
   type ChurchSettings,
