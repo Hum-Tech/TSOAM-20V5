@@ -86,12 +86,6 @@ const allMenuItems = [
     permission: "settings",
   },
   {
-    path: "/admin/setup",
-    label: "Database Setup",
-    icon: Database,
-    permission: "settings",
-  },
-  {
     path: "/system-logs",
     label: "System Logs",
     icon: FileText,
