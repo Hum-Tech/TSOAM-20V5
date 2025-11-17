@@ -30,6 +30,8 @@ import {
   Mail,
   CheckCircle,
   AlertTriangle,
+  Package,
+  ShoppingCart,
 } from "lucide-react";
 import { BackupRecovery } from "@/components/BackupRecovery";
 import { PurchasedModules } from "@/components/PurchasedModules";
