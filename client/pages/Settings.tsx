@@ -51,6 +51,7 @@ import { useAuth } from "@/contexts/AuthContext";
 
 export default function Settings() {
   const { toast } = useToast();
+  const { token } = useAuth();
 
   // Local state for all settings
   const [churchSettings, setChurchSettings] = useState<ChurchSettings>(
