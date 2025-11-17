@@ -180,18 +180,18 @@ router.get('/', authMiddleware, async (req, res) => {
 
     res.json({
       success: true,
-      requests: requests.map(req => ({
+      data: requests.map(req => ({
         id: req.id,
         email: req.email,
-        fullName: req.full_name,
+        full_name: req.full_name,
         phone: req.phone,
         role: req.role,
         status: req.status,
-        rejectionReason: req.rejection_reason,
-        adminNotes: req.admin_notes,
-        requestedAt: req.requested_at,
-        reviewedAt: req.reviewed_at,
-        reviewedBy: req.reviewed_by
+        rejection_reason: req.rejection_reason,
+        admin_notes: req.admin_notes,
+        requested_at: req.requested_at,
+        reviewed_at: req.reviewed_at,
+        reviewed_by: req.reviewed_by
       })),
       total: requests.length
     });
