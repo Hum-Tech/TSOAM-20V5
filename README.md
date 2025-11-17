@@ -2,11 +2,17 @@
 
 A comprehensive church management system built for The Seed of Abraham Ministry (TSOAM).
 
+## ⚠️ IMPORTANT: Database Setup Required
+
+**If you're seeing errors about missing tables (`districts`, `zones`, `homecells`), see [MIGRATION_GUIDE.md](MIGRATION_GUIDE.md) FIRST before continuing.**
+
+The application uses **Supabase** for the database. Follow the migration guide to set up the required tables.
+
 ## 🚀 Quick Start
 
 ### Prerequisites
-- Node.js 18+ 
-- MySQL 8.0+ (or use SQLite fallback)
+- Node.js 18+
+- Supabase account (with PostgreSQL database)
 - npm or yarn
 
 ### Installation
