@@ -180,8 +180,29 @@ app.use((error, req, res, next) => {
 // Start server
 async function startServer() {
   try {
-    // Check if Supabase is configured
-    const useSupabase = process.env.SUPABASE_URL && process.env.SUPABASE_ANON_KEY;
+    // FORCE SUPABASE - Check if Supabase is configured
+    console.log("\n🔐 SUPABASE CONFIGURATION CHECK");
+    console.log("════════════════════════════════════");
+
+    const supabaseUrl = process.env.SUPABASE_URL;
+    const supabaseAnonKey = process.env.SUPABASE_ANON_KEY;
+    const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+
+    if (!supabaseUrl) {
+      console.error("❌ FATAL: SUPABASE_URL environment variable not set");
+      process.exit(1);
+    }
+    if (!supabaseAnonKey) {
+      console.error("❌ FATAL: SUPABASE_ANON_KEY environment variable not set");
+      process.exit(1);
+    }
+    if (!supabaseServiceKey) {
+      console.error("❌ FATAL: SUPABASE_SERVICE_ROLE_KEY environment variable not set");
+      process.exit(1);
+    }
+
+    console.log("✅ All Supabase environment variables configured");
+    const useSupabase = true; // Always use Supabase
 
     if (useSupabase) {
       console.log("\n🔄 Checking Supabase configuration...");
