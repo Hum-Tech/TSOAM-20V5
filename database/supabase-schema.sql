@@ -425,28 +425,27 @@ CREATE INDEX IF NOT EXISTS idx_homecells_active ON homecells(is_active);
 -- ============================================================================
 
 -- Districts
-DELETE FROM homecells;
-DELETE FROM zones;
-DELETE FROM districts;
-
-INSERT INTO districts (name, description) VALUES
-('Nairobi Central', 'Central Nairobi area'),
-('Nairobi East', 'East Nairobi area'),
-('Nairobi West', 'West Nairobi area');
+INSERT INTO districts (name, description, is_active) VALUES
+('Nairobi Central', 'Central Nairobi area', true),
+('Nairobi East', 'East Nairobi area', true),
+('Nairobi West', 'West Nairobi area', true)
+ON CONFLICT (district_id) DO NOTHING;
 
 -- Zones (for each district)
-INSERT INTO zones (district_id, name, leader, leader_phone) VALUES
-(1, 'Zone A1', 'John Mwangi', '+254712345678'),
-(1, 'Zone A2', 'Mary Kipchoge', '+254712345679'),
-(2, 'Zone B1', 'Peter Okonkwo', '+254712345680'),
-(3, 'Zone C1', 'Grace Nyambura', '+254712345681');
+INSERT INTO zones (district_id, name, leader, leader_phone, is_active) VALUES
+(1, 'Zone A1', 'John Mwangi', '+254712345678', true),
+(1, 'Zone A2', 'Mary Kipchoge', '+254712345679', true),
+(2, 'Zone B1', 'Peter Okonkwo', '+254712345680', true),
+(3, 'Zone C1', 'Grace Nyambura', '+254712345681', true)
+ON CONFLICT (zone_id) DO NOTHING;
 
 -- Homecells (for each zone)
-INSERT INTO homecells (zone_id, name, leader, leader_phone, meeting_day, meeting_time, location) VALUES
-(1, 'Zion', 'David Kipchoge', '+254722345678', 'Wednesday', '6:00 PM', 'Riverside Community'),
-(1, 'Judah', 'Ruth Mwangi', '+254722345679', 'Thursday', '5:30 PM', 'Kilimani District'),
-(2, 'Bethel', 'Samuel Okonkwo', '+254722345680', 'Tuesday', '7:00 PM', 'Kasarani Area'),
-(3, 'Philistine', 'Joyce Nyambura', '+254722345681', 'Wednesday', '6:30 PM', 'Westlands Center');
+INSERT INTO homecells (zone_id, name, leader, leader_phone, meeting_day, meeting_time, meeting_location, is_active) VALUES
+(1, 'Zion', 'David Kipchoge', '+254722345678', 'Wednesday', '6:00 PM', 'Riverside Community', true),
+(1, 'Judah', 'Ruth Mwangi', '+254722345679', 'Thursday', '5:30 PM', 'Kilimani District', true),
+(2, 'Bethel', 'Samuel Okonkwo', '+254722345680', 'Tuesday', '7:00 PM', 'Kasarani Area', true),
+(3, 'Philistine', 'Joyce Nyambura', '+254722345681', 'Wednesday', '6:30 PM', 'Westlands Center', true)
+ON CONFLICT (homecell_id) DO NOTHING;
 
 -- Create admin user (you'll need to update password)
 DELETE FROM users WHERE email = 'admin@tsoam.org';
