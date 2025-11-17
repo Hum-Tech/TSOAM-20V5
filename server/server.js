@@ -245,38 +245,6 @@ async function startServer() {
         console.log("   Please verify SUPABASE_URL and SUPABASE_ANON_KEY in .env");
         console.log("   Server will start with limited functionality\n");
       }
-    } else {
-      console.log("📋 Supabase not configured, using local database");
-
-      // Test local database connection
-      const localDbConnected = await testLocalConnection();
-      if (!localDbConnected) {
-        console.log("⚠️  Local database connection failed");
-        console.log("📋 Please check database configuration in .env file");
-        console.log("🔄 Server will continue with limited functionality");
-      } else {
-        console.log("✅ Local database connection established");
-
-        // Initialize local database
-        await initializeLocalDatabase();
-
-        // Setup database tables and default data
-        try {
-          const setupDatabase = require("./database/setup");
-          await setupDatabase();
-          console.log("✅ Database setup completed");
-        } catch (error) {
-          console.log("📋 Database setup skipped:", error.message);
-        }
-
-        // Always initialize sample data including admin user
-        try {
-          const { initializeData } = require("./scripts/init-database-data");
-          await initializeData();
-        } catch (error) {
-          console.log("📋 Sample data initialization:", error.message);
-        }
-      }
     }
 
     app.listen(PORT, "0.0.0.0", () => {
