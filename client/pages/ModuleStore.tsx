@@ -1,3 +1,19 @@
+/**
+ * Module Store Page - Church Module Management Interface
+ *
+ * Provides a comprehensive interface for browsing, purchasing, and managing
+ * church management system modules and subscriptions.
+ *
+ * Features:
+ * - Browse available modules in the store
+ * - View and manage active subscriptions
+ * - Review billing history and payment records
+ * - Module activation and deactivation
+ * - Payment processing and subscription management
+ *
+ * @component
+ */
+
 import { useState } from 'react';
 import { Layout } from '@/components/layout/Layout';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -10,16 +26,26 @@ import { ShoppingCart, Package, CreditCard, HelpCircle, Lightbulb } from 'lucide
 import { useAuth } from '@/contexts/AuthContext';
 
 export default function ModuleStorePage() {
-  const { token } = useAuth();
+  // Get authenticated user and token from auth context
+  const { user, token } = useAuth();
   const [activeTab, setActiveTab] = useState('store');
   const [refreshKey, setRefreshKey] = useState(0);
   const { toast } = useToast();
 
-  if (!token) {
+  /**
+   * Check if user is authenticated
+   * User is authenticated if they have a valid user object, not just a token
+   */
+  if (!user || !user.email) {
     return (
       <Layout>
         <div className="flex items-center justify-center py-12">
-          <p className="text-muted-foreground">Please log in to access the module store</p>
+          <Card className="w-full max-w-md">
+            <CardContent className="pt-6 text-center">
+              <p className="text-muted-foreground mb-4">Please log in to access the module store</p>
+              <p className="text-sm text-gray-500">You need to be logged in to browse and manage modules</p>
+            </CardContent>
+          </Card>
         </div>
       </Layout>
     );
