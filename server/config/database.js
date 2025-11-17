@@ -4,9 +4,9 @@ const sqlite = require("./sqlite-adapter");
 const { supabaseAdmin, isSupabaseConfigured } = require("./supabase-client");
 require("dotenv").config({ path: path.join(__dirname, '..', '..', '.env') });
 
-// Determine which database to use - prioritize Supabase first, then MySQL
-const USE_SQLITE = process.env.USE_SQLITE === "true";
-const FORCE_SUPABASE = isSupabaseConfigured;
+// Determine which database to use - FORCE SUPABASE ONLY
+const USE_SQLITE = false; // Disabled
+const FORCE_SUPABASE = true; // Always use Supabase
 
 // Database configuration for localhost deployment
 const dbConfig = {
@@ -21,11 +21,8 @@ const dbConfig = {
   multipleStatements: true,
 };
 
-// Create connection pool for better performance (MySQL) - only if not using Supabase
+// MySQL pool disabled - using Supabase only
 let pool = null;
-if (!FORCE_SUPABASE) {
-  pool = mysql.createPool(dbConfig);
-}
 
 // Test database connection with Supabase priority
 async function testConnection() {
