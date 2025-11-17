@@ -66,6 +66,7 @@ import EventsEnhanced from "./pages/EventsEnhanced";
 import Settings from "./pages/Settings";
 import SystemLogs from "./pages/SystemLogs";
 import Users from "./pages/Users";
+import ModuleStore from "./pages/ModuleStore";
 import Setup from "./pages/Setup";
 import { DatabaseSetup } from "./pages/DatabaseSetup";
 import AdminSetup from "./pages/AdminSetup";
