@@ -221,22 +221,6 @@ async function startServer() {
 
         if (supabaseReady) {
           console.log("✅ Supabase database ready");
-
-          // Initialize admin user if not exists
-          try {
-            const { initializeSupabaseAdmin } = require("./scripts/init-supabase-admin");
-            await initializeSupabaseAdmin();
-          } catch (error) {
-            console.log("⚠️  Admin initialization:", error.message);
-          }
-
-          // Fix admin user name
-          try {
-            const { fixAdminName } = require("./scripts/fix-admin-name");
-            await fixAdminName();
-          } catch (error) {
-            console.log("⚠️  Admin name fix:", error.message);
-          }
         } else {
           console.log("\n⚠️  IMPORTANT: Database tables not found!");
           console.log("   Please run: npm run supabase:init");
