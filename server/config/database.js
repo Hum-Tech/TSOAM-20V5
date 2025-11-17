@@ -1,7 +1,8 @@
 const mysql = require("mysql2/promise");
+const path = require("path");
 const sqlite = require("./sqlite-adapter");
 const { supabaseAdmin, isSupabaseConfigured } = require("./supabase-client");
-require("dotenv").config();
+require("dotenv").config({ path: path.join(__dirname, '..', '..', '.env') });
 
 // Determine which database to use - prioritize Supabase first, then MySQL
 const USE_SQLITE = process.env.USE_SQLITE === "true";

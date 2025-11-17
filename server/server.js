@@ -4,7 +4,7 @@ const path = require("path");
 const bodyParser = require("body-parser");
 const multer = require("multer");
 const fs = require("fs");
-require("dotenv").config();
+require("dotenv").config({ path: path.join(__dirname, '..', '.env') });
 
 const { testConnection: testLocalConnection, initializeDatabase: initializeLocalDatabase } = require("./config/database");
 const { testConnection: testSupabaseConnection, initializeDatabase: initializeSupabaseDatabase } = require("./config/supabase-client");
