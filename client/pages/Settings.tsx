@@ -32,6 +32,7 @@ import {
   AlertTriangle,
 } from "lucide-react";
 import { BackupRecovery } from "@/components/BackupRecovery";
+import { PurchasedModules } from "@/components/PurchasedModules";
 import {
   settingsService,
   type ChurchSettings,
@@ -46,6 +47,7 @@ import {
 import { backupService } from "@/services/BackupService";
 import { homeCellService, type HomeCell } from "@/services/HomeCellService";
 import { homeCellHierarchyService, type District, type Zone, type Homecell } from "@/services/HomeCellHierarchyService";
+import { useAuth } from "@/contexts/AuthContext";
 
 export default function Settings() {
   const { toast } = useToast();
