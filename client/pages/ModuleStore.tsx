@@ -51,17 +51,30 @@ export default function ModuleStorePage() {
     );
   }
 
+  /**
+   * Handle successful module purchase
+   * Refreshes the module list and switches to subscriptions tab
+   */
   const handlePurchaseSuccess = () => {
+    // Trigger refresh of module data
     setRefreshKey((prev) => prev + 1);
+
+    // Show success notification to user
     toast({
       title: 'Module Activated',
       description: 'The module is now ready to use',
     });
-    // Switch to subscriptions tab
+
+    // Switch to subscriptions tab to show newly activated module
     setActiveTab('subscriptions');
   };
 
+  /**
+   * Handle module deactivation
+   * Refreshes module list to reflect changes
+   */
   const handleDeactivate = () => {
+    // Trigger refresh of module data
     setRefreshKey((prev) => prev + 1);
   };
 
