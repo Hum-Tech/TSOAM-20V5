@@ -29,6 +29,7 @@ import {
   DownloadCloud,
   Eye,
   Loader2,
+  Calendar,
 } from 'lucide-react';
 
 interface ModuleStoreEnhancedProps {
@@ -466,6 +467,3 @@ export function ModuleStoreEnhanced({ token, onPurchaseSuccess }: ModuleStoreEnh
     </div>
   );
 }
-
-// Re-export Calendar icon that might be missing
-import { Calendar } from 'lucide-react';
