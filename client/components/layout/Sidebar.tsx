@@ -23,6 +23,7 @@ import {
   Shield,
   LogOut,
   Database,
+  ShoppingCart,
 } from "lucide-react";
 
 const allMenuItems = [
