@@ -20,6 +20,14 @@ async function authenticateUser(email, password) {
       };
     }
 
+    if (!supabaseAdmin) {
+      console.error('❌ Supabase admin client not configured');
+      return {
+        success: false,
+        error: 'Database connection failed. Please check server configuration.'
+      };
+    }
+
     // Get user from database
     const { data: users, error } = await supabaseAdmin
       .from('users')
