@@ -24,6 +24,7 @@ const dashboardRoutes = require("./routes/dashboard");
 const systemLogsRoutes = require("./routes/system-logs");
 const messagesRoutes = require("./routes/messages");
 const homecellsRoutes = require("./routes/homecells");
+const homecellReportsRoutes = require("./routes/homecell-reports");
 const setupRoutes = require("./routes/setup");
 const migrateHomecellsRoutes = require("./routes/migrate-homecells");
 const databaseSetupRoutes = require("./routes/database-setup");
