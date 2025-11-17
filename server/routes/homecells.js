@@ -351,15 +351,17 @@ router.post('/homecells', async (req, res) => {
       return res.status(400).json({ error: 'Zone ID, District ID, and homecell name are required' });
     }
 
+    // Generate unique homecell_id
+    const homecellId = `HC-${name.toUpperCase().replace(/\s+/g, '-')}-${Date.now()}`;
+
     const { data, error } = await supabaseAdmin
       .from('homecells')
       .insert([{
+        homecell_id: homecellId,
         zone_id: parseInt(zone_id),
         district_id: parseInt(district_id),
         name: name.trim(),
         description: description?.trim() || null,
-        leader: leader?.trim() || null,
-        leader_phone: leader_phone?.trim() || null,
         meeting_day: meeting_day || null,
         meeting_time: meeting_time || null,
         meeting_location: meeting_location?.trim() || null,
@@ -367,7 +369,10 @@ router.post('/homecells', async (req, res) => {
       }])
       .select();
 
-    if (error) throw error;
+    if (error) {
+      console.error('Error creating homecell:', error);
+      return res.status(500).json({ error: error.message });
+    }
 
     res.json({ success: true, data: data[0] });
   } catch (error) {
