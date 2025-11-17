@@ -16,22 +16,44 @@ class HomeCellHierarchyService {
 
     try {
       // Fetch full hierarchy
-      const hierarchy = await homeCellService.getFullHierarchy();
+      const response = await fetch('/api/homecells/hierarchy/full');
 
-      // Extract districts, zones, and homecells from hierarchy
-      this.districts = hierarchy || [];
+      if (!response.ok) {
+        console.warn('API returned error:', response.status);
+        // Tables might not exist yet, fallback to empty
+        this.districts = [];
+        this.zones = [];
+        this.homecells = [];
+        this.initialized = true;
+        return;
+      }
 
-      // Fetch all zones
+      const data = await response.json();
+
+      if (!data.success || !data.data) {
+        console.warn('Invalid API response');
+        this.districts = [];
+        this.zones = [];
+        this.homecells = [];
+        this.initialized = true;
+        return;
+      }
+
+      // Extract districts and their zones/homecells from hierarchy
+      this.districts = data.data || [];
+
       const allZones: Zone[] = [];
       const allHomecells: HomeCell[] = [];
 
       for (const district of this.districts) {
-        const zones = await homeCellService.getZonesByDistrict(district.id);
-        allZones.push(...zones);
+        if (district.zones) {
+          allZones.push(...district.zones);
 
-        for (const zone of zones) {
-          const homecells = await homeCellService.getHomeCellsByZone(zone.id);
-          allHomecells.push(...homecells);
+          for (const zone of district.zones) {
+            if (zone.homecells) {
+              allHomecells.push(...zone.homecells);
+            }
+          }
         }
       }
 
@@ -40,10 +62,11 @@ class HomeCellHierarchyService {
       this.initialized = true;
     } catch (error) {
       console.error('Error initializing HomeCellHierarchyService:', error);
-      // Fallback to empty arrays
+      // Fallback to empty arrays - tables might not be created yet
       this.districts = [];
       this.zones = [];
       this.homecells = [];
+      this.initialized = true;
     }
   }
 
