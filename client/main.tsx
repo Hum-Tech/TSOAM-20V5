@@ -404,6 +404,14 @@ const AppContent = () => {
                   </ProtectedRoute>
                 }
               />
+              <Route
+                path="/module-store"
+                element={
+                  <ProtectedRoute allowedRoles={["admin", "finance"]}>
+                    <ModuleStore />
+                  </ProtectedRoute>
+                }
+              />
               {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
               <Route path="*" element={<NotFound />} />
             </Routes>
