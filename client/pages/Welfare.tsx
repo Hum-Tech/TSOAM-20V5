@@ -173,8 +173,8 @@ function Welfare() {
   const handleExport = async (format: "excel" | "pdf" | "csv") => {
     const filteredRequests = welfareRequests.filter((request) => {
       const matchesSearch =
-        request.fullName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        request.requestId.toLowerCase().includes(searchTerm.toLowerCase());
+        (request.fullName || "").toLowerCase().includes(searchTerm.toLowerCase()) ||
+        (request.requestId || "").toLowerCase().includes(searchTerm.toLowerCase());
       const matchesStatus = !filterStatus || request.status === filterStatus;
       return matchesSearch && matchesStatus;
     });
@@ -227,8 +227,8 @@ function Welfare() {
   // Filter functions
   const filteredRequests = welfareRequests.filter((request) => {
     const matchesSearch =
-      request.fullName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      request.requestId.toLowerCase().includes(searchTerm.toLowerCase());
+      (request.fullName || "").toLowerCase().includes(searchTerm.toLowerCase()) ||
+      (request.requestId || "").toLowerCase().includes(searchTerm.toLowerCase());
     const matchesStatus = !filterStatus || request.status === filterStatus;
     return matchesSearch && matchesStatus;
   });

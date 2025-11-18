@@ -1,220 +1,149 @@
-const mysql = require("mysql2/promise");
-const sqlite = require("./sqlite-adapter");
+/**
+ * Database Configuration Module
+ * 
+ * This module manages database connections with Supabase as the primary backend.
+ * Supabase provides a PostgreSQL database with REST API access.
+ * 
+ * Configuration:
+ * - Supabase is the primary and only production database
+ * - No MySQL fallback in production mode
+ * - SQLite is disabled as it conflicts with Supabase operation
+ */
+
+const path = require("path");
 const { supabaseAdmin, isSupabaseConfigured } = require("./supabase-client");
-require("dotenv").config();
+require("dotenv").config({ path: path.join(__dirname, '..', '..', '.env') });
 
-// Determine which database to use - prioritize Supabase first, then MySQL
-const USE_SQLITE = process.env.USE_SQLITE === "true";
-const FORCE_SUPABASE = isSupabaseConfigured;
+// Force Supabase as the only database backend
+const USE_SUPABASE_ONLY = true;
+const FORCE_SUPABASE = true;
 
-// Database configuration for localhost deployment
-const dbConfig = {
-  host: process.env.DB_HOST || "localhost",
-  port: process.env.DB_PORT || 3306,
-  user: process.env.DB_USER || "root",
-  password: process.env.DB_PASSWORD || "",
-  database: process.env.DB_NAME || "tsoam_church_db",
-  charset: "utf8mb4",
-  connectionLimit: 20,
-  queueLimit: 0,
-  multipleStatements: true,
-};
+console.log('📊 Database Configuration:');
+console.log('   Mode: Supabase PostgreSQL (Production)');
+console.log('   Status:', isSupabaseConfigured ? '✅ Configured' : '❌ Not configured');
 
-// Create connection pool for better performance (MySQL) - only if not using Supabase
-let pool = null;
-if (!FORCE_SUPABASE) {
-  pool = mysql.createPool(dbConfig);
-}
-
-// Test database connection with Supabase priority
+// Test database connection
 async function testConnection() {
-  console.log("🔄 Testing database connection...");
+  console.log("🔄 Testing Supabase database connection...");
 
-  // If Supabase is configured, prioritize it
-  if (FORCE_SUPABASE && supabaseAdmin) {
-    console.log("✅ Using Supabase as primary database");
-    try {
-      const { data, error } = await supabaseAdmin
-        .from('users')
-        .select('id')
-        .limit(1);
-
-      if (!error || error.code === 'PGRST116') {
-        console.log("✅ Supabase connection verified");
-        global.SUPABASE_ENABLED = true;
-        return true;
-      }
-    } catch (err) {
-      console.error("⚠️ Supabase connection test failed:", err.message);
-    }
-  }
-
-  console.log("📍 Configuration:", {
-    host: dbConfig.host,
-    port: dbConfig.port,
-    user: dbConfig.user,
-    database: dbConfig.database,
-    USE_SQLITE: USE_SQLITE,
-    SUPABASE_ENABLED: FORCE_SUPABASE
-  });
-
-  // If explicitly set to use SQLite, skip MySQL
-  if (USE_SQLITE) {
-    console.log("📋 SQLite mode explicitly enabled in configuration");
-    const sqliteResult = await sqlite.testConnection();
-    if (sqliteResult) {
-      console.log("✅ SQLite database ready");
-    }
-    return sqliteResult;
+  if (!FORCE_SUPABASE || !supabaseAdmin) {
+    console.error('❌ Supabase is not properly configured');
+    console.error('   Please set SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY in .env');
+    return false;
   }
 
   try {
-    // Only attempt MySQL if Supabase is not configured
-    if (!FORCE_SUPABASE) {
-      console.log("🔗 Attempting MySQL connection...");
-      const connection = await pool.getConnection();
-      console.log("✅ MySQL database connected successfully!");
-      console.log("📍 Database:", dbConfig.database, "on", dbConfig.host + ":" + dbConfig.port);
-      console.log("🔄 MySQL synchronization enabled");
-      connection.release();
+    // Test Supabase connection by querying users table
+    const { data, error } = await supabaseAdmin
+      .from('users')
+      .select('id')
+      .limit(1);
 
-      // Mark as MySQL successful
-      global.FORCE_MYSQL = true;
+    if (!error || (error && error.code === 'PGRST116')) {
+      // PGRST116 = table doesn't exist, which is OK - it means connection works
+      console.log("✅ Supabase connection verified");
+      global.SUPABASE_ENABLED = true;
       return true;
-    }
-  } catch (error) {
-    console.error("❌ MySQL connection failed:", error.message);
-
-    if (error.code === 'ECONNREFUSED') {
-      console.log("🔧 MySQL server is not running on localhost:3306");
-      console.log("📋 Solutions:");
-      console.log("   1. Start MySQL server (mysqld, XAMPP, WAMP, etc.)");
-      console.log("   2. Or set USE_SQLITE=true in .env to use SQLite");
-    } else if (error.code === 'ER_ACCESS_DENIED_ERROR') {
-      console.log("🔧 Check MySQL credentials in .env file");
+    } else if (error) {
+      console.error("❌ Supabase connection test failed:", error.message);
+      return false;
     }
 
-    console.log("🔄 Falling back to SQLite...");
-    const sqliteResult = await sqlite.testConnection();
-    if (sqliteResult) {
-      console.log("✅ SQLite fallback ready - system operational");
-    }
-    return sqliteResult;
+    return true;
+  } catch (err) {
+    console.error("⚠️ Supabase connection test error:", err.message);
+    return false;
   }
 }
 
-// Initialize database (create tables if they don't exist)
+// Initialize database - ensure tables exist
 async function initializeDatabase() {
-  if (FORCE_SUPABASE && supabaseAdmin) {
-    console.log("✅ Supabase database initialized");
-    return true;
+  if (!FORCE_SUPABASE || !supabaseAdmin) {
+    console.error('❌ Supabase not configured');
+    return false;
   }
 
-  if (USE_SQLITE) {
-    console.log("🔄 SQLite database already initialized");
-    return true;
-  }
+  console.log("🔄 Initializing Supabase database...");
 
   try {
-    console.log("🔄 Initializing MySQL database...");
+    // Check for critical tables
+    const criticalTables = ['users', 'members', 'financial_transactions', 'system_logs'];
+    let allTablesExist = true;
+    const missingTables = [];
 
-    // Check if database exists, create if not
-    const connection = await mysql.createConnection({
-      host: dbConfig.host,
-      port: dbConfig.port,
-      user: dbConfig.user,
-      password: dbConfig.password,
-      multipleStatements: true,
-    });
+    for (const table of criticalTables) {
+      try {
+        const { error } = await supabaseAdmin
+          .from(table)
+          .select('*')
+          .limit(0);
 
-    await connection.execute(
-      `CREATE DATABASE IF NOT EXISTS ${dbConfig.database} CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci`,
-    );
-    await connection.end();
-
-    // Now connect to the specific database
-    const dbConnection = await pool.getConnection();
-
-    // Check if tables exist
-    const [tables] = await dbConnection.execute("SHOW TABLES");
-
-    if (tables.length === 0) {
-      console.log("📦 Database is empty, please run the schema.sql file");
-      console.log(
-        "💻 Command: mysql -u root -p tsoam_church_db < database/schema.sql",
-      );
-    } else {
-      console.log(`✅ Database initialized with ${tables.length} tables`);
+        if (error && error.code === 'PGRST116') {
+          // Table doesn't exist
+          missingTables.push(table);
+          allTablesExist = false;
+        }
+      } catch {
+        missingTables.push(table);
+        allTablesExist = false;
+      }
     }
 
-    dbConnection.release();
+    if (!allTablesExist) {
+      console.warn(`⚠️ Missing tables: ${missingTables.join(', ')}`);
+      console.log('📋 DATABASE SETUP REQUIRED:');
+      console.log('   1. Go to Supabase Dashboard > SQL Editor');
+      console.log('   2. Create a new query');
+      console.log('   3. Copy and paste the complete schema from: server/migrations/000_create_complete_schema.sql');
+      console.log('   4. Execute the query');
+      console.log('   5. Restart your application');
+      return false;
+    }
+
+    console.log('✅ All critical tables exist');
     return true;
   } catch (error) {
-    console.error("❌ MySQL initialization failed:", error.message);
-    console.log("🔄 Using SQLite as fallback");
-    return true; // SQLite is already initialized
+    console.error('❌ Database initialization error:', error.message);
+    return false;
   }
 }
 
-// Execute query with Supabase priority, then MySQL, then SQLite
+// Direct Supabase query wrapper
+// All queries go directly through Supabase REST API, no SQLite fallback
 async function query(sql, params = []) {
-  // If Supabase is configured, use SQLite as a fallback but don't attempt MySQL
-  if (FORCE_SUPABASE && supabaseAdmin) {
-    console.log("🔄 Supabase enabled - using SQLite adapter for query operations");
-    return await sqlite.query(sql, params);
+  if (!FORCE_SUPABASE || !supabaseAdmin) {
+    throw new Error('Supabase not properly configured. Cannot execute query.');
   }
 
-  // Try MySQL unless explicitly disabled
-  if (!USE_SQLITE || global.FORCE_MYSQL) {
-    try {
-      if (!pool) {
-        throw new Error("MySQL pool not initialized");
-      }
-      const [results] = await pool.execute(sql, params);
-      console.log("✅ MySQL query executed successfully");
-      return { success: true, data: results };
-    } catch (error) {
-      console.error("❌ MySQL query error:", error.message);
-      if (global.FORCE_MYSQL) {
-        throw error; // Don't fallback if we're forcing MySQL
-      }
-      console.log("🔄 Falling back to SQLite for this query...");
-    }
-  }
-
-  // Fallback to SQLite
-  return await sqlite.query(sql, params);
+  // Note: This function should not be used for raw SQL queries
+  // Always use supabaseAdmin client directly in route handlers
+  // Example: supabaseAdmin.from('table').select(...).eq(...)
+  throw new Error(
+    'Raw SQL queries are not supported. Use Supabase client API directly in route handlers.\n' +
+    'Example: supabaseAdmin.from("table").select("*")' 
+  );
 }
 
-// Get connection from pool
-async function getConnection() {
-  try {
-    if (!pool) {
-      throw new Error("Database pool not initialized");
-    }
-    return await pool.getConnection();
-  } catch (error) {
-    console.error("Failed to get database connection:", error.message);
-    throw error;
+// Get Supabase client (for direct use in routes)
+function getSupabaseClient() {
+  if (!supabaseAdmin) {
+    throw new Error('Supabase client not initialized');
   }
+  return supabaseAdmin;
 }
 
-// Close all connections
+// Close connections (Supabase doesn't require explicit connection closure)
 async function closePool() {
-  try {
-    await pool.end();
-    console.log("🔌 Database connection pool closed");
-  } catch (error) {
-    console.error("Error closing database pool:", error.message);
-  }
+  console.log("✅ Supabase client closed");
 }
 
 module.exports = {
-  pool,
-  query,
-  getConnection,
   testConnection,
   initializeDatabase,
+  query,
+  getSupabaseClient,
   closePool,
-  dbConfig,
+  USE_SUPABASE_ONLY,
+  FORCE_SUPABASE,
+  supabaseAdmin
 };

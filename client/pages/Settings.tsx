@@ -30,8 +30,12 @@ import {
   Mail,
   CheckCircle,
   AlertTriangle,
+  Package,
+  ShoppingCart,
 } from "lucide-react";
 import { BackupRecovery } from "@/components/BackupRecovery";
+import { PurchasedModules } from "@/components/PurchasedModules";
+import { HomeCellsManagement } from "@/components/settings/HomeCellsManagement";
 import {
   settingsService,
   type ChurchSettings,
@@ -46,9 +50,11 @@ import {
 import { backupService } from "@/services/BackupService";
 import { homeCellService, type HomeCell } from "@/services/HomeCellService";
 import { homeCellHierarchyService, type District, type Zone, type Homecell } from "@/services/HomeCellHierarchyService";
+import { useAuth } from "@/contexts/AuthContext";
 
 export default function Settings() {
   const { toast } = useToast();
+  const { token } = useAuth();
 
   // Local state for all settings
   const [churchSettings, setChurchSettings] = useState<ChurchSettings>(
@@ -744,12 +750,13 @@ export default function Settings() {
         </div>
 
         <Tabs defaultValue="general" className="space-y-4">
-          <TabsList className="grid w-full grid-cols-6">
+          <TabsList className="grid w-full grid-cols-7">
             <TabsTrigger value="general">General</TabsTrigger>
             <TabsTrigger value="church">Church Settings</TabsTrigger>
             <TabsTrigger value="security">Security</TabsTrigger>
             <TabsTrigger value="backup">Backup</TabsTrigger>
             <TabsTrigger value="notifications">Notifications</TabsTrigger>
+            <TabsTrigger value="modules">Modules</TabsTrigger>
             <TabsTrigger value="homecells">Home Cells</TabsTrigger>
           </TabsList>
 
@@ -1654,166 +1661,54 @@ export default function Settings() {
             </div>
           </TabsContent>
 
-          <TabsContent value="homecells">
+          <TabsContent value="modules">
             <div className="space-y-6">
               <Card>
                 <CardHeader>
-                  <CardTitle>Districts, Zones & Homecells</CardTitle>
+                  <CardTitle className="flex items-center gap-2">
+                    <Package className="h-5 w-5" />
+                    Purchased Modules
+                  </CardTitle>
+                  <p className="text-sm text-muted-foreground mt-2">
+                    Manage your active modules and subscriptions. Go to the Module Store to purchase additional modules.
+                  </p>
                 </CardHeader>
                 <CardContent>
-                  <div className="space-y-6">
-                    {districts.map((d) => (
-                      <div key={d.id} className="border rounded-lg p-4">
-                        <h3 className="font-semibold text-lg mb-3">District: {d.name}</h3>
-                        <div className="space-y-4">
-                          {zones.filter((z) => z.districtId === d.id).map((z) => (
-                            <div key={z.id} className="border rounded p-3 bg-muted/30">
-                              <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-3">
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-3 flex-1">
-                                  <div>
-                                    <Label>Zone Leader</Label>
-                                    <Input
-                                      value={zoneEdits[z.id]?.leader ?? ""}
-                                      onChange={(e) =>
-                                        setZoneEdits((prev) => ({
-                                          ...prev,
-                                          [z.id]: { ...(prev[z.id] || { leader: "", leaderPhone: "" }), leader: e.target.value },
-                                        }))
-                                      }
-                                      placeholder="Full name"
-                                    />
-                                  </div>
-                                  <div>
-                                    <Label>Leader Phone</Label>
-                                    <Input
-                                      value={zoneEdits[z.id]?.leaderPhone ?? ""}
-                                      onChange={(e) =>
-                                        setZoneEdits((prev) => ({
-                                          ...prev,
-                                          [z.id]: { ...(prev[z.id] || { leader: "", leaderPhone: "" }), leaderPhone: e.target.value },
-                                        }))
-                                      }
-                                      placeholder="+254 ..."
-                                    />
-                                  </div>
-                                </div>
-                                <Button onClick={() => saveZoneLeader(z.id)}>Save Zone Leader</Button>
-                              </div>
+                  {token ? (
+                    <PurchasedModules token={token} />
+                  ) : (
+                    <div className="text-center py-8 text-muted-foreground">
+                      Please log in to view your modules
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
 
-                              <div className="mt-3 grid gap-2">
-                                <div className="flex items-center gap-2">
-                                  <Input
-                                    placeholder="Add homecell name (e.g., Zion, Judah, Siloam)"
-                                    value={zoneNewHomecellName[z.id] || ""}
-                                    onChange={(e)=> setZoneNewHomecellName((p)=> ({...p, [z.id]: e.target.value}))}
-                                  />
-                                  <Button variant="outline" onClick={()=> addHomecellToZone(z.id)}>Add Homecell</Button>
-                                </div>
-                                {hierHomecells.filter((h) => h.zoneId === z.id).map((h) => (
-                                  <div key={h.id} className="rounded border bg-white p-3">
-                                    <div className="flex items-center justify-between">
-                                      <div className="font-medium w-full max-w-md">
-                                        <Label className="text-xs">Homecell Name</Label>
-                                        <Input
-                                          value={homecellEdits[h.id]?.name as string || ""}
-                                          onChange={(e)=> setHomecellEdits((prev)=> ({...prev, [h.id]: { ...(prev[h.id] || {}), name: e.target.value }}))}
-                                        />
-                                      </div>
-                                      <div className="flex items-center gap-2">
-                                        <Badge variant={h.isActive ? "default" : "secondary"}>{h.isActive ? "Active" : "Inactive"}</Badge>
-                                        <Switch checked={h.isActive} onCheckedChange={(checked) => toggleHomecellActive(h.id, checked)} />
-                                        <Button variant="destructive" size="sm" onClick={()=> deleteHomecell(h.id)}>Delete</Button>
-                                      </div>
-                                    </div>
-                                    <div className="mt-2 grid grid-cols-1 md:grid-cols-3 gap-3">
-                                      <div>
-                                        <Label>Leader</Label>
-                                        <Input
-                                          value={homecellEdits[h.id]?.leader ?? ""}
-                                          onChange={(e) =>
-                                            setHomecellEdits((prev) => ({
-                                              ...prev,
-                                              [h.id]: { ...(prev[h.id] || {}), leader: e.target.value },
-                                            }))
-                                          }
-                                        />
-                                      </div>
-                                      <div>
-                                        <Label>Leader Phone</Label>
-                                        <Input
-                                          value={homecellEdits[h.id]?.leaderPhone ?? ""}
-                                          onChange={(e) =>
-                                            setHomecellEdits((prev) => ({
-                                              ...prev,
-                                              [h.id]: { ...(prev[h.id] || {}), leaderPhone: e.target.value },
-                                            }))
-                                          }
-                                        />
-                                      </div>
-                                      <div>
-                                        <Label>Meeting Day</Label>
-                                        <Input
-                                          value={homecellEdits[h.id]?.meetingDay ?? ""}
-                                          onChange={(e) =>
-                                            setHomecellEdits((prev) => ({
-                                              ...prev,
-                                              [h.id]: { ...(prev[h.id] || {}), meetingDay: e.target.value },
-                                            }))
-                                          }
-                                        />
-                                      </div>
-                                      <div>
-                                        <Label>Meeting Time</Label>
-                                        <Input
-                                          value={homecellEdits[h.id]?.meetingTime ?? ""}
-                                          onChange={(e) =>
-                                            setHomecellEdits((prev) => ({
-                                              ...prev,
-                                              [h.id]: { ...(prev[h.id] || {}), meetingTime: e.target.value },
-                                            }))
-                                          }
-                                        />
-                                      </div>
-                                      <div className="md:col-span-2">
-                                        <Label>Location</Label>
-                                        <Input
-                                          value={homecellEdits[h.id]?.location ?? ""}
-                                          onChange={(e) =>
-                                            setHomecellEdits((prev) => ({
-                                              ...prev,
-                                              [h.id]: { ...(prev[h.id] || {}), location: e.target.value },
-                                            }))
-                                          }
-                                        />
-                                      </div>
-                                      <div className="md:col-span-3">
-                                        <Label>Description</Label>
-                                        <Input
-                                          value={homecellEdits[h.id]?.description ?? ""}
-                                          onChange={(e) =>
-                                            setHomecellEdits((prev) => ({
-                                              ...prev,
-                                              [h.id]: { ...(prev[h.id] || {}), description: e.target.value },
-                                            }))
-                                          }
-                                        />
-                                      </div>
-                                    </div>
-                                    <div className="mt-2 flex justify-end">
-                                      <Button size="sm" onClick={() => saveHomecell(h.id)}>Save Homecell</Button>
-                                    </div>
-                                  </div>
-                                ))}
-                              </div>
-                            </div>
-                          ))}
-                        </div>
-                      </div>
-                    ))}
-                  </div>
+              <Card>
+                <CardHeader>
+                  <CardTitle>Module Store</CardTitle>
+                  <p className="text-sm text-muted-foreground mt-2">
+                    Browse and activate new modules for your church
+                  </p>
+                </CardHeader>
+                <CardContent>
+                  <Button
+                    onClick={() => window.location.hash = '#/module-store'}
+                    className="w-full md:w-auto"
+                  >
+                    <ShoppingCart className="h-4 w-4 mr-2" />
+                    Go to Module Store
+                  </Button>
+                  <p className="text-xs text-muted-foreground mt-4">
+                    Visit the Module Store to browse all available modules, view detailed features, and activate them for your church.
+                  </p>
                 </CardContent>
               </Card>
             </div>
+          </TabsContent>
+
+          <TabsContent value="homecells">
+            <HomeCellsManagement />
           </TabsContent>
         </Tabs>
 

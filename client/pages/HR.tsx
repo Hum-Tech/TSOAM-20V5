@@ -714,9 +714,9 @@ export default function HR() {
 
   const filteredEmployees = employees.filter((employee) => {
     const matchesSearch =
-      employee.fullName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      employee.employeeId.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      employee.email.toLowerCase().includes(searchTerm.toLowerCase());
+      (employee.fullName || "").toLowerCase().includes(searchTerm.toLowerCase()) ||
+      (employee.employeeId || "").toLowerCase().includes(searchTerm.toLowerCase()) ||
+      (employee.email || "").toLowerCase().includes(searchTerm.toLowerCase());
 
     const matchesDepartment =
       departmentFilter === "all" || employee.department === departmentFilter;
@@ -1568,10 +1568,10 @@ ${performanceFormData.managerComments || 'Not specified'}
   // Filter enterprise leave requests
   const filteredEnterpriseLeaveRequests = enterpriseLeaveRequests.filter(request => {
     const matchesSearch = leaveSearchTerm === "" ||
-      request.employeeName.toLowerCase().includes(leaveSearchTerm.toLowerCase()) ||
-      request.employeeId.toLowerCase().includes(leaveSearchTerm.toLowerCase()) ||
-      request.leaveTypeName.toLowerCase().includes(leaveSearchTerm.toLowerCase()) ||
-      request.reason.toLowerCase().includes(leaveSearchTerm.toLowerCase());
+      (request.employeeName || "").toLowerCase().includes(leaveSearchTerm.toLowerCase()) ||
+      (request.employeeId || "").toLowerCase().includes(leaveSearchTerm.toLowerCase()) ||
+      (request.leaveTypeName || "").toLowerCase().includes(leaveSearchTerm.toLowerCase()) ||
+      (request.reason || "").toLowerCase().includes(leaveSearchTerm.toLowerCase());
 
     const matchesStatus = leaveStatusFilter === "all" || request.status === leaveStatusFilter;
     const matchesType = leaveTypeFilter === "all" || request.leaveTypeId === leaveTypeFilter;
@@ -1699,7 +1699,7 @@ ${performanceFormData.managerComments || 'Not specified'}
       );
 
       if (activeEmployees.length === 0) {
-        alert("❌ No active employees with valid salary data found.\n\nPlease ensure employees have:\n• Active employment status\n• Basic salary configured\n• Complete personal information");
+        alert("❌ No active employees with valid salary data found.\n\nPlease ensure employees have:\n• Active employment status\n�� Basic salary configured\n• Complete personal information");
         return;
       }
 

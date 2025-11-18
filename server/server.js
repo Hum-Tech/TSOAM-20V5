@@ -4,7 +4,7 @@ const path = require("path");
 const bodyParser = require("body-parser");
 const multer = require("multer");
 const fs = require("fs");
-require("dotenv").config();
+require("dotenv").config({ path: path.join(__dirname, '..', '.env') });
 
 const { testConnection: testLocalConnection, initializeDatabase: initializeLocalDatabase } = require("./config/database");
 const { testConnection: testSupabaseConnection, initializeDatabase: initializeSupabaseDatabase } = require("./config/supabase-client");
@@ -24,9 +24,11 @@ const dashboardRoutes = require("./routes/dashboard");
 const systemLogsRoutes = require("./routes/system-logs");
 const messagesRoutes = require("./routes/messages");
 const homecellsRoutes = require("./routes/homecells");
+const homecellReportsRoutes = require("./routes/homecell-reports");
 const setupRoutes = require("./routes/setup");
 const migrateHomecellsRoutes = require("./routes/migrate-homecells");
 const databaseSetupRoutes = require("./routes/database-setup");
+const modulesRoutes = require("./routes/modules");
 
 const app = express();
 const PORT = process.env.PORT || 3001;
@@ -109,9 +111,11 @@ app.use("/api/dashboard", dashboardRoutes);
 app.use("/api/system-logs", systemLogsRoutes);
 app.use("/api/messages", messagesRoutes);
 app.use("/api/homecells", homecellsRoutes);
+app.use("/api/reports", homecellReportsRoutes);
 app.use("/api/setup", setupRoutes);
 app.use("/api/migrate", migrateHomecellsRoutes);
 app.use("/api/database-setup", databaseSetupRoutes);
+app.use("/api/modules", modulesRoutes);
 app.use("/api/users", authRoutes);
 
 // File upload endpoint
@@ -178,8 +182,29 @@ app.use((error, req, res, next) => {
 // Start server
 async function startServer() {
   try {
-    // Check if Supabase is configured
-    const useSupabase = process.env.SUPABASE_URL && process.env.SUPABASE_ANON_KEY;
+    // FORCE SUPABASE - Check if Supabase is configured
+    console.log("\n🔐 SUPABASE CONFIGURATION CHECK");
+    console.log("════════════════════════════════════");
+
+    const supabaseUrl = process.env.SUPABASE_URL;
+    const supabaseAnonKey = process.env.SUPABASE_ANON_KEY;
+    const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+
+    if (!supabaseUrl) {
+      console.error("❌ FATAL: SUPABASE_URL environment variable not set");
+      process.exit(1);
+    }
+    if (!supabaseAnonKey) {
+      console.error("❌ FATAL: SUPABASE_ANON_KEY environment variable not set");
+      process.exit(1);
+    }
+    if (!supabaseServiceKey) {
+      console.error("❌ FATAL: SUPABASE_SERVICE_ROLE_KEY environment variable not set");
+      process.exit(1);
+    }
+
+    console.log("✅ All Supabase environment variables configured");
+    const useSupabase = true; // Always use Supabase
 
     if (useSupabase) {
       console.log("\n🔄 Checking Supabase configuration...");
@@ -196,22 +221,6 @@ async function startServer() {
 
         if (supabaseReady) {
           console.log("✅ Supabase database ready");
-
-          // Initialize admin user if not exists
-          try {
-            const { initializeSupabaseAdmin } = require("./scripts/init-supabase-admin");
-            await initializeSupabaseAdmin();
-          } catch (error) {
-            console.log("⚠️  Admin initialization:", error.message);
-          }
-
-          // Fix admin user name
-          try {
-            const { fixAdminName } = require("./scripts/fix-admin-name");
-            await fixAdminName();
-          } catch (error) {
-            console.log("⚠️  Admin name fix:", error.message);
-          }
         } else {
           console.log("\n⚠️  IMPORTANT: Database tables not found!");
           console.log("   Please run: npm run supabase:init");
@@ -221,38 +230,6 @@ async function startServer() {
         console.log("❌ Cannot connect to Supabase");
         console.log("   Please verify SUPABASE_URL and SUPABASE_ANON_KEY in .env");
         console.log("   Server will start with limited functionality\n");
-      }
-    } else {
-      console.log("📋 Supabase not configured, using local database");
-
-      // Test local database connection
-      const localDbConnected = await testLocalConnection();
-      if (!localDbConnected) {
-        console.log("⚠️  Local database connection failed");
-        console.log("📋 Please check database configuration in .env file");
-        console.log("🔄 Server will continue with limited functionality");
-      } else {
-        console.log("✅ Local database connection established");
-
-        // Initialize local database
-        await initializeLocalDatabase();
-
-        // Setup database tables and default data
-        try {
-          const setupDatabase = require("./database/setup");
-          await setupDatabase();
-          console.log("✅ Database setup completed");
-        } catch (error) {
-          console.log("📋 Database setup skipped:", error.message);
-        }
-
-        // Always initialize sample data including admin user
-        try {
-          const { initializeData } = require("./scripts/init-database-data");
-          await initializeData();
-        } catch (error) {
-          console.log("📋 Sample data initialization:", error.message);
-        }
       }
     }
 

@@ -1,4 +1,5 @@
-require('dotenv').config();
+const path = require('path');
+require('dotenv').config({ path: path.join(__dirname, '..', '..', '.env') });
 
 let createClient;
 try {
@@ -207,8 +208,12 @@ async function initializeDatabase() {
     if (!allTablesExist) {
       console.log(`⚠️  Missing tables: ${missingTables.join(', ')}`);
       console.log('📋 Note: Database tables need to be created.');
-      console.log('   Run: npm run supabase:init');
-      console.log('   Or manually in Supabase console');
+      console.log('   See MIGRATION_GUIDE.md for instructions');
+      console.log('   Quick steps:');
+      console.log('     1. Go to Supabase dashboard');
+      console.log('     2. SQL Editor -> New Query');
+      console.log('     3. Copy SQL from MIGRATION_GUIDE.md');
+      console.log('     4. Run and restart server');
       return false; // Return false - user needs to run setup
     } else {
       console.log('✅ All required tables exist');

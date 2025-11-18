@@ -550,8 +550,8 @@ export default function EventsEnhanced() {
       filtered = filtered.filter(
         (event) =>
           event.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          event.description?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          event.organizer.toLowerCase().includes(searchTerm.toLowerCase())
+          (event.description || "").toLowerCase().includes(searchTerm.toLowerCase()) ||
+          (event.organizer || "").toLowerCase().includes(searchTerm.toLowerCase())
       );
     }
 

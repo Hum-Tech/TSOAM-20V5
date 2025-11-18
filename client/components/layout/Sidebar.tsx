@@ -23,6 +23,7 @@ import {
   Shield,
   LogOut,
   Database,
+  ShoppingCart,
 } from "lucide-react";
 
 const allMenuItems = [
@@ -79,9 +80,9 @@ const allMenuItems = [
     permission: "settings",
   },
   {
-    path: "/admin/setup",
-    label: "Database Setup",
-    icon: Database,
+    path: "/module-store",
+    label: "Module Store",
+    icon: ShoppingCart,
     permission: "settings",
   },
   {
@@ -157,9 +158,9 @@ export function Sidebar({ onClose }: SidebarProps) {
               className="h-12 md:h-20 w-12 md:w-20 object-cover rounded-full border-2 border-primary/20 shadow-lg"
             />
           </div>
-          <div className="min-w-0">
+          <div className="min-w-0 flex-1">
             <h1 className="text-lg md:text-xl font-bold text-sidebar-foreground truncate">TSOAM</h1>
-            <p className="text-xs md:text-sm text-sidebar-foreground/70 truncate">
+            <p className="text-xs md:text-sm text-sidebar-foreground/70 break-words line-clamp-2">
               Management System
             </p>
             <div className="mt-1 text-xs text-sidebar-foreground/50 hidden md:block">

@@ -642,9 +642,9 @@ export default function Inventory() {
 
   const filteredItems = items.filter((item) => {
     const matchesSearch =
-      item.itemName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      item.itemCode.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      item.serialNumber.toLowerCase().includes(searchTerm.toLowerCase());
+      (item.itemName || "").toLowerCase().includes(searchTerm.toLowerCase()) ||
+      (item.itemCode || "").toLowerCase().includes(searchTerm.toLowerCase()) ||
+      (item.serialNumber || "").toLowerCase().includes(searchTerm.toLowerCase());
     const matchesStatus =
       statusFilter === "all" || item.status === statusFilter;
     const matchesCategory =

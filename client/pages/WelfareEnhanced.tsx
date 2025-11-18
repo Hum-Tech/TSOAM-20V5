@@ -1073,9 +1073,9 @@ export default function WelfareEnhanced() {
 
   const filteredApplications = applications.filter((app) => {
     const matchesSearch =
-      app.applicantName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      app.id.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      app.phoneNumber.includes(searchTerm);
+      (app.applicantName || "").toLowerCase().includes(searchTerm.toLowerCase()) ||
+      (app.id || "").toLowerCase().includes(searchTerm.toLowerCase()) ||
+      (app.phoneNumber || "").includes(searchTerm);
 
     const matchesStatus =
       statusFilter === "all" || app.approvalStatus === statusFilter;

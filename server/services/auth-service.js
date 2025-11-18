@@ -20,6 +20,14 @@ async function authenticateUser(email, password) {
       };
     }
 
+    if (!supabaseAdmin) {
+      console.error('❌ Supabase admin client not configured');
+      return {
+        success: false,
+        error: 'Database connection failed. Please check server configuration.'
+      };
+    }
+
     // Get user from database
     const { data: users, error } = await supabaseAdmin
       .from('users')
@@ -83,12 +91,18 @@ async function authenticateUser(email, password) {
     // Get user permissions
     const permissions = await getUserPermissions(user.role);
 
+    // Normalize name field - handle both 'name' and 'full_name' columns from database
+    const fullName = (user.name || user.full_name || user.email || "User").trim();
+
+    // Ensure fullName is never empty or undefined
+    const safeName = fullName && fullName !== "" && fullName !== "User" ? fullName : (user.email || "User");
+
     // Generate JWT token
     const token = jwt.sign(
       {
         userId: user.id,
         email: user.email,
-        fullName: user.name,
+        fullName: safeName,
         role: user.role,
         permissions: permissions
       },
@@ -102,9 +116,9 @@ async function authenticateUser(email, password) {
       user: {
         id: user.id,
         email: user.email,
-        fullName: user.name,
-        name: user.name,
-        phone: user.phone,
+        fullName: safeName,
+        name: safeName,
+        phone: user.phone || "",
         role: user.role,
         permissions: permissions,
         lastLogin: user.last_login
@@ -127,19 +141,39 @@ async function authenticateUser(email, password) {
  */
 async function getUserPermissions(role) {
   try {
+    // Return default permissions based on role if table doesn't exist
+    const defaultPermissions = {
+      'admin': ['*'],
+      'Admin': ['*'],
+      'pastor': ['*'],
+      'Pastor': ['*'],
+      'hr': ['members', 'hr', 'employees'],
+      'HR Officer': ['members', 'hr', 'employees'],
+      'finance': ['finance', 'transactions'],
+      'Finance Officer': ['finance', 'transactions'],
+      'user': ['members', 'events', 'appointments'],
+      'User': ['members', 'events', 'appointments']
+    };
+
+    // Return default permissions
+    if (defaultPermissions[role]) {
+      return defaultPermissions[role];
+    }
+
+    // Try to fetch from database
     const { data: permissions, error } = await supabaseAdmin
       .from('role_permissions')
       .select('permission')
       .eq('role', role);
 
     if (error) {
-      console.error('Error fetching permissions:', error);
-      return [];
+      console.warn('Role permissions table not found, using defaults:', error.message);
+      return defaultPermissions[role] || [];
     }
 
     return permissions.map(p => p.permission);
   } catch (error) {
-    console.error('Error in getUserPermissions:', error);
+    console.warn('Error in getUserPermissions, using defaults:', error.message);
     return [];
   }
 }
@@ -221,13 +255,17 @@ async function createUser(userData) {
       };
     }
 
+    // Normalize name field - handle both 'name' and 'full_name' columns
+    const createdUserName = (newUser.name || newUser.full_name || fullName || newUser.email || "User").trim();
+
     return {
       success: true,
       user: {
         id: newUser.id,
         email: newUser.email,
-        fullName: newUser.full_name,
-        phone: newUser.phone,
+        fullName: createdUserName,
+        name: createdUserName,
+        phone: newUser.phone || "",
         role: newUser.role,
         createdAt: newUser.created_at
       }
